@@ -30,7 +30,7 @@ def getProbeInfoDict():
 
 def countUnique(a):
     counter_a = Counter(a)
-    return np.array(counter_a.keys()), np.array(counter_a.values())
+    return np.array(list(counter_a.keys())), np.array(list(counter_a.values()))
 
 def getClusterAveragePerSpike(spike_clusters, quantity):
     unique_clusters, spike_counts = countUnique(spike_clusters)
@@ -41,7 +41,7 @@ def getClusterAveragePerSpike(spike_clusters, quantity):
 
 def getTemplatePositionsAmplitudes(templates, whitening_matrix_inv, y_coords, spike_templates, template_scaling_amplitudes):
     num_templates, num_timepoints, num_channels = templates.shape
-    unwhitened_template_waveforms = np.array([np.matmul(template, whitening_matrix_inv)for template in templates])
+    unwhitened_template_waveforms = np.array(list(map(lambda x:np.matmul(x, whitening_matrix_inv), templates)))
     template_channel_amplitudes = np.max(unwhitened_template_waveforms, axis=1) - np.min(unwhitened_template_waveforms, axis=1)
     template_amplitudes_unscaled = np.max(template_channel_amplitudes, axis=1)
     threshold_values = template_amplitudes_unscaled*0.3
