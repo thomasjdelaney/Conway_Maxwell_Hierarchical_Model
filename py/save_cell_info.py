@@ -28,13 +28,9 @@ def getProbeInfoDict():
     probe_info['connected_xcoords'] = probe_info['xcoords'][probe_info['connected']]
     return probe_info
 
-def countUnique(a):
-    counter_a = Counter(a)
-    return np.array(list(counter_a.keys())), np.array(list(counter_a.values()))
-
 def getClusterAveragePerSpike(spike_clusters, quantity):
-    unique_clusters, spike_counts = countUnique(spike_clusters)
-    cluster_indices = np.concatenate([np.where(cl == unique_clusters)[0]for cl in spike_clusters])
+    unique_clusters, spike_counts = np.unique(spike_clusters, return_counts=True)
+    cluster_indices = np.array(list(map(lambda x:np.where(unique_clusters == x)[0][0], spike_clusters)))
     summation_over_clusters = csr_matrix((quantity, (cluster_indices, np.zeros(spike_clusters.size, dtype=int))), dtype=float).toarray().flatten()
     cluster_average = np.divide(summation_over_clusters, spike_counts)
     return cluster_average
