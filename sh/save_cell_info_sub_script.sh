@@ -12,5 +12,5 @@ do
   echo ${i}>>$confile
 done
 
-time python3 py/save_cell_info.py -s
-time python3 py/save_cell_info.py -s -p frontal
+time python3 $HOME/Conway_Maxwell_Hierarchical_Model/py/save_cell_info.py -s
+time python3 $HOME/Conway_Maxwell_Hierarchical_Model/py/save_cell_info.py -s -p frontal
