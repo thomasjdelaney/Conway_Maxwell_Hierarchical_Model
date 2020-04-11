@@ -65,13 +65,13 @@ def getTemplatePositionsAmplitudes(templates, whitening_matrix_inv, y_coords, sp
     return spike_amplitudes, spike_depths, template_depths, template_amplitudes, unwhitened_template_waveforms, template_duration, waveforms
 
 def makeCellInfoTable(cluster_groups, cluster_depths, cluster_amplitudes, probe):
-    save_cell_info_file = os.path.join(proj_dir, 'csv', 'cell_info.csv')
+    cell_info_file = os.path.join(proj_dir, 'csv', 'cell_info.csv')
     csv_exists = os.path.isfile(cell_info_file)
     if not csv_exists:
         print(dt.datetime.now().isoformat() + ' INFO: ' + 'cell_info.csv does not exist.')
     elif csv_exists:
         print(dt.datetime.now().isoformat() + ' INFO: ' + 'cell_info.csv exists.')
-        existing_cell_info = pd.read_csv(save_cell_info_file, index_col='adj_cluster_id')
+        existing_cell_info = pd.read_csv(cell_info_file, index_col='adj_cluster_id')
         existing_data_probe = existing_cell_info.probe.unique()
         if existing_data_probe.size > 1:
             print(dt.datetime.now().isoformat() + ' ERROR: ' + 'cell_info for both probes already exists! Exiting.')
@@ -107,7 +107,7 @@ def makeCellInfoTable(cluster_groups, cluster_depths, cluster_amplitudes, probe)
     cell_info = pd.DataFrame({'cluster_id':cluster_groups.index, 'group':cluster_groups, 'depth':cluster_depths, 'amplitude':cluster_amplitudes, 'region':regions, 'probe':probe}, index=cluster_groups.index)
     cell_info.index = cell_info.index + id_adjustor
     cell_info_file = os.path.join(proj_dir, 'csv', 'cell_info.csv')
-    if not(os.path.isfile(cell_info_file)):
+    if not csv_exists:
         cell_info.to_csv(cell_info_file, index_label='adj_cluster_id')
     else:
         cell_info.to_csv(cell_info_file, index_label='adj_cluster_id', header=False, mode='a')
