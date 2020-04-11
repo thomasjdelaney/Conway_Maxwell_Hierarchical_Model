@@ -6,6 +6,7 @@ For loading the data from a given neuropixels probe. Instructions taken from the
 import os, argparse
 import numpy as np
 import pandas as pd
+import datetime as dt
 from scipy.io import loadmat
 from collections import Counter
 from scipy.sparse import csr_matrix
@@ -63,7 +64,26 @@ def getTemplatePositionsAmplitudes(templates, whitening_matrix_inv, y_coords, sp
     spike_amplitudes = spike_amplitudes*0.6/512/500*1e6
     return spike_amplitudes, spike_depths, template_depths, template_amplitudes, unwhitened_template_waveforms, template_duration, waveforms
 
-def makeCellInfoTable(cluster_groups, cluster_depths, cluster_amplitudes, probe, id_adjustor=0):
+def makeCellInfoTable(cluster_groups, cluster_depths, cluster_amplitudes, probe):
+    save_cell_info_file = os.path.join(proj_dir, 'csv', 'cell_info.csv')
+    csv_exists = os.path.isfile(cell_info_file)
+    if not csv_exists:
+        print(dt.datetime.now().isoformat() + ' INFO: ' + 'cell_info.csv does not exist.')
+    elif csv_exists:
+        print(dt.datetime.now().isoformat() + ' INFO: ' + 'cell_info.csv exists.')
+        existing_cell_info = pd.read_csv(save_cell_info_file, index_col='adj_cluster_id')
+        existing_data_probe = existing_cell_info.probe.unique()
+        if existing_data_probe.size > 1:
+            print(dt.datetime.now().isoformat() + ' ERROR: ' + 'cell_info for both probes already exists! Exiting.')
+            exit()
+        elif existing_data_probe == probe:
+            print(dt.datetime.now().isoformat() + ' ERROR: ' + 'cell_info for this probe already exists! Exiting.')
+            exit()
+        else:
+            print(dt.datetime.now().isoformat() + ' INFO: ' + 'adding to cell_info.csv...')
+    else:
+        print(dt.datetime.now().isoformat() + ' ERROR: ' + 'Something is wrong.')
+        exit()
     thalamus_threshold = 1634.0
     hippocampus_threshold = 2797.0
     v1_threshold = 3840.0
@@ -73,17 +93,25 @@ def makeCellInfoTable(cluster_groups, cluster_depths, cluster_amplitudes, probe,
         regions = np.repeat('thalamus', cluster_groups.size).astype(object)
         regions[cluster_depths > thalamus_threshold] = 'hippocampus'
         regions[cluster_depths > hippocampus_threshold] = 'v1'
-    if probe == 'frontal':
+        id_adjustor = 0
+    elif probe == 'frontal':
         regions = np.repeat('striatum', cluster_groups.size).astype(object)
         regions[cluster_depths > striatum_threshold] = 'motor_cortex'
-    cell_info = pd.DataFrame({'group':cluster_groups, 'depth':cluster_depths, 'amplitude':cluster_amplitudes, 'region':regions, 'probe':probe}, index=cluster_groups.index)
+        if csv_exists:
+            id_adjustor = existing_cell_info.index.max() + 1
+        else:
+            print(dt.datetime.now().isoformat() + ' ERROR: ' + 'Need to do "posterior" first, then "frontal".')
+            exit()
+    else:
+        error(dt.datetime.now().isoformat() + ' ERROR: ' + 'Unrecognised probe name. Exiting...')
+    cell_info = pd.DataFrame({'cluster_id':cluster_groups.index, 'group':cluster_groups, 'depth':cluster_depths, 'amplitude':cluster_amplitudes, 'region':regions, 'probe':probe}, index=cluster_groups.index)
     cell_info.index = cell_info.index + id_adjustor
     cell_info_file = os.path.join(proj_dir, 'csv', 'cell_info.csv')
     if not(os.path.isfile(cell_info_file)):
-        cell_info.to_csv(cell_info_file, index_label='cluster_id')
+        cell_info.to_csv(cell_info_file, index_label='adj_cluster_id')
     else:
-        cell_info.to_csv(cell_info_file, index_label='cluster_id', header=False, mode='a')
-    return pd.read_csv(cell_info_file, index_col='cluster_id')
+        cell_info.to_csv(cell_info_file, index_label='adj_cluster_id', header=False, mode='a')
+    return pd.read_csv(cell_info_file, index_col='adj_cluster_id')
 
 probe_info = getProbeInfoDict()
 cluster_groups = pd.read_csv(os.path.join(probe_dir, 'cluster_groups.csv'), sep='\t', index_col='cluster_id')['group']
@@ -108,15 +136,9 @@ id_adjustor = 0
 if args.probe_dir == 'frontal':
     time_correction = np.load(os.path.join(probe_dir, 'time_correction.npy'))
     spike_times = spike_times - time_correction[1]
-    cell_info_file = os.path.join(csv_dir, 'cell_info.csv')
-    if os.path.exists(cell_info_file):
-        posterior_cell_info = pd.read_csv(cell_info_file)
-        id_adjustor = posterior_cell_info['cluster_id'].max() + 1
-    else:
-        print("WARNING: cell_info.csv doesn't yet exist.")
 if args.save_cell_info:
-    cell_info = makeCellInfoTable(cluster_groups, cluster_depths, cluster_amplitudes, args.probe_dir, id_adjustor)
+    cell_info = makeCellInfoTable(cluster_groups, cluster_depths, cluster_amplitudes, args.probe_dir)
 else:
-    cell_info = pd.read_csv(os.path.join(proj_dir, 'csv', 'cell_info.csv'), index_col='cluster_id')
+    cell_info = pd.read_csv(os.path.join(proj_dir, 'csv', 'cell_info.csv'), index_col='adj_cluster_id')
 
 # TODO: This whole script is a hack.
