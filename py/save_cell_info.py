@@ -104,16 +104,19 @@ whitening_matrix_inv = np.load(os.path.join(probe_dir, 'whitening_mat_inv.npy'))
 spike_amplitudes, spike_depths, template_depths, template_amplitudes, unwhitened_template_waveforms, template_duration, waveforms = getTemplatePositionsAmplitudes(templates, whitening_matrix_inv, probe_info['connected_ycoords'], spike_templates, template_scaling_amplitudes)
 cluster_depths = getClusterAveragePerSpike(spike_clusters, spike_depths)
 cluster_amplitudes = getClusterAveragePerSpike(spike_clusters, spike_amplitudes)
+id_adjustor = 0
 if args.probe_dir == 'frontal':
     time_correction = np.load(os.path.join(probe_dir, 'time_correction.npy'))
     spike_times = spike_times - time_correction[1]
     cell_info_file = os.path.join(csv_dir, 'cell_info.csv')
     if os.path.exists(cell_info_file):
-        posterior_cell_info = pd.read_csv(os.path.join)
+        posterior_cell_info = pd.read_csv(cell_info_file)
         id_adjustor = posterior_cell_info['cluster_id'].max() + 1
     else:
         print("WARNING: cell_info.csv doesn't yet exist.")
 if args.save_cell_info:
-    cell_info = makeCellInfoTable(cluster_groups, cluster_depths, cluster_amplitudes, args.probe_dir)
+    cell_info = makeCellInfoTable(cluster_groups, cluster_depths, cluster_amplitudes, args.probe_dir, id_adjustor)
 else:
     cell_info = pd.read_csv(os.path.join(proj_dir, 'csv', 'cell_info.csv'), index_col='cluster_id')
+
+# TODO: This whole script is a hack.
