@@ -17,6 +17,7 @@ np.set_printoptions(linewidth=shutil.get_terminal_size().columns)
 
 proj_dir = os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Hierarchical_Model')
 csv_dir = os.path.join(proj_dir, 'csv')
+mat_dir = os.path.join(proj_dir, 'mat')
 py_dir = os.path.join(proj_dir, 'py')
 
 sys.path.append(py_dir)
@@ -25,3 +26,4 @@ import ConwayMaxwellHierarchicalModel as comh
 if not args.debug:
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
     cell_info = comh.loadCellInfo(csv_dir)
+    stim_info, stim_ids = comh.loadStimulusInfo(mat_dir)
