@@ -17,6 +17,7 @@ parser.add_argument('-s', '--save_cell_info', help='Flag to save the cell info t
 args = parser.parse_args()
 
 proj_dir = os.path.join(os.environ['HOME'], 'Conway_Maxwell_Hierarchical_Model')
+csv_dir = os.path.join(proj_dir, 'csv')
 probe_dir = os.path.join(proj_dir, args.probe_dir)
 
 def getProbeInfoDict():
@@ -62,7 +63,7 @@ def getTemplatePositionsAmplitudes(templates, whitening_matrix_inv, y_coords, sp
     spike_amplitudes = spike_amplitudes*0.6/512/500*1e6
     return spike_amplitudes, spike_depths, template_depths, template_amplitudes, unwhitened_template_waveforms, template_duration, waveforms
 
-def makeCellInfoTable(cluster_groups, cluster_depths, cluster_amplitudes, probe):
+def makeCellInfoTable(cluster_groups, cluster_depths, cluster_amplitudes, probe, id_adjustor=0):
     thalamus_threshold = 1634.0
     hippocampus_threshold = 2797.0
     v1_threshold = 3840.0
@@ -76,6 +77,7 @@ def makeCellInfoTable(cluster_groups, cluster_depths, cluster_amplitudes, probe)
         regions = np.repeat('striatum', cluster_groups.size).astype(object)
         regions[cluster_depths > striatum_threshold] = 'motor_cortex'
     cell_info = pd.DataFrame({'group':cluster_groups, 'depth':cluster_depths, 'amplitude':cluster_amplitudes, 'region':regions, 'probe':probe}, index=cluster_groups.index)
+    cell_info.index = cell_info.index + id_adjustor
     cell_info_file = os.path.join(proj_dir, 'csv', 'cell_info.csv')
     if not(os.path.isfile(cell_info_file)):
         cell_info.to_csv(cell_info_file, index_label='cluster_id')
@@ -105,7 +107,12 @@ cluster_amplitudes = getClusterAveragePerSpike(spike_clusters, spike_amplitudes)
 if args.probe_dir == 'frontal':
     time_correction = np.load(os.path.join(probe_dir, 'time_correction.npy'))
     spike_times = spike_times - time_correction[1]
-
+    cell_info_file = os.path.join(csv_dir, 'cell_info.csv')
+    if os.path.exists(cell_info_file):
+        posterior_cell_info = pd.read_csv(os.path.join)
+        id_adjustor = posterior_cell_info['cluster_id'].max() + 1
+    else:
+        print("WARNING: cell_info.csv doesn't yet exist.")
 if args.save_cell_info:
     cell_info = makeCellInfoTable(cluster_groups, cluster_depths, cluster_amplitudes, args.probe_dir)
 else:
