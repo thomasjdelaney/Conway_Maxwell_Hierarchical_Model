@@ -2,8 +2,10 @@ import os
 import pandas as pd
 import numpy as np
 import datetime as dt
+import matplotlib.pyplot as plt
 from scipy.io import loadmat
 from multiprocessing import Pool
+from scipy.stats import nbinom, binom
 
 def loadCellInfo(csv_dir):
     """
@@ -50,6 +52,9 @@ def getRandomSubsetOfCells(cell_info, num_cells, probes=['any'], groups=['any'],
     relevant_cell_info = cell_info[cell_info['probe'].isin(probes)] if probes != ['any'] else cell_info
     relevant_cell_info = relevant_cell_info[relevant_cell_info['group'].isin(groups)] if groups != ['any'] else relevant_cell_info
     relevant_cell_info = relevant_cell_info[relevant_cell_info['region'].isin(regions)] if regions != ['any'] else relevant_cell_info
+    if num_cells > relevant_cell_info.shape[0]:
+        print(dt.datetime.now().isoformat() + 'WARN: ' + 'Returning all available cells.')
+        return relevant_cell_info.index.values
     remaining_regions = relevant_cell_info.region.unique()
     num_regions = remaining_regions.size
     cells_per_region = num_cells // num_regions
@@ -107,6 +112,21 @@ def loadSpikeTimeDict(adj_cell_ids, posterior_dir, frontal_dir, cell_info):
         spike_times_future.wait()
     return dict(zip(adj_cell_ids, spike_times_future.get()))
 
+def divideSpikeTimeDictByRegion(spike_time_dict, cell_info):
+    """
+    For dividing the spike time dict into more dictionaries, one for each region. 
+    Arguments:  spike_time_dict, dictionary adj_cell_id => spike_times
+                cell_info, pandas DataFrame
+    Returns:    a dictionary of spike time dictionaries for each region from which we have cells.
+    """
+    relevant_cell_info = cell_info.loc[list(spike_time_dict.keys())]
+    relevant_regions = relevant_cell_info.region.unique()
+    region_to_spike_time_dict = {}
+    for region in relevant_regions:
+        relevant_adj_ids = relevant_cell_info[relevant_cell_info['region'] == region].index.values
+        region_to_spike_time_dict[region] = dict(zip(relevant_adj_ids, map(spike_time_dict.get, relevant_adj_ids)))
+    return region_to_spike_time_dict
+
 def getBinBorders(start_time, end_time, bin_width):
     """
     For getting the binning borders for a time interval.
@@ -145,5 +165,90 @@ def getNumberOfActiveCellsInBinnedInterval(start_time, end_time, bin_width, spik
         is_active_future.wait()
     return bin_borders, np.vstack(is_active_future.get()).sum(axis=0)
 
+def getNumberOfActiveCellsByRegion(interval_start_time, interval_end_time, bin_width, region_to_spike_time_dict):
+    """
+    Get a dictionary region => number of active cells.
+    Arguments:  interval_start_time,
+                interval_end_time,
+                bin_width,
+                region_to_spike_time_dict, region => dict(adj cell id => spike times)
+    Returns:    dict, region => number of active cells
+                bin_borders
+    """
+    region_to_active_cells = {}
+    for region,spike_time_dict in region_to_spike_time_dict.items():
+        bin_borders, num_active_cells_binned = getNumberOfActiveCellsInBinnedInterval(interval_start_time, interval_end_time, bin_width, spike_time_dict)
+        region_to_active_cells[region] = num_active_cells_binned
+    return bin_borders, region_to_active_cells
 
+def fitBinomialDistn(num_active_cells_binned, total_cells):
+    """
+    For fitting a binomial distribution to the given activit data.
+    Arguments:  num_active_cells_binned, array int
+                total_cells, int, how many cells could spike in any given bin
+    Returns:    fitted binom ditribution object.
+    """
+    num_trials = num_active_cells_binned.size
+    total_successes = num_active_cells_binned.sum()
+    return binom(total_cells, total_successes/(total_cells*num_trials)) 
 
+##########################################################
+########## PLOTTING FUNCTIONS ############################
+##########################################################
+
+def plotShadedStimulus(stim_starts, stim_stops, upper_bound):
+    """
+    For plotting a shaded aread to represent the times when a stimulus was present.
+    Arguments:  stim_starts, list or array, the start times of the stimuli
+                stim_stops, list or array, the stop times of the stimuli
+    Returns:    nothing
+    """
+    for i,(stim_start, stim_stop) in enumerate(zip(stim_starts, stim_stops)):
+        plt.fill_between(x=[stim_start, stim_stop], y1=upper_bound, y2=0, color='grey', alpha=0.3)
+    return None
+
+def plotNumActiveCellsByTime(bin_borders, num_active_cells_binned, stim_starts=[], stim_stops=[], **kwargs):
+    """
+    For plotting the number of active cells across bins, optionally with stimulus time shaded.
+    Arguments:  bin_borders, array (float) 
+                num_active_cells_binned, array (int)
+                stim_starts, list or array, the start times of stimuli
+                stim_stops, list or array, the stop times of stimuli
+    Returns:    Nothing
+    """
+    bin_centres = (bin_borders[:-1] + bin_borders[1:])/2
+    if (len(stim_starts) > 0) & (len(stim_stops) > 0):
+        plotShadedStimulus(stim_starts, stim_stops, num_active_cells_binned.max())
+    plt.plot(bin_centres, num_active_cells_binned, **kwargs)
+    return None
+
+def plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_starts=[], stim_stops=[], **kwargs):
+    """
+    Plot the number of active cells for each region on the same plot.
+    Arguments:  bin_borders,
+                region_to_active_cells, dictionary
+                stim_starts, list or array, 
+                stim_stops, list or array,
+                **kwargs
+    Returns:    nothing
+    """
+    upper_bound = np.array(list(region_to_active_cells.values())).max()
+    plotShadedStimulus(stim_starts, stim_stops, upper_bound) if (len(stim_starts) > 0) & (len(stim_stops) > 0) else None
+    for region, num_active_cells_binned in region_to_active_cells.items():
+        plotNumActiveCellsByTime(bin_borders, num_active_cells_binned, label=region.capitalize())
+    plt.legend(fontsize='large')
+    return None
+
+def plotCompareDataFittedDistn(num_active_cells_binned, fitted_distn, plot_type='pdf', data_label='Num. Active Cells', distn_label='Fitted Distn. PMF'):
+    """
+    For comparing a fitted distribution to some data. (pdf and/or cdf?)
+    Arguments:  num_active_cells_binned, array int
+                fitted_distn, distribution object, needs pdf and cdf functions
+                plot_type, ['pdf', 'cdf']
+    Returns:    nothing
+    """
+    bin_borders = range(num_active_cells_binned.max()+1)
+    plt.hist(num_active_cells_binned, bins=bin_borders, density=True, label=data_label, align='left')
+    plt.plot(bin_borders, fitted_distn.pmf(bin_borders), label=distn_label)
+    plt.legend(fontsize='large')
+    return None
