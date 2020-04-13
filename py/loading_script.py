@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import matplotlib.pyplot as plt
-from scipy.stats import nbinom, binom
+from scipy.stats import nbinom, binom, betabinom
 
 parser = argparse.ArgumentParser(description='For loading in the functions and loading the cell info.')
 parser.add_argument('-n', '--num_cells', help='Number of cells to use.', default=100, type=int)
@@ -38,7 +38,7 @@ if not args.debug:
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Loaded.')
     interval_start_time = stim_info.loc[0]['stim_starts'] - 0.5
     interval_end_time = stim_info.loc[2]['stim_stops'] + 0.5
-    bin_width = 0.005
+    bin_width = 0.001
     region_to_spike_time_dict = comh.divideSpikeTimeDictByRegion(spike_time_dict,cell_info)
     bin_borders, region_to_active_cells = comh.getNumberOfActiveCellsByRegion(interval_start_time, interval_end_time, bin_width, region_to_spike_time_dict)
     plt.figure(figsize=(5,4))

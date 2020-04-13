@@ -5,7 +5,7 @@ import datetime as dt
 import matplotlib.pyplot as plt
 from scipy.io import loadmat
 from multiprocessing import Pool
-from scipy.stats import nbinom, binom
+from scipy.stats import nbinom, binom, betabinom
 
 def loadCellInfo(csv_dir):
     """
@@ -237,6 +237,9 @@ def plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_s
     for region, num_active_cells_binned in region_to_active_cells.items():
         plotNumActiveCellsByTime(bin_borders, num_active_cells_binned, label=region.capitalize())
     plt.legend(fontsize='large')
+    plt.xlabel('Time (s)', fontsize='large')
+    plt.ylabel('Num. Active Cells', fontsize='large')
+    plt.tight_layout()
     return None
 
 def plotCompareDataFittedDistn(num_active_cells_binned, fitted_distn, plot_type='pdf', data_label='Num. Active Cells', distn_label='Fitted Distn. PMF'):
@@ -251,4 +254,7 @@ def plotCompareDataFittedDistn(num_active_cells_binned, fitted_distn, plot_type=
     plt.hist(num_active_cells_binned, bins=bin_borders, density=True, label=data_label, align='left')
     plt.plot(bin_borders, fitted_distn.pmf(bin_borders), label=distn_label)
     plt.legend(fontsize='large')
+    plt.xlabel('Num. Active Cells', fontsize='large')
+    plt.ylabel('P(k)', fontsize='large')
+    plt.tight_layout()
     return None
