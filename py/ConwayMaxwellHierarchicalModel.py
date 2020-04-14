@@ -192,6 +192,16 @@ def fitBinomialDistn(num_active_cells_binned, total_cells):
     total_successes = num_active_cells_binned.sum()
     return binom(total_cells, total_successes/(total_cells*num_trials)) 
 
+def movingAverage(a, n=3):
+    """
+    Arguments:  a, numpy array
+                n, the number of steps over which to take the average.
+    Returns:    array, of length a.size - n + 1
+    """
+    ret = np.cumsum(a, dtype=float)
+    ret[n:] = ret[n:] - ret[:-n]
+    return ret[n - 1:] / n
+
 ##########################################################
 ########## PLOTTING FUNCTIONS ############################
 ##########################################################

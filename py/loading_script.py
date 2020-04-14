@@ -9,6 +9,7 @@ import pandas as pd
 import datetime as dt
 import matplotlib.pyplot as plt
 from scipy.stats import nbinom, binom, betabinom
+from scipy.optimize import minimize
 
 parser = argparse.ArgumentParser(description='For loading in the functions and loading the cell info.')
 parser.add_argument('-n', '--num_cells', help='Number of cells to use.', default=100, type=int)
@@ -27,6 +28,18 @@ frontal_dir = os.path.join(proj_dir, 'frontal')
 
 sys.path.append(py_dir)
 import ConwayMaxwellHierarchicalModel as comh
+
+def easyLogLikeFit(distn, data, init, bounds):
+    """
+    For fitting a distribution to the data using maximum likelihood method, starting from init.
+    Arguments:  distn, the distribution
+                data, the data
+                init, initial guess
+                bounds, (min, max) pairs for each parameter
+    Returns:    fitted distribution object.
+    """
+    res = minimize(lambda x,y:-distn.logpmf(data, n=n, a=x, b=y).sum(), init, bounds=bounds)
+    return res.x
 
 if not args.debug:
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
