@@ -53,7 +53,7 @@ def getRandomSubsetOfCells(cell_info, num_cells, probes=['any'], groups=['any'],
     relevant_cell_info = relevant_cell_info[relevant_cell_info['group'].isin(groups)] if groups != ['any'] else relevant_cell_info
     relevant_cell_info = relevant_cell_info[relevant_cell_info['region'].isin(regions)] if regions != ['any'] else relevant_cell_info
     if num_cells > relevant_cell_info.shape[0]:
-        print(dt.datetime.now().isoformat() + 'WARN: ' + 'Returning all available cells.')
+        print(dt.datetime.now().isoformat() + ' WARN: ' + 'Returning all available cells.')
         return relevant_cell_info.index.values
     remaining_regions = relevant_cell_info.region.unique()
     num_regions = remaining_regions.size
@@ -202,6 +202,20 @@ def movingAverage(a, n=3):
     ret[n:] = ret[n:] - ret[:-n]
     return ret[n - 1:] / n
 
+def easyLogLikeFit(distn, data, init, bounds, n):
+    """
+    For fitting a distribution to the data using maximum likelihood method, starting from init.
+    Arguments:  distn, the distribution
+                data, the data
+                init, initial guess
+                bounds, (min, max) pairs for each parameter
+                n, the number of cells
+    Returns:    fitted distribution object.
+    """
+    res = minimize(lambda x:-distn.logpmf(data, n=n, a=x[0], b=x[1]).sum(), init, bounds=bounds)
+    fitted = distn(n=n, a=res.x[0], b=res.x[1])
+    return fitted
+
 ##########################################################
 ########## PLOTTING FUNCTIONS ############################
 ##########################################################
@@ -252,17 +266,21 @@ def plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_s
     plt.tight_layout()
     return None
 
-def plotCompareDataFittedDistn(num_active_cells_binned, fitted_distn, plot_type='pdf', data_label='Num. Active Cells', distn_label='Fitted Distn. PMF'):
+def plotCompareDataFittedDistn(num_active_cells_binned, fitted_distn, plot_type='pdf', data_label='Num. Active Cells', distn_label=['Fitted Distn. PMF']):
     """
     For comparing a fitted distribution to some data. (pdf and/or cdf?)
     Arguments:  num_active_cells_binned, array int
-                fitted_distn, distribution object, needs pdf and cdf functions
+                fitted_distn, distribution object or list of distn objects, needs pdf and cdf functions
                 plot_type, ['pdf', 'cdf']
     Returns:    nothing
     """
+    fitted_distn = [fitted_distn] if list != type(fitted_distn) else fitted_distn
+    num_distns = len(fitted_distn)
+    distn_label = distn_label * num_distns if len(distn_label) != num_distns else distn_label
     bin_borders = range(num_active_cells_binned.max()+1)
     plt.hist(num_active_cells_binned, bins=bin_borders, density=True, label=data_label, align='left')
-    plt.plot(bin_borders, fitted_distn.pmf(bin_borders), label=distn_label)
+    for distn, d_label in zip(fitted_distn,distn_label):
+        plt.plot(bin_borders, distn.pmf(bin_borders), label=d_label)
     plt.legend(fontsize='large')
     plt.xlabel('Num. Active Cells', fontsize='large')
     plt.ylabel('P(k)', fontsize='large')

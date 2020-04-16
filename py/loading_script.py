@@ -13,6 +13,7 @@ from scipy.optimize import minimize
 
 parser = argparse.ArgumentParser(description='For loading in the functions and loading the cell info.')
 parser.add_argument('-n', '--num_cells', help='Number of cells to use.', default=100, type=int)
+parser.add_argument('-b', '--bin_width', help='Time bin with to use (in seconds).', default=0.001, type=float)
 parser.add_argument('-d', '--debug', help='Enter debug mode.', default=False, action='store_true')
 args = parser.parse_args()
 
@@ -31,33 +32,6 @@ sys.path.append(os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Binomial_Distri
 import ConwayMaxwellHierarchicalModel as comh
 import ConwayMaxwellBinomial as comb
 
-def easyLogLikeFit(distn, data, init, bounds, n):
-    """
-    For fitting a distribution to the data using maximum likelihood method, starting from init.
-    Arguments:  distn, the distribution
-                data, the data
-                init, initial guess
-                bounds, (min, max) pairs for each parameter
-                n, the number of cells
-    Returns:    fitted distribution object.
-    """
-    res = minimize(lambda x:-distn.logpmf(data, n=n, a=x[0], b=x[1]).sum(), init, bounds=bounds)
-    fitted = distn(n=n, a=res.x[0], b=res.x[1])
-    return fitted
-
-def easyCombLogLikeFit(data, init, bounds, n):
-    """
-    For fitting a Conway-Maxwell-binomial distribution using the logpmf function.
-    Arguments:  data,
-                init, initial guess,
-                bounds,
-                n, the number of cells
-    Returns:    fitted distribution object
-    """
-    res = minimize(lambda x:comb.ConwayMaxwellBinomial(x[0], x[1], n).logpmf(data).sum(), init, bounds=bounds)
-    fitted = comb.ConwayMaxwellBinomial(m=n, p=res.x[0], nu=res.x[1])
-    return fitted
-
 if not args.debug:
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
     cell_info = comh.loadCellInfo(csv_dir)
@@ -65,30 +39,27 @@ if not args.debug:
     adj_cell_ids = comh.getRandomSubsetOfCells(cell_info, args.num_cells)
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Loading spike time dictionary...')
     spike_time_dict = comh.loadSpikeTimeDict(adj_cell_ids, posterior_dir, frontal_dir, cell_info)
+    region_to_spike_time_dict = comh.divideSpikeTimeDictByRegion(spike_time_dict,cell_info)
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Loaded.')
+    
     interval_start_time = stim_info.loc[0]['stim_starts'] - 0.5
     interval_end_time = stim_info.loc[2]['stim_stops'] + 0.5
-    bin_width = 0.001
-    region_to_spike_time_dict = comh.divideSpikeTimeDictByRegion(spike_time_dict,cell_info)
+    bin_width = args.bin_width
     bin_borders, region_to_active_cells = comh.getNumberOfActiveCellsByRegion(interval_start_time, interval_end_time, bin_width, region_to_spike_time_dict)
-    plt.figure(figsize=(5,4))
-    comh.plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_starts=stim_info.stim_starts[:3].values, stim_stops=stim_info.stim_stops[:3].values)
-    num_active_cells_binned = region_to_active_cells.get('thalamus')
-    total_cells = len(region_to_spike_time_dict.get('thalamus'))
+    
+    num_active_cells_binned = region_to_active_cells.get('v1')
+    total_cells = len(region_to_spike_time_dict.get('v1'))
     fitted_binom = comh.fitBinomialDistn(num_active_cells_binned, total_cells)
-    plt.figure(figsize=(5,4))
-    comh.plotCompareDataFittedDistn(num_active_cells_binned, fitted_binom)
-    fitted_betabinom = easyLogLikeFit(betabinom, num_active_cells_binned, [1.0, 1.0], [(np.finfo(float).resolution, None), (np.finfo(float).resolution, None)], total_cells)
-    plt.figure(figsize=(5,4))
-    comh.plotCompareDataFittedDistn(num_active_cells_binned, fitted_betabinom)
+    fitted_betabinom = comb.easyLogLikeFit(betabinom, num_active_cells_binned, [1.0, 1.0], [(np.finfo(float).resolution, None), (np.finfo(float).resolution, None)], total_cells)
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Fitting Conway-Maxwell-binomial distribution...')
-    fitted_comb = easyCombLogLikeFit(num_active_cells_binned, [0.5, 0], [(0.00001, 1 - 0.00001), (-2,2)], total_cells)
-    # fitted_comb_params = comb.estimateParams(total_cells, num_active_cells_binned, [0.5, 0])
-    # fitted_comb = comb.ConwayMaxwellBinomial(fitted_comb_params[0], fitted_comb_params[1], total_cells)
+    fitted_comb_params = comb.estimateParams(total_cells, num_active_cells_binned, [0.5, 0])
+    fitted_comb = comb.ConwayMaxwellBinomial(fitted_comb_params[0], fitted_comb_params[1], total_cells)
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Fitted.')
     plt.figure(figsize=(5,4))
-    comh.plotCompareDataFittedDistn(num_active_cells_binned, fitted_comb)
+    comh.plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_starts=stim_info.stim_starts[:3].values, stim_stops=stim_info.stim_stops[:3].values)
+    plt.figure(figsize=(5,4))
+    comh.plotCompareDataFittedDistn(num_active_cells_binned, [fitted_binom, fitted_betabinom, fitted_comb], distn_label=['Binomial PMF', 'Beta-Binomial PMF', 'COM-Binomial PMF'])
+    plt.show(block=False)
 
-    # plt.show(block=False)
-
-# TODO Beta binomial distribution, multiplicative binomial distribution, conway maxwell binomial distribution
+# TODO  roll fitting across incremented 100ms bins
+#       multiplicative binomial distribution
