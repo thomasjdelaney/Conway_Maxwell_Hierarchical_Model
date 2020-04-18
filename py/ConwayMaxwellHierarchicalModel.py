@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.io import loadmat
 from multiprocessing import Pool
 from scipy.stats import nbinom, binom, betabinom
+from scipy.optimize import minimize
 
 def loadCellInfo(csv_dir):
     """
@@ -14,6 +15,15 @@ def loadCellInfo(csv_dir):
     Returns:    pandas DataFrame
     """
     return pd.read_csv(os.path.join(csv_dir, 'cell_info.csv'), index_col='adj_cluster_id')
+
+def getExtraTrialTime(stim_info):
+    """
+    For getting the extra time that we pick up before and after each trial from stimulus number 2.
+    Arguments:  stim_info, pandas DataFrame
+    Returns:    float
+    """
+    min_gap_time = np.min(stim_info['stim_starts'][1:].values - stim_info['stim_stops'][:-1].values)
+    return np.round(min_gap_time/2,2)
 
 def loadStimulusInfo(mat_dir, stim_number=2):
     """
@@ -25,8 +35,10 @@ def loadStimulusInfo(mat_dir, stim_number=2):
     stim_file = 'experiment' + str(stim_number) + 'stimInfo.mat'
     stim_info_dict = loadmat(os.path.join(mat_dir, stim_file))
     stim_ids = np.unique(stim_info_dict['stimIDs'][0])
-    stim_info = pd.DataFrame(data={'stim_ids':stim_info_dict['stimIDs'][0], 'stim_starts':stim_info_dict['stimStarts'][0],
+    stim_info = pd.DataFrame(data={'stim_ids':stim_info_dict['stimIDs'][0], 'stim_starts':stim_info_dict['stimStarts'][0], 
         'stim_stops':stim_info_dict['stimStops'][0]})
+    stim_info['read_starts'] = stim_info['stim_starts'] - getExtraTrialTime(stim_info)
+    stim_info['read_stops'] = stim_info['stim_stops'] + getExtraTrialTime(stim_info)
     return stim_info, stim_ids
 
 def getIdAdjustor(cell_info):

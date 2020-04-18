@@ -32,6 +32,38 @@ sys.path.append(os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Binomial_Distri
 import ConwayMaxwellHierarchicalModel as comh
 import ConwayMaxwellBinomial as comb
 
+def getTrialMeasurements(spike_time_dict, bin_width, region, read_start, read_stop, stim_start, stim_stop, stim_id, num_bins_fitting=100):
+    """
+    Get all the measurements we want for a trial, providing start and stop times, and id.
+    Arguments:  spike_time_dict, dictionary adj_cell_id => spike times
+                bin_width, float,
+                region, NB could be 'all'
+                read_start, start counting the activity here
+                read_stop, stop counting at this time
+                stim_start, the stimulus starts here
+                stim_stop, the stimulus stops here
+                stim_id, the stimulus id
+                num_bins_fitting, int, the number of bins we will use to fit the distributions
+    Returns:    num_active_cells_binned, 
+                moving_avg, 
+                binom_params, 
+                betabinom_params, 
+                comb_params,
+                binom_log_like,
+                beta_binom_log_like,
+                comb_log_like.
+    """
+    bin_borders, num_active_cells_binned = comh.getNumberOfActiveCellsInBinnedInterval(read_start, read_stop, bin_width, spike_time_dict)
+    rolling_array = np.zeros([num_bins_fitting, num_active_cells_binned.size + num_bins_fitting], dtype=int)
+    for i in range(num_bins_fitting):
+        rolling_array[i,(num_bins_fitting - i):(num_bins_fitting - i + num_active_cells_binned.size)] = num_active_cells_binned
+    fitting_counts = rolling_array[:,range(num_bins_fitting, num_active_cells_binned.size)]
+    moving_avg = fitting_counts.mean(axis=0)
+
+
+                
+
+
 if not args.debug:
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
     cell_info = comh.loadCellInfo(csv_dir)
@@ -47,19 +79,27 @@ if not args.debug:
     bin_width = args.bin_width
     bin_borders, region_to_active_cells = comh.getNumberOfActiveCellsByRegion(interval_start_time, interval_end_time, bin_width, region_to_spike_time_dict)
     
-    num_active_cells_binned = region_to_active_cells.get('v1')
-    total_cells = len(region_to_spike_time_dict.get('v1'))
+    num_active_cells_binned = region_to_active_cells.get('thalamus')
+    total_cells = len(region_to_spike_time_dict.get('thalamus'))
     fitted_binom = comh.fitBinomialDistn(num_active_cells_binned, total_cells)
-    fitted_betabinom = comb.easyLogLikeFit(betabinom, num_active_cells_binned, [1.0, 1.0], [(np.finfo(float).resolution, None), (np.finfo(float).resolution, None)], total_cells)
+    fitted_binom_log_like = fitted_binom.logpmf(num_active_cells_binned).sum()
+    fitted_betabinom = comh.easyLogLikeFit(betabinom, num_active_cells_binned, [1.0, 1.0], [(np.finfo(float).resolution, None), (np.finfo(float).resolution, None)], total_cells)
+    fitted_betabinom_log_like = fitted_betabinom.logpmf(num_active_cells_binned).sum()
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Fitting Conway-Maxwell-binomial distribution...')
     fitted_comb_params = comb.estimateParams(total_cells, num_active_cells_binned, [0.5, 0])
     fitted_comb = comb.ConwayMaxwellBinomial(fitted_comb_params[0], fitted_comb_params[1], total_cells)
+    fitted_comb_log_like = -comb.conwayMaxwellNegLogLike(fitted_comb_params, total_cells, num_active_cells_binned)
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Fitted.')
     plt.figure(figsize=(5,4))
     comh.plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_starts=stim_info.stim_starts[:3].values, stim_stops=stim_info.stim_stops[:3].values)
     plt.figure(figsize=(5,4))
     comh.plotCompareDataFittedDistn(num_active_cells_binned, [fitted_binom, fitted_betabinom, fitted_comb], distn_label=['Binomial PMF', 'Beta-Binomial PMF', 'COM-Binomial PMF'])
     plt.show(block=False)
+    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Binomial log likelihood: ' + str(fitted_binom_log_like.round(2)))
+    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Beta-binomial log likelihood: ' + str(fitted_betabinom_log_like.round(2)))
+    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Conway-Maxwell-Binomial log likelihood: ' + str(fitted_comb_log_like.round(2)))
+
+    spike_time_dict, bin_width, region, read_start, read_stop, stim_start, stim_stop, stim_id = region_to_spike_time_dict.get('thalamus'), 0.001, 'thalamus', stim_info.loc[0,'read_starts'], stim_info.loc[0,'read_stops'], stim_info.loc[0,'stim_starts'], stim_info.loc[0,'stim_stops'], stim_info.loc[0,'stim_ids']
 
 # TODO  roll fitting across incremented 100ms bins
 #       multiplicative binomial distribution
