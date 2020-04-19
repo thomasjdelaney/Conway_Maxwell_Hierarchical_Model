@@ -10,6 +10,7 @@ import datetime as dt
 import matplotlib.pyplot as plt
 from scipy.stats import nbinom, binom, betabinom
 from scipy.optimize import minimize
+from multiprocessing import Pool
 
 parser = argparse.ArgumentParser(description='For loading in the functions and loading the cell info.')
 parser.add_argument('-n', '--num_cells', help='Number of cells to use.', default=100, type=int)
@@ -44,7 +45,8 @@ def getTrialMeasurements(spike_time_dict, bin_width, region, read_start, read_st
                 stim_stop, the stimulus stops here
                 stim_id, the stimulus id
                 num_bins_fitting, int, the number of bins we will use to fit the distributions
-    Returns:    num_active_cells_binned, 
+    Returns:    num_active_cells_binned,
+                bin_width,
                 moving_avg, 
                 binom_params, 
                 betabinom_params, 
@@ -53,12 +55,28 @@ def getTrialMeasurements(spike_time_dict, bin_width, region, read_start, read_st
                 beta_binom_log_like,
                 comb_log_like.
     """
+    num_cells = len(spike_time_dict)
     bin_borders, num_active_cells_binned = comh.getNumberOfActiveCellsInBinnedInterval(read_start, read_stop, bin_width, spike_time_dict)
     rolling_array = np.zeros([num_bins_fitting, num_active_cells_binned.size + num_bins_fitting], dtype=int)
     for i in range(num_bins_fitting):
         rolling_array[i,(num_bins_fitting - i):(num_bins_fitting - i + num_active_cells_binned.size)] = num_active_cells_binned
     fitting_counts = rolling_array[:,range(num_bins_fitting, num_active_cells_binned.size)]
+    num_counts_to_fit = fitting_counts.shape[1]
     moving_avg = fitting_counts.mean(axis=0)
+    # comh.plotNumActiveCellsByTimeByRegion(bin_borders, {'Num active cells':num_active_cells_binned}, stim_starts=[stim_start], stim_stops=[stim_stop])
+    # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Moving average':moving_avg})
+    with Pool() as pool:
+        binom_params_future = pool.starmap_async(comh.fitBinomialDistn, zip(fitting_counts.T, [num_cells]*num_counts_to_fit))
+        betabinom_params_future = pool.starmap_async(comh.easyLogLikeFit, zip([betabinom]*num_counts_to_fit, fitting_counts.T, [[1.0, 1.0]]*num_counts_to_fit, [[(np.finfo(float).resolution, None), (np.finfo(float).resolution, None)]]*num_counts_to_fit, [num_cells]*num_counts_to_fit))
+        comb_params_future = pool.starmap_async(comb.estimateParams, zip([num_cells]*num_counts_to_fit, fitting_counts.T, [[0.5, 1.0]]*num_counts_to_fit))
+        binom_params_future.wait()
+        betabinom_params_future.wait()
+        comb_params_future.wait()
+    binom_params = np.array([b.args[1] for b in binom_params_future.get()])
+    betabinom_params = np.array([[b.kwds['a'],b.kwds['b']] for b in bbf]).T
+    # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Binomial p':binom_params})
+    # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Beta-Binomial a':betabinom_params[0]}, stim_starts=[stim_start], stim_stops=[stim_stop])
+    # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Beta-Binomial a':betabinom_params[1]}, stim_starts=[stim_start], stim_stops=[stim_stop])
 
 
                 
@@ -86,7 +104,7 @@ if not args.debug:
     fitted_betabinom = comh.easyLogLikeFit(betabinom, num_active_cells_binned, [1.0, 1.0], [(np.finfo(float).resolution, None), (np.finfo(float).resolution, None)], total_cells)
     fitted_betabinom_log_like = fitted_betabinom.logpmf(num_active_cells_binned).sum()
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Fitting Conway-Maxwell-binomial distribution...')
-    fitted_comb_params = comb.estimateParams(total_cells, num_active_cells_binned, [0.5, 0])
+    fitted_comb_params = comb.estimateParams(total_cells, num_active_cells_binned, [0.5, 1.0])
     fitted_comb = comb.ConwayMaxwellBinomial(fitted_comb_params[0], fitted_comb_params[1], total_cells)
     fitted_comb_log_like = -comb.conwayMaxwellNegLogLike(fitted_comb_params, total_cells, num_active_cells_binned)
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Fitted.')
