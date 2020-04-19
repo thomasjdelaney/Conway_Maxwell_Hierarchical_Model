@@ -33,6 +33,21 @@ sys.path.append(os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Binomial_Distri
 import ConwayMaxwellHierarchicalModel as comh
 import ConwayMaxwellBinomial as comb
 
+def estimateBetaBinomialParams(samples, m):
+    """
+    For estimating the parameters of a beta-binomial distribution using the method of moments.
+    Arguments:  samples, the counts,
+                m, the maximum number
+    Returns:    [alpha, beta], [pi, rho]
+    """
+    first_moment = samples.mean()
+    second_moment = np.power(samples,2).mean()
+    alpha = ((m*first_moment) - second_moment ) / ((m*((second_moment/first_moment) - first_moment - 1)) + first_moment)
+    beta = (m - first_moment)*(m - (second_moment/first_moment)) / ((m*((second_moment/first_moment) - first_moment - 1)) + first_moment)
+    pi = alpha / (alpha + beta)
+    rho = 1 / alpha + beta + 1
+    return [alpha, beta], [pi, rho]
+
 def getTrialMeasurements(spike_time_dict, bin_width, region, read_start, read_stop, stim_start, stim_stop, stim_id, num_bins_fitting=100):
     """
     Get all the measurements we want for a trial, providing start and stop times, and id.
@@ -67,20 +82,19 @@ def getTrialMeasurements(spike_time_dict, bin_width, region, read_start, read_st
     # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Moving average':moving_avg})
     with Pool() as pool:
         binom_params_future = pool.starmap_async(comh.fitBinomialDistn, zip(fitting_counts.T, [num_cells]*num_counts_to_fit))
-        betabinom_params_future = pool.starmap_async(comh.easyLogLikeFit, zip([betabinom]*num_counts_to_fit, fitting_counts.T, [[1.0, 1.0]]*num_counts_to_fit, [[(np.finfo(float).resolution, None), (np.finfo(float).resolution, None)]]*num_counts_to_fit, [num_cells]*num_counts_to_fit))
+        betabinom_params_future = pool.starmap_async(estimateBetaBinomialParams, zip(fitting_counts.T, [num_cells]*num_counts_to_fit))
         comb_params_future = pool.starmap_async(comb.estimateParams, zip([num_cells]*num_counts_to_fit, fitting_counts.T, [[0.5, 1.0]]*num_counts_to_fit))
         binom_params_future.wait()
         betabinom_params_future.wait()
         comb_params_future.wait()
     binom_params = np.array([b.args[1] for b in binom_params_future.get()])
     betabinom_params = np.array([[b.kwds['a'],b.kwds['b']] for b in bbf]).T
+    comb_params = np.array(comb_params_future.get()).T
     # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Binomial p':binom_params})
     # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Beta-Binomial a':betabinom_params[0]}, stim_starts=[stim_start], stim_stops=[stim_stop])
     # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Beta-Binomial a':betabinom_params[1]}, stim_starts=[stim_start], stim_stops=[stim_stop])
-
-
-                
-
+    # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'COM-Binomial a':comb_params[0]}, stim_starts=[stim_start], stim_stops=[stim_stop])
+    # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'COM-Binomial a':comb_params[1]}, stim_starts=[stim_start], stim_stops=[stim_stop])
 
 if not args.debug:
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
