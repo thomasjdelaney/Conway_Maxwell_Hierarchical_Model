@@ -10,6 +10,7 @@ import datetime as dt
 import matplotlib.pyplot as plt
 from scipy.stats import nbinom, binom, betabinom
 from scipy.optimize import minimize
+from scipy.special import gammaln
 from multiprocessing import Pool
 
 parser = argparse.ArgumentParser(description='For loading in the functions and loading the cell info.')
@@ -47,6 +48,16 @@ def estimateBetaBinomialParams(samples, m):
     pi = alpha / (alpha + beta)
     rho = 1 / alpha + beta + 1
     return [alpha, beta], [pi, rho]
+
+def calcBetaBinomialLogLike(alpha, beta, samples, m):
+    """
+    For calculating the log likelihood of samples given the parameters of a beta-binomial distribution.
+    Arguments:  alpha,
+                beta,
+                samples,
+    Returns:    float, the log likelihood
+    """
+    return np.sum(gammaln(m+1) + gammaln(samples+alpha) + gammaln(m-samples+beta) + gammaln(alpha+beta) - gammaln(samples+1) - gammaln(m-samples+1) - gammaln(m+alpha+beta) - gammaln(alpha) - gammaln(beta))
 
 def getTrialMeasurements(spike_time_dict, bin_width, region, read_start, read_stop, stim_start, stim_stop, stim_id, num_bins_fitting=100):
     """
@@ -88,8 +99,13 @@ def getTrialMeasurements(spike_time_dict, bin_width, region, read_start, read_st
         betabinom_params_future.wait()
         comb_params_future.wait()
     binom_params = np.array([b.args[1] for b in binom_params_future.get()])
-    betabinom_params = np.array([[b.kwds['a'],b.kwds['b']] for b in bbf]).T
+    betabinom_params = np.array(betabinom_params_future.get())
+    betabinom_ab = betabinom_params[:,0,:]
+    betabinom_pr = betabinom_params[:,1,:]
     comb_params = np.array(comb_params_future.get()).T
+    binom_log_like = np.array([binom.logpmf(fc, num_cells, p).sum() for fc,p in zip(fitting_counts.T,binom_params)])
+    betabinom_log_like = np.array([calcBetaBinomialLogLike(p[0], p[1], fc, num_cells).sum() for fc,p in zip(fitting_counts.T, betabinom_ab)]) # testing required
+    comb_log_like = np.array([comb.conwayMaxwellNegLogLike(p, num_cells, fc) for fc,p in zip(fitting_counts.T, comb_params)])
     # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Binomial p':binom_params})
     # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Beta-Binomial a':betabinom_params[0]}, stim_starts=[stim_start], stim_stops=[stim_stop])
     # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Beta-Binomial a':betabinom_params[1]}, stim_starts=[stim_start], stim_stops=[stim_stop])
