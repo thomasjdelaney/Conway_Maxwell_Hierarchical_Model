@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import matplotlib.pyplot as plt
-from scipy.stats import nbinom, binom, betabinom
+from scipy.stats import nbinom, binom
 from scipy.optimize import minimize
 from scipy.special import gammaln
 from multiprocessing import Pool
