@@ -5,7 +5,7 @@ import datetime as dt
 import matplotlib.pyplot as plt
 from scipy.io import loadmat
 from multiprocessing import Pool
-from scipy.stats import nbinom, binom
+from scipy.stats import nbinom, binom, betabinom
 from scipy.optimize import minimize
 
 def loadCellInfo(csv_dir):
@@ -258,7 +258,7 @@ def plotNumActiveCellsByTime(bin_borders, num_active_cells_binned, stim_starts=[
     plt.plot(bin_centres, num_active_cells_binned, **kwargs)
     return None
 
-def plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_starts=[], stim_stops=[], **kwargs):
+def plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_starts=[], stim_stops=[], is_tight_layout=True, **kwargs):
     """
     Plot the number of active cells for each region on the same plot.
     Arguments:  bin_borders,
@@ -275,10 +275,10 @@ def plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_s
     plt.legend(fontsize='large')
     plt.xlabel('Time (s)', fontsize='large')
     plt.ylabel('Num. Active Cells', fontsize='large')
-    plt.tight_layout()
+    plt.tight_layout() if is_tight_layout else None
     return None
 
-def plotCompareDataFittedDistn(num_active_cells_binned, fitted_distn, plot_type='pdf', data_label='Num. Active Cells', distn_label=['Fitted Distn. PMF']):
+def plotCompareDataFittedDistn(num_active_cells_binned, fitted_distn, plot_type='pdf', data_label='Num. Active Cells', distn_label=['Fitted Distn. PMF'], title=''):
     """
     For comparing a fitted distribution to some data. (pdf and/or cdf?)
     Arguments:  num_active_cells_binned, array int
@@ -296,5 +296,6 @@ def plotCompareDataFittedDistn(num_active_cells_binned, fitted_distn, plot_type=
     plt.legend(fontsize='large')
     plt.xlabel('Num. Active Cells', fontsize='large')
     plt.ylabel('P(k)', fontsize='large')
+    plt.title(title, fontsize='large') if title != '' else None
     plt.tight_layout()
     return None
