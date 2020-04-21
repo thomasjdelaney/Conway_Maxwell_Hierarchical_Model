@@ -35,31 +35,6 @@ sys.path.append(os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Binomial_Distri
 import ConwayMaxwellHierarchicalModel as comh
 import ConwayMaxwellBinomial as comb
 
-def estimateBetaBinomialParams(samples, m):
-    """
-    For estimating the parameters of a beta-binomial distribution using the method of moments.
-    Arguments:  samples, the counts,
-                m, the maximum number
-    Returns:    [alpha, beta], [pi, rho]
-    """
-    first_moment = samples.mean()
-    second_moment = np.power(samples,2).mean()
-    alpha = ((m*first_moment) - second_moment ) / ((m*((second_moment/first_moment) - first_moment - 1)) + first_moment)
-    beta = (m - first_moment)*(m - (second_moment/first_moment)) / ((m*((second_moment/first_moment) - first_moment - 1)) + first_moment)
-    pi = alpha / (alpha + beta)
-    rho = 1 / alpha + beta + 1
-    return [alpha, beta], [pi, rho]
-
-def calcBetaBinomialLogLike(alpha, beta, samples, m):
-    """
-    For calculating the log likelihood of samples given the parameters of a beta-binomial distribution.
-    Arguments:  alpha,
-                beta,
-                samples,
-    Returns:    float, the log likelihood
-    """
-    return np.sum(gammaln(m+1) + gammaln(samples+alpha) + gammaln(m-samples+beta) + gammaln(alpha+beta) - gammaln(samples+1) - gammaln(m-samples+1) - gammaln(m+alpha+beta) - gammaln(alpha) - gammaln(beta))
-
 def getTrialMeasurements(spike_time_dict, bin_width, region, read_start, read_stop, stim_start, stim_stop, stim_id, num_bins_fitting=100):
     """
     Get all the measurements we want for a trial, providing start and stop times, and id.
@@ -79,39 +54,32 @@ def getTrialMeasurements(spike_time_dict, bin_width, region, read_start, read_st
                 betabinom_params, 
                 comb_params,
                 binom_log_like,
-                beta_binom_log_like,
+                betabinom_log_like,
                 comb_log_like.
     """
     num_cells = len(spike_time_dict)
     bin_borders, num_active_cells_binned = comh.getNumberOfActiveCellsInBinnedInterval(read_start, read_stop, bin_width, spike_time_dict)
     rolling_array = np.zeros([num_bins_fitting, num_active_cells_binned.size + num_bins_fitting], dtype=int)
-    for i in range(num_bins_fitting):
+    for i in range(num_bins_fitting): # create the windows to fit on before fitting starts.
         rolling_array[i,(num_bins_fitting - i):(num_bins_fitting - i + num_active_cells_binned.size)] = num_active_cells_binned
     fitting_counts = rolling_array[:,range(num_bins_fitting, num_active_cells_binned.size)]
     num_counts_to_fit = fitting_counts.shape[1]
     moving_avg = fitting_counts.mean(axis=0)
-    # comh.plotNumActiveCellsByTimeByRegion(bin_borders, {'Num active cells':num_active_cells_binned}, stim_starts=[stim_start], stim_stops=[stim_stop])
-    # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Moving average':moving_avg})
     with Pool() as pool:
         binom_params_future = pool.starmap_async(comh.fitBinomialDistn, zip(fitting_counts.T, [num_cells]*num_counts_to_fit))
-        betabinom_params_future = pool.starmap_async(estimateBetaBinomialParams, zip(fitting_counts.T, [num_cells]*num_counts_to_fit))
+        betabinom_params_future = pool.starmap_async(comh.easyLogLikeFit, zip([betabinom]*num_counts_to_fit, fitting_counts.T, [[1.0,1.0]]*num_counts_to_fit, [((1e-08,None),(1e-08,None))]*num_counts_to_fit, [num_cells]*num_counts_to_fit))
         comb_params_future = pool.starmap_async(comb.estimateParams, zip([num_cells]*num_counts_to_fit, fitting_counts.T, [[0.5, 1.0]]*num_counts_to_fit))
         binom_params_future.wait()
         betabinom_params_future.wait()
         comb_params_future.wait()
     binom_params = np.array([b.args[1] for b in binom_params_future.get()])
-    betabinom_params = np.array(betabinom_params_future.get())
-    betabinom_ab = betabinom_params[:,0,:]
-    betabinom_pr = betabinom_params[:,1,:]
-    comb_params = np.array(comb_params_future.get()).T
+    betabinom_ab = np.array([[b.kwds['a'],b.kwds['b']] for b in betabinom_params_future.get()])
+    betabinom_pr = np.array([[alpha/(alpha+beta),1/(alpha+beta+1)] for alpha,beta in betabinom_ab])
+    comb_params = np.array(comb_params_future.get())
     binom_log_like = np.array([binom.logpmf(fc, num_cells, p).sum() for fc,p in zip(fitting_counts.T,binom_params)])
-    betabinom_log_like = np.array([calcBetaBinomialLogLike(p[0], p[1], fc, num_cells).sum() for fc,p in zip(fitting_counts.T, betabinom_ab)]) # testing required
-    comb_log_like = np.array([comb.conwayMaxwellNegLogLike(p, num_cells, fc) for fc,p in zip(fitting_counts.T, comb_params)])
-    # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Binomial p':binom_params})
-    # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Beta-Binomial a':betabinom_params[0]}, stim_starts=[stim_start], stim_stops=[stim_stop])
-    # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'Beta-Binomial a':betabinom_params[1]}, stim_starts=[stim_start], stim_stops=[stim_stop])
-    # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'COM-Binomial a':comb_params[0]}, stim_starts=[stim_start], stim_stops=[stim_stop])
-    # comh.plotNumActiveCellsByTimeByRegion(bin_borders[(num_bins_fitting//2):-(num_bins_fitting//2)], {'COM-Binomial a':comb_params[1]}, stim_starts=[stim_start], stim_stops=[stim_stop])
+    betabinom_log_like = np.array([betabinom.logpmf(fc, num_cells, p[0], p[1]).sum() for fc,p in zip(fitting_counts.T, betabinom_ab)])
+    comb_log_like = -np.array([comb.conwayMaxwellNegLogLike(p, num_cells, fc) for fc,p in zip(fitting_counts.T, comb_params)])
+    return num_active_cells_binned, moving_avg, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like
 
 if not args.debug:
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
