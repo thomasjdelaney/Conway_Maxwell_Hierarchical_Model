@@ -1,4 +1,4 @@
-import os, h5py
+import os, sys, h5py
 import pandas as pd
 import numpy as np
 import datetime as dt
@@ -7,6 +7,9 @@ from scipy.io import loadmat
 from multiprocessing import Pool
 from scipy.stats import binom, betabinom
 from scipy.optimize import minimize
+
+sys.path.append(os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Binomial_Distribution'))
+import ConwayMaxwellBinomial as comb
 
 def loadCellInfo(csv_dir):
     """
