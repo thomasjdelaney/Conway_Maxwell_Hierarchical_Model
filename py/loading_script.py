@@ -3,7 +3,7 @@ Script for loading in all all the functions. Testing that loading is working.
 
 python3 -i py/loading_script.py -d
 """
-import argparse, sys, os, shutil
+import argparse, sys, os, shutil, h5py
 import numpy as np
 import pandas as pd
 import datetime as dt
@@ -28,6 +28,7 @@ proj_dir = os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Hierarchical_Model')
 csv_dir = os.path.join(proj_dir, 'csv')
 mat_dir = os.path.join(proj_dir, 'mat')
 py_dir = os.path.join(proj_dir, 'py')
+h5_dir = os.path.join(proj_dir, 'h5')
 posterior_dir = os.path.join(proj_dir, 'posterior')
 frontal_dir = os.path.join(proj_dir, 'frontal')
 
@@ -53,13 +54,15 @@ def saveMeasurementsForAllTrials(bin_width, stim_info, region_to_spike_time_dict
                 stim_info, pandas DataFrame
     Returns:    nothing?
     """
-    region_to_num_cells = {r:len(d)for r,d in regional_to_spike_time_dict.items()}
-    for stim_index in stim_info.index.values:
-        trial_info = stim_info.loc[stim_index]
+    region_to_num_cells = {r:len(d)for r,d in region_to_spike_time_dict.items()}
+    for trial_index in stim_info.index.values:
+        trial_bin_width_file_name = os.path.join(h5_dir, 'trial_' + str(trial_index) + '_bin_width_' + str(int(1000*bin_width)) + 'ms_num_bins_' + str(num_bins_fitting) + '.h5')
+        trial_info = stim_info.loc[trial_index]
         bin_borders, region_to_active_cells = comh.getNumberOfActiveCellsByRegion(trial_info['read_starts'], trial_info['read_stops'], bin_width, region_to_spike_time_dict)
         is_stimulated = isStimulatedBins(bin_borders, trial_info['stim_starts'], trial_info['stim_stops'])
         for region, regional_active_cells_binned in region_to_active_cells.items():
             moving_avg, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like = getTrialMeasurements(regional_active_cells_binned, region_to_num_cells.get(region), bin_width, num_bins_fitting=100)
+            trial_bin_width_file = h5py.File('data.h5', 'w')
             
         
 if not args.debug:

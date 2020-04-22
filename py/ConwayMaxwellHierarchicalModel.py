@@ -1,4 +1,4 @@
-import os
+import os, h5py
 import pandas as pd
 import numpy as np
 import datetime as dt
@@ -250,8 +250,8 @@ def getTrialMeasurements(num_active_cells_binned, num_cells, bin_width, num_bins
     num_counts_to_fit = fitting_counts.shape[1]
     moving_avg = fitting_counts.mean(axis=0)
     with Pool() as pool:
-        binom_params_future = pool.starmap_async(comh.fitBinomialDistn, zip(fitting_counts.T, [num_cells]*num_counts_to_fit))
-        betabinom_params_future = pool.starmap_async(comh.easyLogLikeFit, zip([betabinom]*num_counts_to_fit, fitting_counts.T, [[1.0,1.0]]*num_counts_to_fit, [((1e-08,None),(1e-08,None))]*num_counts_to_fit, [num_cells]*num_counts_to_fit))
+        binom_params_future = pool.starmap_async(fitBinomialDistn, zip(fitting_counts.T, [num_cells]*num_counts_to_fit))
+        betabinom_params_future = pool.starmap_async(easyLogLikeFit, zip([betabinom]*num_counts_to_fit, fitting_counts.T, [[1.0,1.0]]*num_counts_to_fit, [((1e-08,None),(1e-08,None))]*num_counts_to_fit, [num_cells]*num_counts_to_fit))
         comb_params_future = pool.starmap_async(comb.estimateParams, zip([num_cells]*num_counts_to_fit, fitting_counts.T, [[0.5, 1.0]]*num_counts_to_fit))
         binom_params_future.wait()
         betabinom_params_future.wait()
