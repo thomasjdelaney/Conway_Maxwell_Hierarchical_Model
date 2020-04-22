@@ -267,6 +267,27 @@ def getTrialMeasurements(num_active_cells_binned, num_cells, bin_width, num_bins
     comb_log_like = -np.array([comb.conwayMaxwellNegLogLike(p, num_cells, fc) for fc,p in zip(fitting_counts.T, comb_params)])
     return moving_avg, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like
 
+def isStimulatedBins(bin_borders, stim_start, stim_stop):
+    """
+    Get an array of booleans indicating which bins are stimulated and which are not.
+    Arguments:  bin_borders, the times where the bins start and stop in seconds
+                stim_start, time,
+                stim_stop, time
+    Returns:    numpy array boolean
+    """
+    return np.array([(bin_start > stim_start) & (bin_stop < stim_stop) for bin_start,bin_stop in zip(bin_borders[:-1],bin_borders[1:])])
+
+def getH5FileName(h5_dir, trial_index, bin_width, num_bins_fitting):
+    """
+    For getting the name of the h5 file. Can be used for saving or loading or whatever.
+    Arguments:  h5_dir, string, the directory
+                trial_index, int, the index of the trial 
+                bin_width, float,
+                num_bins_fitting, number of bins used to fit the distributions.
+    Returns:    string
+    """
+    return os.path.join(h5_dir, 'trial_' + str(trial_index) + '_bin_width_' + str(int(1000*bin_width)) + 'ms_num_bins_' + str(num_bins_fitting) + '.h5')
+
 ##########################################################
 ########## PLOTTING FUNCTIONS ############################
 ##########################################################
