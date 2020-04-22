@@ -5,7 +5,7 @@ import datetime as dt
 import matplotlib.pyplot as plt
 from scipy.io import loadmat
 from multiprocessing import Pool
-from scipy.stats import nbinom, binom, betabinom
+from scipy.stats import binom, betabinom
 from scipy.optimize import minimize
 
 def loadCellInfo(csv_dir):
@@ -188,8 +188,8 @@ def getNumberOfActiveCellsByRegion(interval_start_time, interval_end_time, bin_w
                 bin_borders
     """
     region_to_active_cells = {}
-    for region,spike_time_dict in region_to_spike_time_dict.items():
-        bin_borders, num_active_cells_binned = getNumberOfActiveCellsInBinnedInterval(interval_start_time, interval_end_time, bin_width, spike_time_dict)
+    for region,regional_spike_time_dict in region_to_spike_time_dict.items():
+        bin_borders, num_active_cells_binned = getNumberOfActiveCellsInBinnedInterval(interval_start_time, interval_end_time, bin_width, regional_spike_time_dict)
         region_to_active_cells[region] = num_active_cells_binned
     return bin_borders, region_to_active_cells
 
@@ -227,6 +227,42 @@ def easyLogLikeFit(distn, data, init, bounds, n):
     res = minimize(lambda x:-distn.logpmf(data, n=n, a=x[0], b=x[1]).sum(), init, bounds=bounds)
     fitted = distn(n=n, a=res.x[0], b=res.x[1])
     return fitted
+
+def getTrialMeasurements(num_active_cells_binned, num_cells, bin_width, num_bins_fitting=100):
+    """
+    Get all the measurements we want for a trial, providing start and stop times, and id.
+    Arguments:  num_active_cells_binned, numpy array (int)
+                num_cells, int
+                bin_width, float,
+                num_bins_fitting, int, the number of bins we will use to fit the distributions
+    Returns:    moving_avg, 
+                binom_params, 
+                betabinom_params, 
+                comb_params,
+                binom_log_like,
+                betabinom_log_like,
+                comb_log_like.
+    """
+    rolling_array = np.zeros([num_bins_fitting, num_active_cells_binned.size + num_bins_fitting], dtype=int)
+    for i in range(num_bins_fitting): # create the windows to fit on before fitting starts.
+        rolling_array[i,(num_bins_fitting - i):(num_bins_fitting - i + num_active_cells_binned.size)] = num_active_cells_binned
+    fitting_counts = rolling_array[:,range(num_bins_fitting, num_active_cells_binned.size)]
+    num_counts_to_fit = fitting_counts.shape[1]
+    moving_avg = fitting_counts.mean(axis=0)
+    with Pool() as pool:
+        binom_params_future = pool.starmap_async(comh.fitBinomialDistn, zip(fitting_counts.T, [num_cells]*num_counts_to_fit))
+        betabinom_params_future = pool.starmap_async(comh.easyLogLikeFit, zip([betabinom]*num_counts_to_fit, fitting_counts.T, [[1.0,1.0]]*num_counts_to_fit, [((1e-08,None),(1e-08,None))]*num_counts_to_fit, [num_cells]*num_counts_to_fit))
+        comb_params_future = pool.starmap_async(comb.estimateParams, zip([num_cells]*num_counts_to_fit, fitting_counts.T, [[0.5, 1.0]]*num_counts_to_fit))
+        binom_params_future.wait()
+        betabinom_params_future.wait()
+        comb_params_future.wait()
+    binom_params = np.array([b.args[1] for b in binom_params_future.get()])
+    betabinom_ab = np.array([[b.kwds['a'],b.kwds['b']] for b in betabinom_params_future.get()])
+    comb_params = np.array(comb_params_future.get())
+    binom_log_like = np.array([binom.logpmf(fc, num_cells, p).sum() for fc,p in zip(fitting_counts.T,binom_params)])
+    betabinom_log_like = np.array([betabinom.logpmf(fc, num_cells, p[0], p[1]).sum() for fc,p in zip(fitting_counts.T, betabinom_ab)])
+    comb_log_like = -np.array([comb.conwayMaxwellNegLogLike(p, num_cells, fc) for fc,p in zip(fitting_counts.T, comb_params)])
+    return moving_avg, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like
 
 ##########################################################
 ########## PLOTTING FUNCTIONS ############################

@@ -17,6 +17,7 @@ parser = argparse.ArgumentParser(description='For loading in the functions and l
 parser.add_argument('-n', '--num_cells', help='Number of cells to use.', default=100, type=int)
 parser.add_argument('-b', '--bin_width', help='Time bin with to use (in seconds).', default=0.001, type=float)
 parser.add_argument('-r', '--region', help='The region to use for any ad hoc plotting.', default='thalamus', type=str)
+parser.add_argument('-f', '--num_bins_fitting', help='The number of bins to use for fitting.', default=100, type=int)
 parser.add_argument('-d', '--debug', help='Enter debug mode.', default=False, action='store_true')
 args = parser.parse_args()
 
@@ -35,52 +36,32 @@ sys.path.append(os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Binomial_Distri
 import ConwayMaxwellHierarchicalModel as comh
 import ConwayMaxwellBinomial as comb
 
-def getTrialMeasurements(spike_time_dict, bin_width, region, read_start, read_stop, stim_start, stim_stop, stim_id, num_bins_fitting=100):
+def isStimulatedBins(bin_borders, stim_start, stim_stop):
     """
-    Get all the measurements we want for a trial, providing start and stop times, and id.
-    Arguments:  spike_time_dict, dictionary adj_cell_id => spike times
-                bin_width, float,
-                region, NB could be 'all'
-                read_start, start counting the activity here
-                read_stop, stop counting at this time
-                stim_start, the stimulus starts here
-                stim_stop, the stimulus stops here
-                stim_id, the stimulus id
-                num_bins_fitting, int, the number of bins we will use to fit the distributions
-    Returns:    num_active_cells_binned,
-                bin_width,
-                moving_avg, 
-                binom_params, 
-                betabinom_params, 
-                comb_params,
-                binom_log_like,
-                betabinom_log_like,
-                comb_log_like.
+    Get an array of booleans indicating which bins are stimulated and which are not.
+    Arguments:  bin_borders, the times where the bins start and stop in seconds
+                stim_start, time,
+                stim_stop, time
+    Returns:    numpy array boolean
     """
-    num_cells = len(spike_time_dict)
-    bin_borders, num_active_cells_binned = comh.getNumberOfActiveCellsInBinnedInterval(read_start, read_stop, bin_width, spike_time_dict)
-    rolling_array = np.zeros([num_bins_fitting, num_active_cells_binned.size + num_bins_fitting], dtype=int)
-    for i in range(num_bins_fitting): # create the windows to fit on before fitting starts.
-        rolling_array[i,(num_bins_fitting - i):(num_bins_fitting - i + num_active_cells_binned.size)] = num_active_cells_binned
-    fitting_counts = rolling_array[:,range(num_bins_fitting, num_active_cells_binned.size)]
-    num_counts_to_fit = fitting_counts.shape[1]
-    moving_avg = fitting_counts.mean(axis=0)
-    with Pool() as pool:
-        binom_params_future = pool.starmap_async(comh.fitBinomialDistn, zip(fitting_counts.T, [num_cells]*num_counts_to_fit))
-        betabinom_params_future = pool.starmap_async(comh.easyLogLikeFit, zip([betabinom]*num_counts_to_fit, fitting_counts.T, [[1.0,1.0]]*num_counts_to_fit, [((1e-08,None),(1e-08,None))]*num_counts_to_fit, [num_cells]*num_counts_to_fit))
-        comb_params_future = pool.starmap_async(comb.estimateParams, zip([num_cells]*num_counts_to_fit, fitting_counts.T, [[0.5, 1.0]]*num_counts_to_fit))
-        binom_params_future.wait()
-        betabinom_params_future.wait()
-        comb_params_future.wait()
-    binom_params = np.array([b.args[1] for b in binom_params_future.get()])
-    betabinom_ab = np.array([[b.kwds['a'],b.kwds['b']] for b in betabinom_params_future.get()])
-    betabinom_pr = np.array([[alpha/(alpha+beta),1/(alpha+beta+1)] for alpha,beta in betabinom_ab])
-    comb_params = np.array(comb_params_future.get())
-    binom_log_like = np.array([binom.logpmf(fc, num_cells, p).sum() for fc,p in zip(fitting_counts.T,binom_params)])
-    betabinom_log_like = np.array([betabinom.logpmf(fc, num_cells, p[0], p[1]).sum() for fc,p in zip(fitting_counts.T, betabinom_ab)])
-    comb_log_like = -np.array([comb.conwayMaxwellNegLogLike(p, num_cells, fc) for fc,p in zip(fitting_counts.T, comb_params)])
-    return num_active_cells_binned, moving_avg, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like
+    return np.array([(bin_start > stim_start) & (bin_stop < stim_stop) for bin_start,bin_stop in zip(bin_borders[:-1],bin_borders[1:])])
 
+def saveMeasurementsForAllTrials(bin_width, stim_info, region_to_spike_time_dict, num_bins_fitting=100):
+    """
+    Get the measurements for each trial and save them down, one by one. 
+    Arguments:  bin_width, float,
+                stim_info, pandas DataFrame
+    Returns:    nothing?
+    """
+    region_to_num_cells = {r:len(d)for r,d in regional_to_spike_time_dict.items()}
+    for stim_index in stim_info.index.values:
+        trial_info = stim_info.loc[stim_index]
+        bin_borders, region_to_active_cells = comh.getNumberOfActiveCellsByRegion(trial_info['read_starts'], trial_info['read_stops'], bin_width, region_to_spike_time_dict)
+        is_stimulated = isStimulatedBins(bin_borders, trial_info['stim_starts'], trial_info['stim_stops'])
+        for region, regional_active_cells_binned in region_to_active_cells.items():
+            moving_avg, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like = getTrialMeasurements(regional_active_cells_binned, region_to_num_cells.get(region), bin_width, num_bins_fitting=100)
+            
+        
 if not args.debug:
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
     cell_info = comh.loadCellInfo(csv_dir)
@@ -119,7 +100,6 @@ if not args.debug:
 
     spike_time_dict, bin_width, region, read_start, read_stop, stim_start, stim_stop, stim_id = region_to_spike_time_dict.get('thalamus'), 0.001, 'thalamus', stim_info.loc[0,'read_starts'], stim_info.loc[0,'read_stops'], stim_info.loc[0,'stim_starts'], stim_info.loc[0,'stim_stops'], stim_info.loc[0,'stim_ids']
 
-    num_active_cells_binned, moving_avg, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like = getTrialMeasurements(spike_time_dict, bin_width, region, read_start, read_stop, stim_start, stim_stop, stim_id)
 
 # TODO  Function for rolling over 100ms windows.
 #       Save as hdf5 files. One per stimulus per bin_width value.
