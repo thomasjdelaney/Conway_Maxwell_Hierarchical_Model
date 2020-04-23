@@ -8,9 +8,8 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import matplotlib.pyplot as plt
-from scipy.stats import nbinom, binom, betabinom
+from scipy.stats import binom, betabinom
 from scipy.optimize import minimize
-from scipy.special import gammaln
 from multiprocessing import Pool
 
 parser = argparse.ArgumentParser(description='For loading in the functions and loading the cell info.')
@@ -48,7 +47,9 @@ def saveMeasurementsForAllTrials(bin_width, stim_info, region_to_spike_time_dict
     for trial_index in stim_info.index.values:
         print(dt.datetime.now().isoformat() + ' INFO: ' + 'Processing trial number ' + str(trial_index) + '...')
         trial_bin_width_file_name = comh.getH5FileName(h5_dir, trial_index, bin_width, num_bins_fitting)
-        os.remove(trial_bin_width_file_name) if os.path.isfile(trial_bin_width_file_name) else None
+        if os.path.isfile(trial_bin_width_file_name):
+            print(dt.datetime.now().isoformat() + ' INFO: ' + 'Already have this file. Skipping...')
+            continue
         trial_bin_width_file = h5py.File(trial_bin_width_file_name, 'w')
         trial_info = stim_info.loc[trial_index]
         bin_borders, region_to_active_cells = comh.getNumberOfActiveCellsByRegion(trial_info['read_starts'], trial_info['read_stops'], bin_width, region_to_spike_time_dict)
