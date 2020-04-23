@@ -231,13 +231,16 @@ def easyLogLikeFit(distn, data, init, bounds, n):
     fitted = distn(n=n, a=res.x[0], b=res.x[1])
     return fitted
 
-def getTrialMeasurements(num_active_cells_binned, num_cells, bin_width, num_bins_fitting=100):
+def getTrialMeasurements(num_active_cells_binned, is_stimulated, window_inds, num_cells, window_size=100, window_skip=10):
     """
     Get all the measurements we want for a trial, providing start and stop times, and id.
     Arguments:  num_active_cells_binned, numpy array (int)
+                is_stimulated, numpy array boolean, whether or not the stimulus was present for the entirety of each bin.
+                window_inds, numpy array (int) (num_windows, window_size), indices for each window, each row is a list of indices for a window.
                 num_cells, int
-                bin_width, float,
-                num_bins_fitting, int, the number of bins we will use to fit the distributions
+                window_size, int, the number of bins we will use to fit the distributions
+                window_skip, int, the number of bins between each fitting window. This influences how many times we have to fit each distribution,
+                    and therefore has a major effect on how long it takes to process everything.
     Returns:    moving_avg, 
                 binom_params, 
                 betabinom_params, 
@@ -246,26 +249,25 @@ def getTrialMeasurements(num_active_cells_binned, num_cells, bin_width, num_bins
                 betabinom_log_like,
                 comb_log_like.
     """
-    rolling_array = np.zeros([num_bins_fitting, num_active_cells_binned.size + num_bins_fitting], dtype=int)
-    for i in range(num_bins_fitting): # create the windows to fit on before fitting starts.
-        rolling_array[i,(num_bins_fitting - i):(num_bins_fitting - i + num_active_cells_binned.size)] = num_active_cells_binned
-    fitting_counts = rolling_array[:,range(num_bins_fitting, num_active_cells_binned.size)]
-    num_counts_to_fit = fitting_counts.shape[1]
-    moving_avg = fitting_counts.mean(axis=0)
+    num_windows = window_inds.shape[0]
+    windowed_counts = num_active_cells_binned[window_inds]
+    moving_avg = windowed_counts.mean(axis=1)
+    all_stimulated = is_stimulated[window_inds].all(axis=1)
+    any_stimulated = is_stimulated[window_inds].any(axis=1)
     with Pool() as pool:
-        binom_params_future = pool.starmap_async(fitBinomialDistn, zip(fitting_counts.T, [num_cells]*num_counts_to_fit))
-        betabinom_params_future = pool.starmap_async(easyLogLikeFit, zip([betabinom]*num_counts_to_fit, fitting_counts.T, [[1.0,1.0]]*num_counts_to_fit, [((1e-08,None),(1e-08,None))]*num_counts_to_fit, [num_cells]*num_counts_to_fit))
-        comb_params_future = pool.starmap_async(comb.estimateParams, zip([num_cells]*num_counts_to_fit, fitting_counts.T, [[0.5, 1.0]]*num_counts_to_fit))
+        binom_params_future = pool.starmap_async(fitBinomialDistn, zip(windowed_counts, [num_cells]*num_windows))
+        betabinom_params_future = pool.starmap_async(easyLogLikeFit, zip([betabinom]*num_windows, windowed_counts, [[1.0,1.0]]*num_windows, [((1e-08,None),(1e-08,None))]*num_windows, [num_cells]*num_windows))
+        comb_params_future = pool.starmap_async(comb.estimateParams, zip([num_cells]*num_windows, windowed_counts))
         binom_params_future.wait()
         betabinom_params_future.wait()
         comb_params_future.wait()
     binom_params = np.array([b.args[1] for b in binom_params_future.get()])
     betabinom_ab = np.array([[b.kwds['a'],b.kwds['b']] for b in betabinom_params_future.get()])
     comb_params = np.array(comb_params_future.get())
-    binom_log_like = np.array([binom.logpmf(fc, num_cells, p).sum() for fc,p in zip(fitting_counts.T,binom_params)])
-    betabinom_log_like = np.array([betabinom.logpmf(fc, num_cells, p[0], p[1]).sum() for fc,p in zip(fitting_counts.T, betabinom_ab)])
-    comb_log_like = -np.array([comb.conwayMaxwellNegLogLike(p, num_cells, fc) for fc,p in zip(fitting_counts.T, comb_params)])
-    return moving_avg, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like
+    binom_log_like = np.array([binom.logpmf(fc, num_cells, p).sum() for fc,p in zip(windowed_counts, binom_params)])
+    betabinom_log_like = np.array([betabinom.logpmf(fc, num_cells, p[0], p[1]).sum() for fc,p in zip(windowed_counts, betabinom_ab)])
+    comb_log_like = -np.array([comb.conwayMaxwellNegLogLike(p, num_cells, fc) for fc,p in zip(windowed_counts, comb_params)])
+    return moving_avg, all_stimulated, any_stimulated, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like
 
 def isStimulatedBins(bin_borders, stim_start, stim_stop):
     """
@@ -287,6 +289,14 @@ def getH5FileName(h5_dir, trial_index, bin_width, num_bins_fitting):
     Returns:    string
     """
     return os.path.join(h5_dir, 'trial_' + str(trial_index) + '_bin_width_' + str(int(1000*bin_width)) + 'ms_num_bins_' + str(num_bins_fitting) + '.h5')
+
+def getBinCentres(bin_borders):
+    """
+    Function for getting the centre of bins given the borders.
+    Arguments:  bin_borders, the borders of each bin
+    Returns:    bin_centres, length(bin_borders) - 1, the centre of each time bin.
+    """
+    return (bin_borders[:-1] + bin_borders[1:])/2
 
 ##########################################################
 ########## PLOTTING FUNCTIONS ############################
@@ -312,7 +322,7 @@ def plotNumActiveCellsByTime(bin_borders, num_active_cells_binned, stim_starts=[
                 stim_stops, list or array, the stop times of stimuli
     Returns:    Nothing
     """
-    bin_centres = (bin_borders[:-1] + bin_borders[1:])/2
+    bin_centres = getBinCentres(bin_borders)
     if (len(stim_starts) > 0) & (len(stim_stops) > 0):
         plotShadedStimulus(stim_starts, stim_stops, num_active_cells_binned.max())
     plt.plot(bin_centres, num_active_cells_binned, **kwargs)
