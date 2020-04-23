@@ -16,4 +16,4 @@ done
 
 # run your program, timing it for good measure:
 # NB: Only using 50 cells here because of memory constraints
-time python3 -Wi $HOME/Conway_Maxwell_Hierarchical_Model/py/loading_script.py -n 2000 -b 0.001 -f 100
+time python3 -Wi $HOME/Conway_Maxwell_Hierarchical_Model/py/loading_script.py -n 2000 -b 0.001 
