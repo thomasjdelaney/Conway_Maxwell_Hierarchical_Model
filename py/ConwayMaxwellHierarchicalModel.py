@@ -279,16 +279,28 @@ def isStimulatedBins(bin_borders, stim_start, stim_stop):
     """
     return np.array([(bin_start > stim_start) & (bin_stop < stim_stop) for bin_start,bin_stop in zip(bin_borders[:-1],bin_borders[1:])])
 
-def getH5FileName(h5_dir, trial_index, bin_width, num_bins_fitting):
+def getH5FileName(h5_dir, trial_index, bin_width, window_size):
     """
     For getting the name of the h5 file. Can be used for saving or loading or whatever.
     Arguments:  h5_dir, string, the directory
                 trial_index, int, the index of the trial 
                 bin_width, float,
-                num_bins_fitting, number of bins used to fit the distributions.
+                window_size, number of bins used to fit the distributions.
     Returns:    string
     """
-    return os.path.join(h5_dir, 'trial_' + str(trial_index) + '_bin_width_' + str(int(1000*bin_width)) + 'ms_num_bins_' + str(num_bins_fitting) + '.h5')
+    return os.path.join(h5_dir, 'trial_' + str(trial_index) + '_bin_width_' + str(int(1000*bin_width)) + 'ms_num_bins_' + str(window_size) + '.h5')
+
+def readH5File(h5_dir, trial_index, bin_width, window_size):
+    """
+    For getting a h5 file handle. We can access the data through that.
+    Arguments:  h5_dir, string
+                trial_index, the identifies for the trial
+                bin_width, float
+                window_size, int
+    Returns:    HDF5 file  handle in read mode
+    """
+    h5_file_name = getH5FileName(h5_dir, trial_index, bin_width, window_size)
+    return h5py.File(h5_file_name, 'r')
 
 def getBinCentres(bin_borders):
     """

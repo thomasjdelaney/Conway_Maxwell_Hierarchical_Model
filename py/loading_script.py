@@ -37,20 +37,21 @@ sys.path.append(os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Binomial_Distri
 import ConwayMaxwellHierarchicalModel as comh
 import ConwayMaxwellBinomial as comb
 
-if not args.debug:
-    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
-    cell_info = comh.loadCellInfo(csv_dir)
-    stim_info, stim_ids = comh.loadStimulusInfo(mat_dir)
-    adj_cell_ids = comh.getRandomSubsetOfCells(cell_info, args.num_cells)
-    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Loading spike time dictionary...')
-    spike_time_dict = comh.loadSpikeTimeDict(adj_cell_ids, posterior_dir, frontal_dir, cell_info)
-    region_to_spike_time_dict = comh.divideSpikeTimeDictByRegion(spike_time_dict,cell_info)
-    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Loaded.')
+print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
+cell_info = comh.loadCellInfo(csv_dir)
+stim_info, stim_ids = comh.loadStimulusInfo(mat_dir)
+adj_cell_ids = comh.getRandomSubsetOfCells(cell_info, args.num_cells)
+print(dt.datetime.now().isoformat() + ' INFO: ' + 'Loading spike time dictionary...')
+spike_time_dict = comh.loadSpikeTimeDict(adj_cell_ids, posterior_dir, frontal_dir, cell_info)
+region_to_spike_time_dict = comh.divideSpikeTimeDictByRegion(spike_time_dict,cell_info)
+print(dt.datetime.now().isoformat() + ' INFO: ' + 'Loaded.')
+trial_bin_width_file = comh.readH5File(h5_dir, 0, 0.001, 100)
 
 ###############################################################################
 ##################### DEMO STARTS HERE ########################################
 ###############################################################################
 
+if not args.debug:
     interval_start_time = stim_info.loc[0]['stim_starts'] - 0.5
     interval_end_time = stim_info.loc[2]['stim_stops'] + 0.5
     bin_width = args.bin_width
@@ -79,6 +80,9 @@ if not args.debug:
 
     spike_time_dict, bin_width, region, read_start, read_stop, stim_start, stim_stop, stim_id = region_to_spike_time_dict.get('thalamus'), 0.001, 'thalamus', stim_info.loc[0,'read_starts'], stim_info.loc[0,'read_stops'], stim_info.loc[0,'stim_starts'], stim_info.loc[0,'stim_stops'], stim_info.loc[0,'stim_ids']
 
+##############################################################################
+################## PROCESSING h5 FILES #######################################
+##############################################################################
 
 # TODO  Function for rolling over 100ms windows.
 #       Save as hdf5 files. One per stimulus per bin_width value.
