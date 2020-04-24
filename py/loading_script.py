@@ -1,7 +1,7 @@
 """
 Script for loading in all all the functions. Testing that loading is working.
 
-python3 -i py/loading_script.py -d
+python3 -i py/loading_script.py -d -n 2000 -b 0.005 -w 100 -s 5 
 """
 import argparse, sys, os, shutil, h5py
 import numpy as np
@@ -37,53 +37,6 @@ sys.path.append(os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Binomial_Distri
 import ConwayMaxwellHierarchicalModel as comh
 import ConwayMaxwellBinomial as comb
 
-def saveMeasurementsForAllTrials(bin_width, stim_info, region_to_spike_time_dict, h5_dir, window_size=100, window_skip=10):
-    """
-    Get the measurements for each trial and save them down, one by one. 
-    Arguments:  bin_width, float,
-                stim_info, pandas DataFrame
-    Returns:    nothing?
-    """
-    region_to_num_cells = {r:len(d)for r,d in region_to_spike_time_dict.items()}
-    for trial_index in stim_info.index.values:
-        print(dt.datetime.now().isoformat() + ' INFO: ' + 'Processing trial number ' + str(trial_index) + '...')
-        trial_bin_width_file_name = comh.getH5FileName(h5_dir, trial_index, bin_width, window_size)
-        if os.path.isfile(trial_bin_width_file_name):
-            print(dt.datetime.now().isoformat() + ' INFO: ' + 'Already have this file. Skipping...')
-            continue
-        trial_bin_width_file = h5py.File(trial_bin_width_file_name, 'w')
-        trial_info = stim_info.loc[trial_index]
-        bin_borders, region_to_active_cells = comh.getNumberOfActiveCellsByRegion(trial_info['read_starts'], trial_info['read_stops'], bin_width, region_to_spike_time_dict)
-        is_stimulated = comh.isStimulatedBins(bin_borders, trial_info['stim_starts'], trial_info['stim_stops'])
-        bin_centres = comh.getBinCentres(bin_borders)
-        num_bins = bin_centres.size
-        window_starts = np.arange(0, num_bins-window_size, window_skip)
-        window_centre_times = bin_centres[window_starts+(window_size//2)]
-        window_inds = np.vstack([ws + np.arange(window_size) for ws in window_starts])
-        trial_bin_width_file.create_dataset('bin_width',data=bin_width)
-        trial_bin_width_file.create_dataset('window_size',data=window_size)
-        trial_bin_width_file.create_dataset('window_skip',data=window_skip)
-        trial_bin_width_file.create_dataset('window_centre_times',data=window_centre_times)
-        for region, regional_active_cells_binned in region_to_active_cells.items():
-            print(dt.datetime.now().isoformat() + ' INFO: ' + 'Processing region ' + region + '...')
-            moving_avg, all_stimulated, any_stimulated, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like = comh.getTrialMeasurements(regional_active_cells_binned, is_stimulated, window_inds, region_to_num_cells.get(region), window_size=100, window_skip=10)
-            regional_group = trial_bin_width_file.create_group(region)
-            regional_group.create_dataset('num_cells',data=region_to_num_cells.get(region))
-            regional_group.create_dataset('num_active_cells_binned',data=regional_active_cells_binned)
-            regional_group.create_dataset('region',data=region)
-            regional_group.create_dataset('moving_avg',data=moving_avg)
-            regional_group.create_dataset('all_stimulated',data=all_stimulated)
-            regional_group.create_dataset('any_stimulated',data=any_stimulated)
-            regional_group.create_dataset('binom_params',data=binom_params)
-            regional_group.create_dataset('binom_log_like',data=binom_log_like)
-            regional_group.create_dataset('betabinom_ab',data=betabinom_ab)
-            regional_group.create_dataset('betabinom_log_like',data=binom_log_like)
-            regional_group.create_dataset('comb_params',data=comb_params)
-            regional_group.create_dataset('comb_log_like',data=comb_log_like)
-        trial_bin_width_file.close()
-    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Done saving.')
-    return None
-        
 if not args.debug:
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
     cell_info = comh.loadCellInfo(csv_dir)
@@ -93,40 +46,38 @@ if not args.debug:
     spike_time_dict = comh.loadSpikeTimeDict(adj_cell_ids, posterior_dir, frontal_dir, cell_info)
     region_to_spike_time_dict = comh.divideSpikeTimeDictByRegion(spike_time_dict,cell_info)
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Loaded.')
-    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Measuring and saving...')
-    saveMeasurementsForAllTrials(args.bin_width, stim_info, region_to_spike_time_dict, h5_dir, window_size=args.window_size, window_skip=args.window_skip)
 
 ###############################################################################
 ##################### DEMO STARTS HERE ########################################
 ###############################################################################
 
-#    interval_start_time = stim_info.loc[0]['stim_starts'] - 0.5
-#    interval_end_time = stim_info.loc[2]['stim_stops'] + 0.5
-#    bin_width = args.bin_width
-#    bin_borders, region_to_active_cells = comh.getNumberOfActiveCellsByRegion(interval_start_time, interval_end_time, bin_width, region_to_spike_time_dict)
-#    
-#    num_active_cells_binned = region_to_active_cells.get(args.region)
-#    total_cells = len(region_to_spike_time_dict.get(args.region))
-#    fitted_binom = comh.fitBinomialDistn(num_active_cells_binned, total_cells)
-#    fitted_binom_log_like = fitted_binom.logpmf(num_active_cells_binned).sum()
-#    fitted_betabinom = comh.easyLogLikeFit(betabinom, num_active_cells_binned, [1.0, 1.0], [(np.finfo(float).resolution, None), (np.finfo(float).resolution, None)], total_cells)
-#    fitted_betabinom_log_like = fitted_betabinom.logpmf(num_active_cells_binned).sum()
-#    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Fitting Conway-Maxwell-binomial distribution...')
-#    fitted_comb_params = comb.estimateParams(total_cells, num_active_cells_binned, [0.5, 1.0])
-#    fitted_comb = comb.ConwayMaxwellBinomial(fitted_comb_params[0], fitted_comb_params[1], total_cells)
-#    fitted_comb_log_like = -comb.conwayMaxwellNegLogLike(fitted_comb_params, total_cells, num_active_cells_binned)
-#    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Fitted.')
-#    plt.figure(figsize=(5,4))
-#    comh.plotNumActiveCellsByTimeByRegion(bin_borders, {args.region.capitalize():region_to_active_cells.get(args.region)}, stim_starts=stim_info.stim_starts[:3].values, stim_stops=stim_info.stim_stops[:3].values)
-#    comh.plotNumActiveCellsByTimeByRegion(bin_borders[50:-49], {'Moving avg.':comh.movingAverage(region_to_active_cells.get(args.region),n=100)})
-#    plt.figure()
-#    comh.plotCompareDataFittedDistn(num_active_cells_binned, [fitted_binom, fitted_betabinom, fitted_comb], distn_label=['Binomial PMF', 'Beta-Binomial PMF', 'COM-Binomial PMF'], title='Fitted distns, region = ' + args.region.capitalize())
-#    plt.show(block=False)
-#    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Binomial log likelihood: ' + str(fitted_binom_log_like.round(2)))
-#    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Beta-binomial log likelihood: ' + str(fitted_betabinom_log_like.round(2)))
-#    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Conway-Maxwell-Binomial log likelihood: ' + str(fitted_comb_log_like.round(2)))
+    interval_start_time = stim_info.loc[0]['stim_starts'] - 0.5
+    interval_end_time = stim_info.loc[2]['stim_stops'] + 0.5
+    bin_width = args.bin_width
+    bin_borders, region_to_active_cells = comh.getNumberOfActiveCellsByRegion(interval_start_time, interval_end_time, bin_width, region_to_spike_time_dict)
+    
+    num_active_cells_binned = region_to_active_cells.get(args.region)
+    total_cells = len(region_to_spike_time_dict.get(args.region))
+    fitted_binom = comh.fitBinomialDistn(num_active_cells_binned, total_cells)
+    fitted_binom_log_like = fitted_binom.logpmf(num_active_cells_binned).sum()
+    fitted_betabinom = comh.easyLogLikeFit(betabinom, num_active_cells_binned, [1.0, 1.0], [(np.finfo(float).resolution, None), (np.finfo(float).resolution, None)], total_cells)
+    fitted_betabinom_log_like = fitted_betabinom.logpmf(num_active_cells_binned).sum()
+    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Fitting Conway-Maxwell-binomial distribution...')
+    fitted_comb_params = comb.estimateParams(total_cells, num_active_cells_binned, [0.5, 1.0])
+    fitted_comb = comb.ConwayMaxwellBinomial(fitted_comb_params[0], fitted_comb_params[1], total_cells)
+    fitted_comb_log_like = -comb.conwayMaxwellNegLogLike(fitted_comb_params, total_cells, num_active_cells_binned)
+    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Fitted.')
+    plt.figure(figsize=(5,4))
+    comh.plotNumActiveCellsByTimeByRegion(bin_borders, {args.region.capitalize():region_to_active_cells.get(args.region)}, stim_starts=stim_info.stim_starts[:3].values, stim_stops=stim_info.stim_stops[:3].values)
+    comh.plotNumActiveCellsByTimeByRegion(bin_borders[50:-49], {'Moving avg.':comh.movingAverage(region_to_active_cells.get(args.region),n=100)})
+    plt.figure()
+    comh.plotCompareDataFittedDistn(num_active_cells_binned, [fitted_binom, fitted_betabinom, fitted_comb], distn_label=['Binomial PMF', 'Beta-Binomial PMF', 'COM-Binomial PMF'], title='Fitted distns, region = ' + args.region.capitalize())
+    plt.show(block=False)
+    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Binomial log likelihood: ' + str(fitted_binom_log_like.round(2)))
+    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Beta-binomial log likelihood: ' + str(fitted_betabinom_log_like.round(2)))
+    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Conway-Maxwell-Binomial log likelihood: ' + str(fitted_comb_log_like.round(2)))
 
-#    spike_time_dict, bin_width, region, read_start, read_stop, stim_start, stim_stop, stim_id = region_to_spike_time_dict.get('thalamus'), 0.001, 'thalamus', stim_info.loc[0,'read_starts'], stim_info.loc[0,'read_stops'], stim_info.loc[0,'stim_starts'], stim_info.loc[0,'stim_stops'], stim_info.loc[0,'stim_ids']
+    spike_time_dict, bin_width, region, read_start, read_stop, stim_start, stim_stop, stim_id = region_to_spike_time_dict.get('thalamus'), 0.001, 'thalamus', stim_info.loc[0,'read_starts'], stim_info.loc[0,'read_stops'], stim_info.loc[0,'stim_starts'], stim_info.loc[0,'stim_stops'], stim_info.loc[0,'stim_ids']
 
 
 # TODO  Function for rolling over 100ms windows.
