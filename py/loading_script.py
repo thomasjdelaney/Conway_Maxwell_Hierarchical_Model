@@ -37,37 +37,6 @@ sys.path.append(os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Binomial_Distri
 import ConwayMaxwellHierarchicalModel as comh
 import ConwayMaxwellBinomial as comb
 
-def plotAverageMeasure(h5_file_list, region, measure, index=None, include_stim=True, colour='blue', **kwargs):
-    """
-    For plotting the average of a given measure taking the average across the given files.
-    Arguments:  h5_file_list, list(str), file_names
-                region, str
-                measure, str, for example 'moving_avg', 'comb_params'
-                index, int, for indexing into two parameter columns
-                include_stim, include the stimulus shaded area
-    Returns:    None
-    """
-    x_axis = h5py.File(h5_file_list[0],'r').get('window_centre_times')[()]
-    time_adjustor = x_axis[0]
-    x_axis = x_axis - time_adjustor
-    measures = []
-    for h5_file_name in h5_file_list:
-        h5_file = h5py.File(h5_file_name, 'r')
-        trial_measure = h5_file.get(region).get(measure)[()]
-        trial_measure = trial_measure[:,index] if index != None else trial_measure
-        measures.append(trial_measure)
-        plt.plot(x_axis, trial_measure, color=colour, alpha=0.05)
-        h5_file.close()
-    plt.plot(x_axis, np.array(measures).mean(axis=0), color=colour, **kwargs)
-    trial_index = comh.getTrialIndexFromH5File(h5py.File(h5_file_list[0],'r'))
-    if include_stim:
-        comh.plotShadedStimulus([stim_info.loc[trial_index]['stim_starts']]-time_adjustor, [stim_info.loc[trial_index]['stim_stops']]-time_adjustor, plt.ylim()[1])
-    plt.legend(fontsize='large') if 'label' in kwargs else None
-    plt.xlim((x_axis[0], x_axis[-1]))
-    plt.ylim((0, np.max(measures)))
-    plt.xlabel('Time (s)', fontsize='large')
-    return None
-
 print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
 cell_info = comh.loadCellInfo(csv_dir)
 stim_info, stim_ids = comh.loadStimulusInfo(mat_dir)
@@ -78,15 +47,21 @@ region_to_spike_time_dict = comh.divideSpikeTimeDictByRegion(spike_time_dict,cel
 print(dt.datetime.now().isoformat() + ' INFO: ' + 'Loaded.')
 bin_width, window_size = [args.bin_width, args.window_size]
 region=args.region
-h5_file_list = glob.glob(os.path.join(h5_dir, '*_bin_width_' + str(int(1000*bin_width)) + 'ms_num_bins_' + str(window_size) + '.h5'))
+h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
+trial_info = stim_info.loc[comh.getTrialIndexFromH5File(h5py.File(h5_file_list[0],'r'))]
+stim_times = [trial_info['stim_starts'], trial_info['stim_stops']]
 plt.figure()
-plotAverageMeasure(h5_file_list, args.region, 'moving_avg', index=None, include_stim=True, label='Moving Avg.')
+comh.plotAverageMeasure(h5_file_list, args.region, 'moving_avg', index=None, stim_times=stim_times, label='Moving Avg.')
 plt.figure()
-plotAverageMeasure(h5_file_list, args.region, 'binom_params', index=None, include_stim=True, label=r'Binomial $p$')
+comh.plotAverageMeasure(h5_file_list, args.region, 'binom_params', index=None, stim_times=stim_times, label=r'Binomial $p$')
 plt.figure()
-plotAverageMeasure(h5_file_list, args.region, 'comb_params', index=0, include_stim=True, label=r'COM-Binomial $p$')
+comh.plotAverageMeasure(h5_file_list, args.region, 'comb_params', index=0, stim_times=stim_times, label=r'COM-Binomial $p$')
 plt.figure()
-plotAverageMeasure(h5_file_list, args.region, 'comb_params', index=1, include_stim=True, label=r'COM-Binomial $\nu$')
+comh.plotAverageMeasure(h5_file_list, args.region, 'comb_params', index=1, stim_times=stim_times, label=r'COM-Binomial $\nu$')
+plt.figure()
+comh.plotAverageMeasure(h5_file_list, args.region, 'betabinom_ab', index=0, stim_times=stim_times, label=r'Beta-Binomial $\pi$', reparametrise=True)
+plt.figure()
+comh.plotAverageMeasure(h5_file_list, args.region, 'betabinom_ab', index=1, stim_times=stim_times, label=r'Beta-Binomial $\rho$', reparametrise=True)
 plt.show(block=False)
 
 # need a 'get file list from trial indices' function.

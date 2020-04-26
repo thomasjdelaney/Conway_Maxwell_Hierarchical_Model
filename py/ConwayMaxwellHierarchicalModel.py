@@ -290,6 +290,18 @@ def getH5FileName(h5_dir, trial_index, bin_width, window_size):
     """
     return os.path.join(h5_dir, 'trial_' + str(trial_index) + '_bin_width_' + str(int(1000*bin_width)) + 'ms_num_bins_' + str(window_size) + '.h5')
 
+def getFileListFromTrialIndices(h5_dir, trial_indices, bin_width=0.001, window_size=100):
+    """
+    For getting a list of hdf5 files given a list of trial_indices, and maybe some more info.
+    Arguments:  h5_dir, str, directory
+                trial_indices, list of ints, 
+                bin_width, float
+                window_size, int
+    Returns:    list of file names, list(str)
+    """
+    trial_indices = [trial_indices] if np.isscalar(trial_indices) else trial_indices
+    return [getH5FileName(h5_dir, trial_index, bin_width, window_size) for trial_index in trial_indices]
+
 def readH5File(h5_dir, trial_index, bin_width, window_size):
     """
     For getting a h5 file handle. We can access the data through that.
@@ -332,15 +344,16 @@ def reparametriseBetaBinomial(ab_params):
 ########## PLOTTING FUNCTIONS ############################
 ##########################################################
 
-def plotShadedStimulus(stim_starts, stim_stops, upper_bound):
+def plotShadedStimulus(stim_starts, stim_stops, upper_bound, lower_bound=0):
     """
     For plotting a shaded aread to represent the times when a stimulus was present.
     Arguments:  stim_starts, list or array, the start times of the stimuli
                 stim_stops, list or array, the stop times of the stimuli
+                upper_bound, lower_bound, shade between these areas.
     Returns:    nothing
     """
     for i,(stim_start, stim_stop) in enumerate(zip(stim_starts, stim_stops)):
-        plt.fill_between(x=[stim_start, stim_stop], y1=upper_bound, y2=0, color='grey', alpha=0.3)
+        plt.fill_between(x=[stim_start, stim_stop], y1=upper_bound, y2=lower_bound, color='grey', alpha=0.3)
     return None
 
 def plotNumActiveCellsByTime(bin_borders, num_active_cells_binned, stim_starts=[], stim_stops=[], get_centres=False, **kwargs):
@@ -425,5 +438,41 @@ def plotTrialSummary(h5_file, region, stim_info):
     plt.subplot(2,2,4)
     plotNumActiveCellsByTimeByRegion(window_centres, {'COM-Binom. nu':h5_file.get(region).get('comb_params')[()][:,1]}, stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops])
     plt.tight_layout()
+    return None
+
+def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[], colour='blue', reparametrise=False, title='', **kwargs):
+    """
+    For plotting the average of a given measure taking the average across the given files.
+    Arguments:  h5_file_list, list(str), file_names
+                region, str
+                measure, str, for example 'moving_avg', 'comb_params'
+                index, int, for indexing into two parameter columns
+                stim_times, [stim_start, stim_stop]
+                colour, str
+                reparametrise, bool, whether to reparametrise the betabinomial paramters or not.
+    Returns:    None
+    """
+    x_axis = h5py.File(h5_file_list[0],'r').get('window_centre_times')[()]
+    time_adjustor = x_axis[0]
+    x_axis = x_axis - time_adjustor
+    measures = []
+    for h5_file_name in h5_file_list:
+        h5_file = h5py.File(h5_file_name, 'r')
+        trial_measure = h5_file.get(region).get(measure)[()]
+        if reparametrise & (measure=='betabinom_ab'):
+            trial_measure = reparametriseBetaBinomial(trial_measure)
+        trial_measure = trial_measure[:,index] if index != None else trial_measure
+        measures.append(trial_measure)
+        plt.plot(x_axis, trial_measure, color=colour, alpha=0.05)
+        h5_file.close()
+    plt.plot(x_axis, np.array(measures).mean(axis=0), color=colour, **kwargs)
+    lower_bound = np.min(np.min(measures),0)
+    if stim_times != []: # include the grey shaded area to indicate the stimulus 
+        plotShadedStimulus([stim_times[0]]-time_adjustor, [stim_times[1]]-time_adjustor, plt.ylim()[1], lower_bound=lower_bound)
+    plt.ylim(lower_bound, np.max(measures))
+    plt.xlim((x_axis[0], x_axis[-1]))
+    plt.xlabel('Time (s)', fontsize='large')
+    plt.title(title, fontsize='large') if title != '' else None
+    plt.legend(fontsize='large') if 'label' in kwargs else None
     return None
 
