@@ -310,6 +310,24 @@ def getBinCentres(bin_borders):
     """
     return (bin_borders[:-1] + bin_borders[1:])/2
 
+def getTrialIndexFromH5File(h5_file):
+    """
+    Get all the information we can from the filename.
+    Arguments:  h5_file, hdf5 file object
+    Returns:    trial_index, bin_width, window_size
+    """
+    file_name = os.path.basename(h5_file.filename)
+    return int(file_name.split('_')[1])
+
+def reparametriseBetaBinomial(ab_params):
+    """
+    For converting alpha beta parametrisation to the pi rho parametrisation
+    Arguments:  ab_params, 
+    returns:    pr_params
+    """
+    ab_params = np.array([ab_params]) if ab_params.ndim == 1 else ab_params
+    return np.array([[alpha/(alpha+beta),1/(alpha+beta+1)] for alpha,beta in ab_params])
+
 ##########################################################
 ########## PLOTTING FUNCTIONS ############################
 ##########################################################
@@ -325,7 +343,7 @@ def plotShadedStimulus(stim_starts, stim_stops, upper_bound):
         plt.fill_between(x=[stim_start, stim_stop], y1=upper_bound, y2=0, color='grey', alpha=0.3)
     return None
 
-def plotNumActiveCellsByTime(bin_borders, num_active_cells_binned, stim_starts=[], stim_stops=[], **kwargs):
+def plotNumActiveCellsByTime(bin_borders, num_active_cells_binned, stim_starts=[], stim_stops=[], get_centres=False, **kwargs):
     """
     For plotting the number of active cells across bins, optionally with stimulus time shaded.
     Arguments:  bin_borders, array (float) 
@@ -334,13 +352,13 @@ def plotNumActiveCellsByTime(bin_borders, num_active_cells_binned, stim_starts=[
                 stim_stops, list or array, the stop times of stimuli
     Returns:    Nothing
     """
-    bin_centres = getBinCentres(bin_borders)
+    bin_centres = getBinCentres(bin_borders) if get_centres else bin_borders
     if (len(stim_starts) > 0) & (len(stim_stops) > 0):
         plotShadedStimulus(stim_starts, stim_stops, num_active_cells_binned.max())
     plt.plot(bin_centres, num_active_cells_binned, **kwargs)
     return None
 
-def plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_starts=[], stim_stops=[], is_tight_layout=True, **kwargs):
+def plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_starts=[], stim_stops=[], is_tight_layout=True, get_centres=False, **kwargs):
     """
     Plot the number of active cells for each region on the same plot.
     Arguments:  bin_borders,
@@ -353,7 +371,7 @@ def plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_s
     upper_bound = np.array(list(region_to_active_cells.values())).max()
     plotShadedStimulus(stim_starts, stim_stops, upper_bound) if (len(stim_starts) > 0) & (len(stim_stops) > 0) else None
     for region, num_active_cells_binned in region_to_active_cells.items():
-        plotNumActiveCellsByTime(bin_borders, num_active_cells_binned, label=region.capitalize())
+        plotNumActiveCellsByTime(bin_borders, num_active_cells_binned, get_centres=get_centres, label=region.capitalize())
     plt.legend(fontsize='large')
     plt.xlabel('Time (s)', fontsize='large')
     plt.ylabel('Num. Active Cells', fontsize='large')
@@ -381,3 +399,31 @@ def plotCompareDataFittedDistn(num_active_cells_binned, fitted_distn, plot_type=
     plt.title(title, fontsize='large') if title != '' else None
     plt.tight_layout()
     return None
+
+def plotTrialSummary(h5_file, region, stim_info):
+    """
+    Make some plots giving a summary of a trial.
+    Arguments:  h5_file, the file that contains the information that we need.
+                stim_info, pandas DataFrame, information about each trial 
+    Returns:    nothing
+    """
+    trial_index = getTrialIndexFromH5File(h5_file)
+    trial_info = stim_info.loc[trial_index]
+    bin_borders = getBinBorders(trial_info.read_starts, trial_info.read_stops, h5_file.get('bin_width')[()])
+    window_centres = h5_file.get('window_centre_times')[()]
+    plt.subplot(2,2,1)
+    plotNumActiveCellsByTimeByRegion(bin_borders, {'Num. active cells':h5_file.get(region).get('num_active_cells_binned')[()]}, stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops], get_centres=True)
+    plotNumActiveCellsByTimeByRegion(window_centres, {'Moving avg.':h5_file.get(region).get('moving_avg')[()]})
+    plt.title(region.capitalize().replace('_', ' ') + ', Total cells = ' + str(h5_file.get(region).get('num_cells')[()]), fontsize='large')
+    plt.subplot(2,2,2)
+    plotNumActiveCellsByTimeByRegion(window_centres, {'Binom. p':h5_file.get(region).get('binom_params')[()]})
+    betabinom_pr = reparametriseBetaBinomial(h5_file.get(region).get('betabinom_ab'))
+    plotNumActiveCellsByTimeByRegion(window_centres, {'Beta-Binom. pi':betabinom_pr[:,0]})
+    plotNumActiveCellsByTimeByRegion(window_centres, {'COM-Binom. p':h5_file.get(region).get('comb_params')[()][:,0]}, stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops])
+    plt.subplot(2,2,3)
+    plotNumActiveCellsByTimeByRegion(window_centres, {'Beta-Binom. rho':betabinom_pr[:,1]}, stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops])
+    plt.subplot(2,2,4)
+    plotNumActiveCellsByTimeByRegion(window_centres, {'COM-Binom. nu':h5_file.get(region).get('comb_params')[()][:,1]}, stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops])
+    plt.tight_layout()
+    return None
+
