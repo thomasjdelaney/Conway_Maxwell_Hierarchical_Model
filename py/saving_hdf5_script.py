@@ -52,7 +52,7 @@ def saveMeasurementsForAllTrials(bin_width, stim_info, region_to_spike_time_dict
             continue
         trial_bin_width_file = h5py.File(trial_bin_width_file_name, 'w')
         trial_info = stim_info.loc[trial_index]
-        bin_borders, region_to_active_cells = comh.getNumberOfActiveCellsByRegion(trial_info['read_starts'], trial_info['read_stops'], bin_width, region_to_spike_time_dict)
+        bin_borders, region_to_active_cells, region_to_spike_counts = comh.getNumberOfActiveCellsByRegion(trial_info['read_starts'], trial_info['read_stops'], bin_width, region_to_spike_time_dict)
         is_stimulated = comh.isStimulatedBins(bin_borders, trial_info['stim_starts'], trial_info['stim_stops'])
         bin_centres = comh.getBinCentres(bin_borders)
         num_bins = bin_centres.size
@@ -63,14 +63,17 @@ def saveMeasurementsForAllTrials(bin_width, stim_info, region_to_spike_time_dict
         trial_bin_width_file.create_dataset('window_size',data=window_size)
         trial_bin_width_file.create_dataset('window_skip',data=window_skip)
         trial_bin_width_file.create_dataset('window_centre_times',data=window_centre_times)
-        for region, regional_active_cells_binned in region_to_active_cells.items():
+        for region in region_to_active_cells.keys():
+            regional_active_cells_binned = region_to_active_cells.get(region)
+            regional_spike_count_array = region_to_spike_counts.get(region)
             print(dt.datetime.now().isoformat() + ' INFO: ' + 'Processing region ' + region + '...')
-            moving_avg, all_stimulated, any_stimulated, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like = comh.getTrialMeasurements(regional_active_cells_binned, is_stimulated, window_inds, region_to_num_cells.get(region), window_size=100, window_skip=10)
+            moving_avg, corr_avg, all_stimulated, any_stimulated, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like = comh.getTrialMeasurements(regional_active_cells_binned, is_stimulated, window_inds, region_to_num_cells.get(region), window_size=100, window_skip=10)
             regional_group = trial_bin_width_file.create_group(region)
             regional_group.create_dataset('num_cells',data=region_to_num_cells.get(region))
             regional_group.create_dataset('num_active_cells_binned',data=regional_active_cells_binned)
             regional_group.create_dataset('region',data=region)
             regional_group.create_dataset('moving_avg',data=moving_avg)
+            regional_group.create_dataset('corr_avg',data=corr_avg)
             regional_group.create_dataset('all_stimulated',data=all_stimulated)
             regional_group.create_dataset('any_stimulated',data=any_stimulated)
             regional_group.create_dataset('binom_params',data=binom_params)

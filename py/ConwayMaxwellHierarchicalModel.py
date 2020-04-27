@@ -160,7 +160,7 @@ def binActiveTimes(spike_times, bin_borders):
     Returns:    array (boolean)
     """
     spike_counts, bb = np.histogram(spike_times, bins=bin_borders)
-    return spike_counts > 0
+    return spike_counts
 
 def getNumberOfActiveCellsInBinnedInterval(start_time, end_time, bin_width, spike_time_dict):
     """
@@ -178,7 +178,8 @@ def getNumberOfActiveCellsInBinnedInterval(start_time, end_time, bin_width, spik
     with Pool() as pool:
         is_active_future = pool.starmap_async(binActiveTimes, zip(spike_times_list, [bin_borders]*num_cells))
         is_active_future.wait()
-    return bin_borders, np.vstack(is_active_future.get()).sum(axis=0)
+    spike_count_array = np.vstack(is_active_future.get())
+    return bin_borders, np.sum(spike_count_array > 0, axis=0), spike_count_array
 
 def getNumberOfActiveCellsByRegion(interval_start_time, interval_end_time, bin_width, region_to_spike_time_dict):
     """
@@ -191,10 +192,10 @@ def getNumberOfActiveCellsByRegion(interval_start_time, interval_end_time, bin_w
                 bin_borders
     """
     region_to_active_cells = {}
+    region_to_spike_counts = {}
     for region,regional_spike_time_dict in region_to_spike_time_dict.items():
-        bin_borders, num_active_cells_binned = getNumberOfActiveCellsInBinnedInterval(interval_start_time, interval_end_time, bin_width, regional_spike_time_dict)
-        region_to_active_cells[region] = num_active_cells_binned
-    return bin_borders, region_to_active_cells
+        bin_borders, region_to_active_cells[region], region_to_spike_counts[region] = getNumberOfActiveCellsInBinnedInterval(interval_start_time, interval_end_time, bin_width, regional_spike_time_dict)
+    return bin_borders, region_to_active_cells, region_to_spike_counts
 
 def fitBinomialDistn(num_active_cells_binned, total_cells):
     """
@@ -231,17 +232,29 @@ def easyLogLikeFit(distn, data, init, bounds, n):
     fitted = distn(n=n, a=res.x[0], b=res.x[1])
     return fitted
 
-def getTrialMeasurements(num_active_cells_binned, is_stimulated, window_inds, num_cells, window_size=100, window_skip=10):
+def getAverageSpikeCountCorrelation(spike_count_array):
+    """
+    For getting the average of the spike count correlation from an array of spike counts.
+    Arguments:  spike_count_array, numpy array (int) (num_cells, num_spikes)
+    Returns:    float, the average of the spike count correlations
+    """
+    corr_matrix = np.corrcoef(spike_count_array)
+    corr_matrix[np.isnan(corr_matrix)] = 0.0
+    return corr_matrix[np.triu_indices(corr_matrix.shape[0], k=1)].mean()
+
+def getTrialMeasurements(num_active_cells_binned, spike_count_array, is_stimulated, window_inds, num_cells, window_size=100, window_skip=10):
     """
     Get all the measurements we want for a trial, providing start and stop times, and id.
     Arguments:  num_active_cells_binned, numpy array (int)
+                spike_count_array, array (int) (num_cells, num_bins)
                 is_stimulated, numpy array boolean, whether or not the stimulus was present for the entirety of each bin.
                 window_inds, numpy array (int) (num_windows, window_size), indices for each window, each row is a list of indices for a window.
                 num_cells, int
                 window_size, int, the number of bins we will use to fit the distributions
                 window_skip, int, the number of bins between each fitting window. This influences how many times we have to fit each distribution,
                     and therefore has a major effect on how long it takes to process everything.
-    Returns:    moving_avg, 
+    Returns:    moving_avg,
+                corr_avg,
                 binom_params, 
                 betabinom_params, 
                 comb_params,
@@ -250,24 +263,27 @@ def getTrialMeasurements(num_active_cells_binned, is_stimulated, window_inds, nu
                 comb_log_like.
     """
     num_windows = window_inds.shape[0]
-    windowed_counts = num_active_cells_binned[window_inds]
-    moving_avg = windowed_counts.mean(axis=1)
+    windowed_active_cells = num_active_cells_binned[window_inds]
+    windowed_spike_counts = spike_count_array[:,window_inds].reshape((num_windows, num_cells, window_size))
+    moving_avg = windowed_active_cells.mean(axis=1)
     all_stimulated = is_stimulated[window_inds].all(axis=1)
     any_stimulated = is_stimulated[window_inds].any(axis=1)
     with Pool() as pool:
-        binom_params_future = pool.starmap_async(fitBinomialDistn, zip(windowed_counts, [num_cells]*num_windows))
-        betabinom_params_future = pool.starmap_async(easyLogLikeFit, zip([betabinom]*num_windows, windowed_counts, [[1.0,1.0]]*num_windows, [((1e-08,None),(1e-08,None))]*num_windows, [num_cells]*num_windows))
-        comb_params_future = pool.starmap_async(comb.estimateParams, zip([num_cells]*num_windows, windowed_counts))
+        binom_params_future = pool.starmap_async(fitBinomialDistn, zip(windowed_active_cells, [num_cells]*num_windows))
+        betabinom_params_future = pool.starmap_async(easyLogLikeFit, zip([betabinom]*num_windows, windowed_active_cells, [[1.0,1.0]]*num_windows, [((1e-08,None),(1e-08,None))]*num_windows, [num_cells]*num_windows))
+        comb_params_future = pool.starmap_async(comb.estimateParams, zip([num_cells]*num_windows, windowed_active_cells))
+        corr_avg_future = pool.map_async(getAverageSpikeCountCorrelation, windowed_spike_counts)
         binom_params_future.wait()
         betabinom_params_future.wait()
         comb_params_future.wait()
     binom_params = np.array([b.args[1] for b in binom_params_future.get()])
     betabinom_ab = np.array([[b.kwds['a'],b.kwds['b']] for b in betabinom_params_future.get()])
     comb_params = np.array(comb_params_future.get())
-    binom_log_like = np.array([binom.logpmf(fc, num_cells, p).sum() for fc,p in zip(windowed_counts, binom_params)])
-    betabinom_log_like = np.array([betabinom.logpmf(fc, num_cells, p[0], p[1]).sum() for fc,p in zip(windowed_counts, betabinom_ab)])
-    comb_log_like = -np.array([comb.conwayMaxwellNegLogLike(p, num_cells, fc) for fc,p in zip(windowed_counts, comb_params)])
-    return moving_avg, all_stimulated, any_stimulated, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like
+    corr_avg = corr_avg_future.get()
+    binom_log_like = np.array([binom.logpmf(fc, num_cells, p).sum() for fc,p in zip(windowed_active_cells, binom_params)])
+    betabinom_log_like = np.array([betabinom.logpmf(fc, num_cells, p[0], p[1]).sum() for fc,p in zip(windowed_active_cells, betabinom_ab)])
+    comb_log_like = -np.array([comb.conwayMaxwellNegLogLike(p, num_cells, fc) for fc,p in zip(windowed_active_cells, comb_params)])
+    return moving_avg, corr_avg, all_stimulated, any_stimulated, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like
 
 def isStimulatedBins(bin_borders, stim_start, stim_stop):
     """
