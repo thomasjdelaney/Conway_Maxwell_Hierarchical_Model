@@ -400,7 +400,7 @@ def plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_s
     upper_bound = np.array(list(region_to_active_cells.values())).max()
     plotShadedStimulus(stim_starts, stim_stops, upper_bound) if (len(stim_starts) > 0) & (len(stim_stops) > 0) else None
     for region, num_active_cells_binned in region_to_active_cells.items():
-        plotNumActiveCellsByTime(bin_borders, num_active_cells_binned, get_centres=get_centres, label=region.capitalize())
+        plotNumActiveCellsByTime(bin_borders, num_active_cells_binned, get_centres=get_centres, label=region.capitalize(), **kwargs)
     plt.legend(fontsize='large')
     plt.xlabel('Time (s)', fontsize='large')
     plt.ylabel('Num. Active Cells', fontsize='large')
@@ -442,17 +442,17 @@ def plotTrialSummary(h5_file, region, stim_info):
     window_centres = h5_file.get('window_centre_times')[()]
     plt.subplot(2,2,1)
     plotNumActiveCellsByTimeByRegion(bin_borders, {'Num. active cells':h5_file.get(region).get('num_active_cells_binned')[()]}, stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops], get_centres=True)
-    plotNumActiveCellsByTimeByRegion(window_centres, {'Moving avg.':h5_file.get(region).get('moving_avg')[()]})
+    plt.plot(window_centres, h5_file.get(region).get('moving_avg')[()], label='Moving Average')
     plt.title(region.capitalize().replace('_', ' ') + ', Total cells = ' + str(h5_file.get(region).get('num_cells')[()]), fontsize='large')
     plt.subplot(2,2,2)
-    plotNumActiveCellsByTimeByRegion(window_centres, {'Binom. p':h5_file.get(region).get('binom_params')[()]})
+    plotNumActiveCellsByTimeByRegion(window_centres, {r'Binom. $p$':h5_file.get(region).get('binom_params')[()]})
     betabinom_pr = reparametriseBetaBinomial(h5_file.get(region).get('betabinom_ab'))
-    plotNumActiveCellsByTimeByRegion(window_centres, {'Beta-Binom. pi':betabinom_pr[:,0]})
-    plotNumActiveCellsByTimeByRegion(window_centres, {'COM-Binom. p':h5_file.get(region).get('comb_params')[()][:,0]}, stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops])
+    plotNumActiveCellsByTimeByRegion(window_centres, {r'Beta-Binom. $\pi$':betabinom_pr[:,0]})
+    plotNumActiveCellsByTimeByRegion(window_centres, {r'COM-Binom. $p$':h5_file.get(region).get('comb_params')[()][:,0]}, stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops])
     plt.subplot(2,2,3)
-    plotNumActiveCellsByTimeByRegion(window_centres, {'Beta-Binom. rho':betabinom_pr[:,1]}, stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops])
+    plotNumActiveCellsByTimeByRegion(window_centres, {r'Beta-Binom. $\rho$':betabinom_pr[:,1]}, stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops])
     plt.subplot(2,2,4)
-    plotNumActiveCellsByTimeByRegion(window_centres, {'COM-Binom. nu':h5_file.get(region).get('comb_params')[()][:,1]}, stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops])
+    plotNumActiveCellsByTimeByRegion(window_centres, {r'COM-Binom. $\nu$':h5_file.get(region).get('comb_params')[()][:,1]}, stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops])
     plt.tight_layout()
     return None
 
