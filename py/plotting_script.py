@@ -38,62 +38,65 @@ sys.path.append(os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Binomial_Distri
 import ConwayMaxwellHierarchicalModel as comh
 import ConwayMaxwellBinomial as comb
 
-if not args.debug:
-    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
-    stim_info, stim_ids = comh.loadStimulusInfo(mat_dir)
-    h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
-    title = args.region.capitalize().replace('_', ' ') + ', Num Trials=' + str(len(h5_file_list)) + ' All stimulated trials'
-    trial_info = stim_info.loc[comh.getTrialIndexFromH5File(h5py.File(h5_file_list[0],'r'))]
-    stim_times = [trial_info['stim_starts'], trial_info['stim_stops']]
-    measure_list = ['moving_avg', 'binom_params', 'comb_params', 'comb_params', 'betabinom_ab', 'betabinom_ab', 'corr_avg']
-    index_list = [None, None, 0, 1, 0, 1, None]
-    label_list = ['Moving Avg.', r'Binomial $p$', r'COM-Binomial $p$', r'COM-Binomial $\nu$', r'Beta-Binomial $\pi$', r'Beta-Binomial $\rho$', 'Avg. Corr.']
-    file_name_prefix_list = ['moving_avg', 'binom_p', 'comb_p', 'comb_nu', 'betabinom_pi', 'betabinom_rho', 'corr_avg']
-    for measure, index, label,file_name_prefix in zip(measure_list,index_list,label_list,file_name_prefix_list):
+def plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, measure_list, index_list, label_list, reparametrise_list, file_name_prefix_list):
+    """
+    For plotting the average of measures across trials. Loops through all those lists.
+    Arguments:  h5_file_list, list of str
+                title, str,
+                file_name_suffix, str, for every file
+                stim_times, start and end time of stimuli
+                measure_list, list of str
+                index_list, index into the measures or not
+                label_list, str, labels,
+                reparametrise_list, list of booleans
+                file_name_prefix_list, list of str
+    Returns:    Nothing
+    """
+    for measure, index, label, reparametrise, file_name_prefix in zip(measure_list,index_list,label_list,reparametrise_list,file_name_prefix_list):
         plt.figure(figsize=(10,4))
-        comh.plotAverageMeasure(h5_file_list, args.region, measure, index=index, stim_times=stim_times, label=label, title=title)
+        comh.plotAverageMeasure(h5_file_list, args.region, measure, index=index, stim_times=stim_times, label=label, title=title, reparametrise=reparametrise)
         save_dir = os.path.join(image_dir, 'Averaging_measurements_across_trials', args.region, str(int(1000*args.bin_width)) + 'ms', measure)
         os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-        save_name = os.path.join(save_dir, file_name_prefix + '_all_stimulated_trials.png')
+        save_name = os.path.join(save_dir, file_name_prefix + file_name_suffix)
         plt.savefig(save_name)
         print(dt.datetime.now().isoformat() + ' INFO: ' + 'Saved: ' + save_name)
         plt.close('all')
-    
-# plt.figure(figsize=(10,4))
-# comh.plotAverageMeasure(h5_file_list, args.region, 'binom_params', index=None, stim_times=stim_times, label=r'Binomial $p$', title=title)
-# save_dir = os.path.join(image_dir, 'Averaging_measurements_across_trials', args.region, str(int(1000*args.bin_width)) + 'ms', 'binom_params')
-# os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-# save_name = os.path.join(save_dir, 'binom_p_all_stimulated_trials.png')
-# plt.savefig(save_name)
-# plt.close('all')
-# plt.figure(figsize=(10,4))
-# comh.plotAverageMeasure(h5_file_list, args.region, 'comb_params', index=0, stim_times=stim_times, label=r'COM-Binomial $p$', title=title)
-# save_dir = os.path.join(image_dir, 'Averaging_measurements_across_trials', args.region, str(int(1000*args.bin_width)) + 'ms', 'comb_p')
-# os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-# save_name = os.path.join(save_dir, 'comb_p_all_stimulated_trials.png')
-# plt.savefig(save_name)
-# plt.close('all')
-# plt.figure(figsize=(10,4))
-# comh.plotAverageMeasure(h5_file_list, args.region, 'comb_params', index=1, stim_times=stim_times, label=r'COM-Binomial $\nu$', title=title)
-# save_dir = os.path.join(image_dir, 'Averaging_measurements_across_trials', args.region, str(int(1000*args.bin_width)) + 'ms', 'comb_nu')
-# os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-# save_name = os.path.join(save_dir, 'comb_nu_all_stimulated_trials.png')
-# plt.savefig(save_name)
-# plt.close('all')
-# plt.figure(figsize=(10,4))
-# comh.plotAverageMeasure(h5_file_list, args.region, 'betabinom_ab', index=0, stim_times=stim_times, label=r'Beta-Binomial $\pi$', reparametrise=True, title=title)
-# save_dir = os.path.join(image_dir, 'Averaging_measurements_across_trials', args.region, str(int(1000*args.bin_width)) + 'ms', 'betabinom_pi')
-# os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-# save_name = os.path.join(save_dir, 'betabinom_pi_all_stimulated_trials.png')
-# plt.savefig(save_name)
-# plt.close('all')
-# plt.figure(figsize=(10,4))
-# comh.plotAverageMeasure(h5_file_list, args.region, 'betabinom_ab', index=1, stim_times=stim_times, label=r'Beta-Binomial $\rho$', reparametrise=True, title=title)
-# save_dir = os.path.join(image_dir, 'Averaging_measurements_across_trials', args.region, str(int(1000*args.bin_width)) + 'ms', 'betabinom_rho')
-# os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-# save_name = os.path.join(save_dir, 'betabinom_rho_all_stimulated_trials.png')
-# plt.savefig(save_name)
-# plt.close('all')
+    return None
 
+if not args.debug:
+    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
+    stim_info, stim_ids = comh.loadStimulusInfo(mat_dir)
 
-# TODO Consolidate into a 4 loop running over a few 5 element lists
+    ##### Average across all stimulated trials ##################
+    h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
+    title = args.region.capitalize().replace('_', ' ') + ', Num Trials=' + str(len(h5_file_list)) + ' All stimulated trials'
+    file_name_suffix = '_all_stimulated_trials.png'
+    trial_info = stim_info.loc[comh.getTrialIndexFromH5File(h5py.File(h5_file_list[0],'r'))]
+    stim_times = [trial_info['stim_starts'], trial_info['stim_stops']]
+    measure_list = ['moving_avg', 'corr_avg', 'binom_params', 'comb_params', 'comb_params', 'betabinom_ab', 'betabinom_ab']
+    index_list = [None, None, None, 0, 1, 0, 1]
+    label_list = ['Moving Avg.', 'Avg. Corr.', r'Binomial $p$', r'COM-Binomial $p$', r'COM-Binomial $\nu$', r'Beta-Binomial $\pi$', r'Beta-Binomial $\rho$']
+    reparametrise_list = [False, False, False, False, False, True, True]
+    file_name_prefix_list = ['moving_avg', 'corr_avg', 'binom_p', 'comb_p', 'comb_nu', 'betabinom_pi', 'betabinom_rho']
+    plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, measure_list, index_list, label_list, reparametrise_list, file_name_prefix_list)
+
+    ######## Average across all unstimulated trials ##########
+    h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
+    title = args.region.capitalize().replace('_', ' ') + ', Num Trials=' + str(len(h5_file_list)) + ' All unstimulated trials'
+    file_name_suffix = '_all_unstimulated_trials.png'
+    trial_info = stim_info.loc[comh.getTrialIndexFromH5File(h5py.File(h5_file_list[0],'r'))]
+    stim_times = [trial_info['stim_starts'], trial_info['stim_stops']]
+    plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, measure_list, index_list, label_list, reparametrise_list, file_name_prefix_list) 
+
+    ################# Plotting Trial summaries ###################
+    h5_file_list = comh.getFileListFromTrialIndices(h5_dir, list(range(170)), args.bin_width, args.window_size)
+    save_dir = os.path.join(image_dir, 'Trial_summaries', args.region, str(int(1000*args.bin_width)) + 'ms')
+    os.makedirs(save_dir) if not os.path.exists(save_dir) else None
+    for h5_file_name in h5_file_list:
+        h5_file = h5py.File(h5_file_name, 'r')
+        comh.plotTrialSummary(h5_file, args.region, stim_info)
+        save_name = os.path.join(save_dir, 'trial_summary_' + str(comh.getTrialIndexFromH5File(h5_file)) + '.png')
+        plt.savefig(save_name)
+        plt.close('all')
+    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Trial summaries complete: ' + save_dir)
+         

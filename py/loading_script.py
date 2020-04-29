@@ -39,70 +39,18 @@ import ConwayMaxwellBinomial as comb
 
 print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
 cell_info = comh.loadCellInfo(csv_dir)
-stim_info, stim_ids = comh.loadStimulusInfo(mat_dir)
-adj_cell_ids = comh.getRandomSubsetOfCells(cell_info, args.num_cells)
-print(dt.datetime.now().isoformat() + ' INFO: ' + 'Loading spike time dictionary...')
-spike_time_dict = comh.loadSpikeTimeDict(adj_cell_ids, posterior_dir, frontal_dir, cell_info)
-region_to_spike_time_dict = comh.divideSpikeTimeDictByRegion(spike_time_dict,cell_info)
-print(dt.datetime.now().isoformat() + ' INFO: ' + 'Loaded.')
-bin_width, window_size = [args.bin_width, args.window_size]
-region=args.region
-h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
-trial_info = stim_info.loc[comh.getTrialIndexFromH5File(h5py.File(h5_file_list[0],'r'))]
-stim_times = [trial_info['stim_starts'], trial_info['stim_stops']]
-plt.figure()
-comh.plotAverageMeasure(h5_file_list, args.region, 'moving_avg', index=None, stim_times=stim_times, label='Moving Avg.')
-plt.figure()
-comh.plotAverageMeasure(h5_file_list, args.region, 'binom_params', index=None, stim_times=stim_times, label=r'Binomial $p$')
-plt.figure()
-comh.plotAverageMeasure(h5_file_list, args.region, 'comb_params', index=0, stim_times=stim_times, label=r'COM-Binomial $p$')
-plt.figure()
-comh.plotAverageMeasure(h5_file_list, args.region, 'comb_params', index=1, stim_times=stim_times, label=r'COM-Binomial $\nu$')
-plt.figure()
-comh.plotAverageMeasure(h5_file_list, args.region, 'betabinom_ab', index=0, stim_times=stim_times, label=r'Beta-Binomial $\pi$', reparametrise=True)
-plt.figure()
-comh.plotAverageMeasure(h5_file_list, args.region, 'betabinom_ab', index=1, stim_times=stim_times, label=r'Beta-Binomial $\rho$', reparametrise=True)
-plt.show(block=False)
-
-# need a 'get file list from trial indices' function.
-# need a quick way to measure correlations :( 
-
-###############################################################################
-##################### DEMO STARTS HERE ########################################
-###############################################################################
-
-if not args.debug:
-    interval_start_time = stim_info.loc[0]['stim_starts'] - 0.5
-    interval_end_time = stim_info.loc[2]['stim_stops'] + 0.5
-    bin_width = args.bin_width
-    bin_borders, region_to_active_cells = comh.getNumberOfActiveCellsByRegion(interval_start_time, interval_end_time, bin_width, region_to_spike_time_dict)
-    
-    num_active_cells_binned = region_to_active_cells.get(args.region)
-    total_cells = len(region_to_spike_time_dict.get(args.region))
-    fitted_binom = comh.fitBinomialDistn(num_active_cells_binned, total_cells)
-    fitted_binom_log_like = fitted_binom.logpmf(num_active_cells_binned).sum()
-    fitted_betabinom = comh.easyLogLikeFit(betabinom, num_active_cells_binned, [1.0, 1.0], [(np.finfo(float).resolution, None), (np.finfo(float).resolution, None)], total_cells)
-    fitted_betabinom_log_like = fitted_betabinom.logpmf(num_active_cells_binned).sum()
-    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Fitting Conway-Maxwell-binomial distribution...')
-    fitted_comb_params = comb.estimateParams(total_cells, num_active_cells_binned, [0.5, 1.0])
-    fitted_comb = comb.ConwayMaxwellBinomial(fitted_comb_params[0], fitted_comb_params[1], total_cells)
-    fitted_comb_log_like = -comb.conwayMaxwellNegLogLike(fitted_comb_params, total_cells, num_active_cells_binned)
-    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Fitted.')
-    plt.figure(figsize=(5,4))
-    comh.plotNumActiveCellsByTimeByRegion(bin_borders, {args.region.capitalize():region_to_active_cells.get(args.region)}, stim_starts=stim_info.stim_starts[:3].values, stim_stops=stim_info.stim_stops[:3].values)
-    comh.plotNumActiveCellsByTimeByRegion(bin_borders[50:-49], {'Moving avg.':comh.movingAverage(region_to_active_cells.get(args.region),n=100)})
-    plt.figure()
-    comh.plotCompareDataFittedDistn(num_active_cells_binned, [fitted_binom, fitted_betabinom, fitted_comb], distn_label=['Binomial PMF', 'Beta-Binomial PMF', 'COM-Binomial PMF'], title='Fitted distns, region = ' + args.region.capitalize())
-    plt.show(block=False)
-    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Binomial log likelihood: ' + str(fitted_binom_log_like.round(2)))
-    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Beta-binomial log likelihood: ' + str(fitted_betabinom_log_like.round(2)))
-    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Conway-Maxwell-Binomial log likelihood: ' + str(fitted_comb_log_like.round(2)))
-
-    spike_time_dict, bin_width, region, read_start, read_stop, stim_start, stim_stop, stim_id = region_to_spike_time_dict.get('thalamus'), 0.001, 'thalamus', stim_info.loc[0,'read_starts'], stim_info.loc[0,'read_stops'], stim_info.loc[0,'stim_starts'], stim_info.loc[0,'stim_stops'], stim_info.loc[0,'stim_ids']
-
-##############################################################################
-################## PROCESSING h5 FILES #######################################
-##############################################################################
-
-# TODO  Function for rolling over 100ms windows.
-#       Save as hdf5 files. One per stimulus per bin_width value.
+h5_file_list = comh.getFileListFromTrialIndices(h5_dir, list(range(170)), bin_width=0.001, window_size=100)
+regions=['thalamus','v1','striatum','motor_cortex','hippocampus']
+relevant_h5_files = []
+relevant_regions = []
+for h5_file_name in h5_file_list:
+    h5_file = h5py.File(h5_file_name, 'r')
+    for region in regions:
+        binom_log_like = h5_file.get(region).get('binom_log_like')
+        betabinom_log_like = h5_file.get(region).get('betabinom_log_like')
+        comb_log_like = h5_file.get(region).get('comb_log_like')
+        winning_distns_for_region_file = np.argmax([binom_log_like, betabinom_log_like, comb_log_like], axis=0)
+        if np.any(winning_distns_for_region_file != 2):
+            relevant_h5_files.append(h5_file_name)
+            relevant_regions.append(region)
+            
