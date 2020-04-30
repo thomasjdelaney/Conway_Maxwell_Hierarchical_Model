@@ -81,7 +81,7 @@ if not args.debug:
     plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, measure_list, index_list, label_list, reparametrise_list, file_name_prefix_list)
 
     ######## Average across all unstimulated trials ##########
-    h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
+    h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] == 17].index.values, args.bin_width, args.window_size)
     title = args.region.capitalize().replace('_', ' ') + ', Num Trials=' + str(len(h5_file_list)) + ' All unstimulated trials'
     file_name_suffix = '_all_unstimulated_trials.png'
     trial_info = stim_info.loc[comh.getTrialIndexFromH5File(h5py.File(h5_file_list[0],'r'))]
