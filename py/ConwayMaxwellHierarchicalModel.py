@@ -265,6 +265,7 @@ def getTrialMeasurements(num_active_cells_binned, spike_count_array, is_stimulat
     num_windows = window_inds.shape[0]
     windowed_active_cells = num_active_cells_binned[window_inds]
     windowed_spike_counts = spike_count_array[:,window_inds].reshape((num_windows, num_cells, window_size))
+    moving_avg_activity_by_cell = (spike_count_array[:,window_inds] > 0).mean(axis=2)
     moving_avg = windowed_active_cells.mean(axis=1)
     moving_var = windowed_active_cells.var(axis=1)
     all_stimulated = is_stimulated[window_inds].all(axis=1)
@@ -284,7 +285,7 @@ def getTrialMeasurements(num_active_cells_binned, spike_count_array, is_stimulat
     binom_log_like = np.array([binom.logpmf(fc, num_cells, p).sum() for fc,p in zip(windowed_active_cells, binom_params)])
     betabinom_log_like = np.array([betabinom.logpmf(fc, num_cells, p[0], p[1]).sum() for fc,p in zip(windowed_active_cells, betabinom_ab)])
     comb_log_like = -np.array([comb.conwayMaxwellNegLogLike(p, num_cells, fc) for fc,p in zip(windowed_active_cells, comb_params)])
-    return moving_avg, moving_var, corr_avg, all_stimulated, any_stimulated, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like
+    return moving_avg_activity_by_cell, moving_avg, moving_var, corr_avg, all_stimulated, any_stimulated, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like
 
 def isStimulatedBins(bin_borders, stim_start, stim_stop):
     """
