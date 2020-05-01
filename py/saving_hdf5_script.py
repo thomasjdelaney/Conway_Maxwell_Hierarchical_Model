@@ -70,7 +70,7 @@ def saveMeasurementsForAllTrials(bin_width, stim_info, region_to_spike_time_dict
             moving_avg_activity_by_cell, moving_avg, moving_var, corr_avg, all_stimulated, any_stimulated, binom_params, binom_log_like, betabinom_ab, betabinom_log_like, comb_params, comb_log_like = comh.getTrialMeasurements(regional_active_cells_binned, regional_spike_count_array, is_stimulated, window_inds, region_to_num_cells.get(region), window_size=window_size, window_skip=window_skip)
             regional_group = trial_bin_width_file.create_group(region)
             regional_group.create_dataset('num_cells',data=region_to_num_cells.get(region))
-            regional_group.create_dataset('cell_list',data=list(region_to_spike_time_dict.keys()))
+            regional_group.create_dataset('cell_list',data=np.array(list(region_to_spike_time_dict.keys())))
             regional_group.create_dataset('num_active_cells_binned',data=regional_active_cells_binned)
             regional_group.create_dataset('region',data=region)
             regional_group.create_dataset('moving_avg_activity_by_cell',data=moving_avg_activity_by_cell)
