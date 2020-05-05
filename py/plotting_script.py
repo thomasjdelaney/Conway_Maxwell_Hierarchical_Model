@@ -13,11 +13,10 @@ from scipy.optimize import minimize
 from multiprocessing import Pool
 
 parser = argparse.ArgumentParser(description='For loading in the functions and loading the cell info.')
-parser.add_argument('-n', '--num_cells', help='Number of cells to use.', default=100, type=int)
 parser.add_argument('-b', '--bin_width', help='Time bin with to use (in seconds).', default=0.001, type=float)
 parser.add_argument('-r', '--region', help='The region to use for any ad hoc plotting.', default='thalamus', type=str)
 parser.add_argument('-w', '--window_size', help='The number of bins to use for fitting.', default=100, type=int)
-parser.add_argument('-s', '--window_skip', help='The number of bins between fitting windows.', default=10, type=int)
+parser.add_argument('-t', '--plot_trial_summaries', help='Flag to plot the trial summaries, or skip them.', default=False, action='store_true')
 parser.add_argument('-d', '--debug', help='Enter debug mode.', default=False, action='store_true')
 args = parser.parse_args()
 
@@ -73,11 +72,11 @@ if not args.debug:
     file_name_suffix = '_all_stimulated_trials.png'
     trial_info = stim_info.loc[comh.getTrialIndexFromH5File(h5py.File(h5_file_list[0],'r'))]
     stim_times = [trial_info['stim_starts'], trial_info['stim_stops']]
-    measure_list = ['moving_avg', 'corr_avg', 'binom_params', 'comb_params', 'comb_params', 'betabinom_ab', 'betabinom_ab']
-    index_list = [None, None, None, 0, 1, 0, 1]
-    label_list = ['Moving Avg.', 'Avg. Corr.', r'Binomial $p$', r'COM-Binomial $p$', r'COM-Binomial $\nu$', r'Beta-Binomial $\pi$', r'Beta-Binomial $\rho$']
+    measure_list = ['moving_avg', 'moving_var', 'corr_avg', 'binom_params', 'comb_params', 'comb_params', 'betabinom_ab', 'betabinom_ab']
+    index_list = [None, None, None, None, 0, 1, 0, 1]
+    label_list = ['Moving Avg.', 'Moving Var.', 'Avg. Corr.', r'Binomial $p$', r'COM-Binomial $p$', r'COM-Binomial $\nu$', r'Beta-Binomial $\pi$', r'Beta-Binomial $\rho$']
     reparametrise_list = [False, False, False, False, False, True, True]
-    file_name_prefix_list = ['moving_avg', 'corr_avg', 'binom_p', 'comb_p', 'comb_nu', 'betabinom_pi', 'betabinom_rho']
+    file_name_prefix_list = ['moving_avg', 'moving_var', 'corr_avg', 'binom_p', 'comb_p', 'comb_nu', 'betabinom_pi', 'betabinom_rho']
     plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, measure_list, index_list, label_list, reparametrise_list, file_name_prefix_list)
 
     ######## Average across all unstimulated trials ##########
@@ -89,14 +88,16 @@ if not args.debug:
     plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, measure_list, index_list, label_list, reparametrise_list, file_name_prefix_list) 
 
     ################# Plotting Trial summaries ###################
-    h5_file_list = comh.getFileListFromTrialIndices(h5_dir, list(range(170)), args.bin_width, args.window_size)
-    save_dir = os.path.join(image_dir, 'Trial_summaries', args.region, str(int(1000*args.bin_width)) + 'ms')
-    os.makedirs(save_dir) if not os.path.exists(save_dir) else None
-    for h5_file_name in h5_file_list:
-        h5_file = h5py.File(h5_file_name, 'r')
-        comh.plotTrialSummary(h5_file, args.region, stim_info)
-        save_name = os.path.join(save_dir, 'trial_summary_' + str(comh.getTrialIndexFromH5File(h5_file)) + '.png')
-        plt.savefig(save_name)
-        plt.close('all')
-    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Trial summaries complete: ' + save_dir)
+    if args.plot_trial_summaries:
+        print(dt.datetime.now().isoformat() + ' INFO: ' + 'Plotting trial summaries...')
+        h5_file_list = comh.getFileListFromTrialIndices(h5_dir, list(range(170)), args.bin_width, args.window_size)
+        save_dir = os.path.join(image_dir, 'Trial_summaries', args.region, str(int(1000*args.bin_width)) + 'ms')
+        os.makedirs(save_dir) if not os.path.exists(save_dir) else None
+        for h5_file_name in h5_file_list:
+            h5_file = h5py.File(h5_file_name, 'r')
+            comh.plotTrialSummary(h5_file, args.region, stim_info)
+            save_name = os.path.join(save_dir, 'trial_summary_' + str(comh.getTrialIndexFromH5File(h5_file)) + '.png')
+            plt.savefig(save_name)
+            plt.close('all')
+        print(dt.datetime.now().isoformat() + ' INFO: ' + 'Trial summaries complete: ' + save_dir)
          
