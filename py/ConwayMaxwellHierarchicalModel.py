@@ -470,6 +470,37 @@ def plotTrialSummary(h5_file, region, stim_info):
     plt.tight_layout()
     return None
 
+def getXAxisTimeAdjustor(h5_file_name):
+    """
+    For getting the time axis and time adjustor given a file.
+    Arguments:  h5_file_name, string
+    Returns:    x_axis, numpy array (float) (num_windows)
+                time_adjustor, float
+    """
+    x_axis = h5py.File(h5_file_name,'r').get('window_centre_times')[()]
+    time_adjustor = x_axis[0]
+    return x_axis - time_adjustor, time_adjustor
+
+def collectMeasureFromFiles(h5_file_list, region, measure, index, reparametrise):
+    """
+    For collecting a given measure from each of the files in the list.
+    Arguments:  h5_file_list, list of strings
+                region, string
+                measure, string
+                index, should we index into the measure, or not.
+    Returns:    array of the measures
+    """
+    measures = []
+    for h5_file_name in h5_file_list:
+        h5_file = h5py.File(h5_file_name, 'r')
+        trial_measure = h5_file.get(region).get(measure)[()]
+        if reparametrise & (measure=='betabinom_ab'):
+            trial_measure = reparametriseBetaBinomial(trial_measure)
+        trial_measure = trial_measure[:,index] if index != None else trial_measure
+        measures.append(trial_measure)
+        h5_file.close()
+    return np.array(measures)
+
 def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[], colour='blue', reparametrise=False, title='', **kwargs):
     """
     For plotting the average of a given measure taking the average across the given files.
@@ -482,20 +513,10 @@ def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[],
                 reparametrise, bool, whether to reparametrise the betabinomial paramters or not.
     Returns:    None
     """
-    x_axis = h5py.File(h5_file_list[0],'r').get('window_centre_times')[()]
-    time_adjustor = x_axis[0]
-    x_axis = x_axis - time_adjustor
-    measures = []
-    for h5_file_name in h5_file_list:
-        h5_file = h5py.File(h5_file_name, 'r')
-        trial_measure = h5_file.get(region).get(measure)[()]
-        if reparametrise & (measure=='betabinom_ab'):
-            trial_measure = reparametriseBetaBinomial(trial_measure)
-        trial_measure = trial_measure[:,index] if index != None else trial_measure
-        measures.append(trial_measure)
-        plt.plot(x_axis, trial_measure, color=colour, alpha=0.05)
-        h5_file.close()
-    plt.plot(x_axis, np.array(measures).mean(axis=0), color=colour, **kwargs)
+    x_axis, time_adjustor = getXAxisTimeAdjustor(h5_file_list[0])
+    measures = collectMeasureFromFiles(h5_file_list, region, measure, index, reparametrise)
+    plt.plot(x_axis, trial_measures.T, color=colour, alpha=0.05)
+    plt.plot(x_axis, measures.mean(axis=0), color=colour, **kwargs)
     lower_bound = np.min(np.min(measures),0)
     if stim_times != []: # include the grey shaded area to indicate the stimulus 
         plotShadedStimulus([stim_times[0]]-time_adjustor, [stim_times[1]]-time_adjustor, plt.ylim()[1], lower_bound=lower_bound)
@@ -504,5 +525,40 @@ def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[],
     plt.xlabel('Time (s)', fontsize='large')
     plt.title(title, fontsize='large') if title != '' else None
     plt.legend(fontsize='large') if 'label' in kwargs else None
+    return None
+
+def plotFanoFactors(h5_file_list, region, stim_times=[], colour='blue', is_tight_layout=True, use_title=False):
+    """
+    For plotting the Fano factor for active cells, and the mean fano factor across cells. Making this to compare to Churchland et al. 2010. 
+        'Stimulus onset quenches neural variability: a widespread cortical phenomenon'
+    Arguments:  h5_file_list, list of strings
+                region, string 
+                stim_times, the stimulus, 
+                colour, str, 
+    Return:     Nothing
+    """
+    x_axis, time_adjustor = getXAxisTimeAdjustor(h5_file_list[0])
+    moving_avg_activity_by_cell = collectMeasureFromFiles(h5_file_list, region, 'moving_avg_activity_by_cell', None, False)
+    variances = np.var(moving_avg_activity_by_cell,axis=0) # taking variances across trials, dims are now (num cells, num windows)
+    means = np.mean(moving_avg_activity_by_cell, axis=0) # taking means across trials, dims are now (num cells, num windows)
+    fanos = variances/means
+    contains_nans = np.isnan(fanos).any(axis=1) # the fano factors for these cells contain nans
+    full_fanos = fanos[~contains_nans,:]
+    num_cells, num_windows = full_fanos.shape
+    mean_full_fanos = full_fanos.mean(axis=0)
+    std_err_full_fanos = full_fanos.std(axis=0)/np.sqrt(num_cells)
+    lower_bound = np.min(np.min(mean_full_fanos - std_err_full_fanos),0)
+    plt.plot(x_axis, mean_full_fanos, color=colour)
+    plt.fill_between(x_axis, mean_full_fanos - std_err_full_fanos, mean_full_fanos + std_err_full_fanos, color=colour, alpha=0.25, label='Std. Err.')
+    plot_peak = np.max(mean_full_fanos + std_err_full_fanos)
+    plt.ylim((lower_bound, plot_peak))
+    if stim_times != []: # include the grey shaded area to indicate the stimulus 
+        plotShadedStimulus([stim_times[0]]-time_adjustor, [stim_times[1]]-time_adjustor, plt.ylim()[1], lower_bound=lower_bound)
+    plt.ylabel('Fano Factor', fontsize='large')
+    plt.xlabel('Time (s)', fontsize='large')
+    plt.xlim((x_axis[0], x_axis[-1]))
+    plt.legend(fontsize='large')
+    plt.title('Region = ' + region + ', Num fully responsive cells = ' + str(num_cells), fontsize='large') if use_title else None
+    plt.tight_layout()
     return None
 
