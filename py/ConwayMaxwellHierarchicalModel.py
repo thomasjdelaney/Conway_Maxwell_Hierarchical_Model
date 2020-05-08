@@ -515,7 +515,7 @@ def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[],
     """
     x_axis, time_adjustor = getXAxisTimeAdjustor(h5_file_list[0])
     measures = collectMeasureFromFiles(h5_file_list, region, measure, index, reparametrise)
-    plt.plot(x_axis, trial_measures.T, color=colour, alpha=0.05)
+    plt.plot(x_axis, measures.T, color=colour, alpha=0.05)
     plt.plot(x_axis, measures.mean(axis=0), color=colour, **kwargs)
     lower_bound = np.min(np.min(measures),0)
     if stim_times != []: # include the grey shaded area to indicate the stimulus 
