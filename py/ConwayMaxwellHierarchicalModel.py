@@ -527,7 +527,7 @@ def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[],
     plt.legend(fontsize='large') if 'label' in kwargs else None
     return None
 
-def plotFanoFactors(h5_file_list, region, stim_times=[], colour='blue', is_tight_layout=True, use_title=False):
+def plotCellFanoFactors(h5_file_list, region, stim_times=[], colour='blue', is_tight_layout=True, use_title=False, window_size=100):
     """
     For plotting the Fano factor for active cells, and the mean fano factor across cells. Making this to compare to Churchland et al. 2010. 
         'Stimulus onset quenches neural variability: a widespread cortical phenomenon'
@@ -535,12 +535,16 @@ def plotFanoFactors(h5_file_list, region, stim_times=[], colour='blue', is_tight
                 region, string 
                 stim_times, the stimulus, 
                 colour, str, 
+                is_tight_layout, use the tight layout
+                use_title,
+                window_size, int
     Return:     Nothing
     """
     x_axis, time_adjustor = getXAxisTimeAdjustor(h5_file_list[0])
     moving_avg_activity_by_cell = collectMeasureFromFiles(h5_file_list, region, 'moving_avg_activity_by_cell', None, False)
-    variances = np.var(moving_avg_activity_by_cell,axis=0) # taking variances across trials, dims are now (num cells, num windows)
-    means = np.mean(moving_avg_activity_by_cell, axis=0) # taking means across trials, dims are now (num cells, num windows)
+    total_activity_by_cell = (window_size*moving_avg_activity_by_cell).astype(int)
+    variances = np.var(total_activity_by_cell,axis=0) # taking variances across trials, dims are now (num cells, num windows)
+    means = np.mean(total_activity_by_cell, axis=0) # taking means across trials, dims are now (num cells, num windows)
     fanos = variances/means
     contains_nans = np.isnan(fanos).any(axis=1) # the fano factors for these cells contain nans
     full_fanos = fanos[~contains_nans,:]
@@ -559,6 +563,6 @@ def plotFanoFactors(h5_file_list, region, stim_times=[], colour='blue', is_tight
     plt.xlim((x_axis[0], x_axis[-1]))
     plt.legend(fontsize='large')
     plt.title('Region = ' + region + ', Num fully responsive cells = ' + str(num_cells), fontsize='large') if use_title else None
-    plt.tight_layout()
+    plt.tight_layout() if is_tight_layout else None
     return None
 

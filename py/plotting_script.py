@@ -59,7 +59,7 @@ def plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, 
         save_dir = os.path.join(image_dir, 'Averaging_measurements_across_trials', args.region, str(int(1000*args.bin_width)) + 'ms', measure)
         os.makedirs(save_dir) if not os.path.exists(save_dir) else None
         save_name = os.path.join(save_dir, file_name_prefix + file_name_suffix)
-        plt.savefig(save_name)
+        plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg'))
         print(dt.datetime.now().isoformat() + ' INFO: ' + 'Saved: ' + save_name)
         plt.close('all')
     return None
@@ -100,7 +100,7 @@ if not args.debug:
             h5_file = h5py.File(h5_file_name, 'r')
             comh.plotTrialSummary(h5_file, args.region, stim_info)
             save_name = os.path.join(save_dir, 'trial_summary_' + str(comh.getTrialIndexFromH5File(h5_file)) + '.png')
-            plt.savefig(save_name)
+            plt.savefig(save_name);plt.savefig(save_name.replace('.png', '.svg'));
             plt.close('all')
         print(dt.datetime.now().isoformat() + ' INFO: ' + 'Trial summaries complete: ' + save_dir)
      
@@ -109,9 +109,11 @@ if not args.debug:
         h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
         trial_info = stim_info.loc[comh.getTrialIndexFromH5File(h5py.File(h5_file_list[0],'r'))]
         stim_times = [trial_info['stim_starts'], trial_info['stim_stops']]
-        comh.plotFanoFactors(h5_file_list, args.region, stim_times=stim_times, colour='blue', is_tight_layout=True, use_title=True)
+        plt.figure(figsize=(5.5,4))
+        comh.plotCellFanoFactors(h5_file_list, args.region, stim_times=stim_times, colour='blue', is_tight_layout=True, use_title=True, window_size=args.window_size)
         save_name = os.path.join(image_dir, 'Fano_factors', args.region, str(int(1000*args.bin_width)) + 'ms', args.region + '_' + str(int(1000*args.bin_width)) + 'ms' + '_fano_factor.png')
         os.makedirs(os.path.dirname(save_name)) if not os.path.exists(os.path.dirname(save_name)) else None
         plt.savefig(save_name)
         save_name = os.path.join(image_dir, 'Fano_factors', args.region, str(int(1000*args.bin_width)) + 'ms', args.region + '_' + str(int(1000*args.bin_width)) + 'ms' + '_fano_factor.svg')
         plt.savefig(save_name)
+        print(dt.datetime.now().isoformat() + ' INFO: ' + 'Fano factor plots saved: ' + save_name)
