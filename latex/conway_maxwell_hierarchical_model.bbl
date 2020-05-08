@@ -1,48 +1,54 @@
 \begin{thebibliography}{9}
 
-  \begin{altham}
+  \bibitem{altham}
     Patricia M. E. Altham,
     \emph{Two Generalizations of the Binomial Distribution}.
     Journal of the Royal Statistical Society 27,
     162-167,
     (1978)
 
+  \bibitem{churchland}
+    Mark M Churchland, Byron M Yu, John P Cunningham, Leo P Sugrue, Marlene R Cohen, Greg S Corrado, William T Newsome, Andrew M Clark, Paymon Hosseini, Benjamin B Scott, David C Bradley, Matthew A Smith, Adam Kohn, J Anthony Movshon, Katherine M Armstrong, Tirin Moore, Steve W Chang, Lawrence H Snyder, Stephen G Lisberger, Nicholas J Priebe, Ian M Finn, David Ferster, Stephen I Ryu, Gopal Santhanam, Maneesh Sahani, Krishna V Shenoy,
+    \emph{Stimulus onset quenches neural variability: A widespread cortical phenomenon.}
+    Nature Neuroscience 13,
+    369-378,
+    (2010)
 
-  \begin{daly}
+  \bibitem{daly}
     Fraser Daly, Robert E. Gaunt,
     \emph{The Conway-Maxwell-Poisson distribution: Distributional theory and approximation.}
     ALEA 13,
     635-658,
     (2016)
 
-  \begin{kadane_2016}
+  \bibitem{kadane_2016}
     Joseph B. Kadane,
     \emph{Sums of Possibly Associated Bernoulli Variables: The Conway–Maxwell-Binomial Distribution.}
     Bayesian Analysis 11,
     403-420,
     (2016)
 
-  \begin{kadane_2006}
+  \bibitem{kadane_2006}
     Joseph B. Kadane, Galit Shmueli, Thomas P. Minka, Sharad Borle, Peter Boatwright,
     \emph{Conjugate Analysis of the Conway-Maxwell-Poisson Distribution.}
     Bayesian Analysis 1,
     (2006)
 
-  \begin{prentice}
+  \bibitem{prentice}
     R. L. Prentice,
     \emph{Binary Regression Using an Extended Beta-Binomial Distribution, With Discussion of Correlation Induced by Covariate Measurement Errors.}
     Journal of American Statistical Association 81,
     321-327,
     (1986)
 
-  \begin{shmueli}
+  \bibitem{shmueli}
     Galit Shmueli, Thomas P. Minka, Joseph B. Kadane, Sharad Borle, Peter Boatwright,
     \emph{A useful distribution for fitting discrete data: revival of the Conway–Maxwell–Poisson distribution.}
     Applied Statistics 54,
     127-142,
     (2005)
 
-  \begin{verducci}
+  \bibitem{verducci}
     Joseph S. Verducci,  Michael E. Mack, Morris H. DeGroot,
     \emph{Estimating multiple rater agreement for a rare diagnosis.}
     Journal of Multivariate Analysis 27,
