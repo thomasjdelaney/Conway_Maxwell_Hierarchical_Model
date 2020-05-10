@@ -75,10 +75,44 @@
 
 Details from data cortex lab here.
 
+  \subsection{Experimental protocol}
+
 \section{Methods}
 Details about all kinds of things here.
     \subsection{Binning data}
-    We binned the spiking data into very small bins.
+    We converted the spike times for each cell into spike counts by putting the spike times into time bins of a given `width' (in seconds). We used time bins of $1$ms, $5$ms, and $10$ms. We used different time bin widths to assess the impact of choosing a bin width. 
+
+
+    \subsection{Number of \textit{active} neurons}
+    To count the number of active neurons in each neuronal ensemble, we split the time interval for each trial into bins of a given width. We counted the number of spikes fired by each cell in each bin. If a cell fired \textit{at least} one spike in a given bin, we regarded that cell as active in that bin. We recorded the number of active cells in every bin, and we recorded each cell's individual spike counts.
+    
+    It should be noted that when we used a bin width of $1$ms, the maximum number of spikes in any bin was $1$. For the wider time bins, some bins had spike counts greater than $1$. Consequently when using a bin width of $1$ms, the number of active neurons and the total spike count of a given bin were identical. But for wider bin widths, the total spike count was greater than the number of active neurons. 
+
+    So for the $1$ms bin width, the activity of a neuron and the number of spikes fired by that neuron in any bin can be modelled as a Bernoulli variable. But for wider time bins, only the activity can be modelled in this way.
+
+    \subsection{Moving windows for measurements}
+
+    When taking measurements (e.g. moving average over the number of active neurons) or fitting distributions (eg. the beta binomial distribution) we slid a window containing a certain number of bins across the data, and made our measurements at each window position. For example, when analysing $1$ms bin data, we used a window containing $100$ bins, and we slid the window across the time interval for each trial moving $10$ bins at a time. So that for $2560$ms of data, we made $246$ measurements.
+
+    For the $5$ms bin width data, we used windows containing $40$ bins, and slid the window $2$ bins at a time when taking measurements.
+
+    For the $10$ms bin width data, we used windows containing $40$ bins, and slid the window $1$ bin at a time when taking measurements.
+    
+    By continuing to use windows containing $40$ bins, we retained statistical power but sacrificed the number of measurements taken. 
+
+    \subsection{Fano factor}
+
+    \subsection{Probability Distributions suitable for modelling ensemble activty}
+
+      \subsubsection{Binomial distribution}
+
+      \subsubsection{Beta-binomial distribution}
+
+      \subsubsection{Conway-Maxwell-binomial distribution}
+
+    \subsection{Goodness-of-fit}
+
+    \subsection{Spike count correlations}
 
 \section{Discussion}
 Point out that the Conway-Maxwell-binomial distribution could be used to measure activity and association without having to sort the voltage traces into spikes. That does defeat the purpose slightly, however. 
