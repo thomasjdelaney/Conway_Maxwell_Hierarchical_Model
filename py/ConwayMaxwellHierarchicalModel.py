@@ -5,7 +5,7 @@ import datetime as dt
 import matplotlib.pyplot as plt
 from scipy.io import loadmat
 from multiprocessing import Pool
-from scipy.stats import binom, betabinom
+from scipy.stats import binom, betabinom, mannwhitneyu
 from scipy.optimize import minimize
 
 sys.path.append(os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Binomial_Distribution'))
@@ -358,6 +358,42 @@ def reparametriseBetaBinomial(ab_params):
     ab_params = np.array([ab_params]) if ab_params.ndim == 1 else ab_params
     return np.array([[alpha/(alpha+beta),1/(alpha+beta+1)] for alpha,beta in ab_params])
 
+def getFanoFactorFromFiles(h5_file_list, region, window_size):
+    """
+    Get the fano factors for each cell given the trials in the file list, and using the given region.
+    Arguments:  h5_file_list, list of str
+                region, str
+                window_size, int, 
+    Returns:    fano factors, numpy array (float) (num cells, num windows)
+    """
+    moving_avg_activity_by_cell = collectMeasureFromFiles(h5_file_list, region, 'moving_avg_activity_by_cell', None, False)
+    total_activity_by_cell = (window_size*moving_avg_activity_by_cell).astype(int)
+    variances = np.var(total_activity_by_cell,axis=0) # taking variances across trials, dims are now (num cells, num windows)
+    means = np.mean(total_activity_by_cell, axis=0) # taking means across trials, dims are now (num cells, num windows)
+    fanos = variances/means
+    contains_nans = np.isnan(fanos).any(axis=1) # the fano factors for these cells contain nans
+    full_fanos = fanos[~contains_nans,:]
+    return full_fanos
+
+def runFanoStatTest(full_fanos, h5_file_name, region):
+    """
+    For running the Mann-Whitney U test on chosen unstimulated and stimulated samples  of the fano factors.
+    Arguments:  full_fanos, numpy array (float)
+                h5_file_name, name of a file for getting the stimulated and unstimulated indices
+                region, str
+    Returns:    p_value, the p-value resulting from the Mann-Whitney U test
+                last_unstimulated_window_ind, int
+                first_all_stimulated_window_ind, int
+    """
+    h5_file = h5py.File(h5_file_name,'r')
+    last_unstimulated_window_ind = h5_file.get(region).get('any_stimulated')[()].nonzero()[0].min()-1
+    first_all_stimulated_window_ind = h5_file.get(region).get('all_stimulated')[()].nonzero()[0].min()
+    h5_file.close()
+    last_unstimulated_fanos = full_fanos[:,last_unstimulated_window_ind]
+    first_all_stimulated_fanos = full_fanos[:,first_all_stimulated_window_ind]
+    mw_res = mannwhitneyu(last_unstimulated_fanos, first_all_stimulated_fanos)
+    return mw_res, last_unstimulated_window_ind, first_all_stimulated_window_ind
+
 ##########################################################
 ########## PLOTTING FUNCTIONS ############################
 ##########################################################
@@ -541,13 +577,7 @@ def plotCellFanoFactors(h5_file_list, region, stim_times=[], colour='blue', is_t
     Return:     Nothing
     """
     x_axis, time_adjustor = getXAxisTimeAdjustor(h5_file_list[0])
-    moving_avg_activity_by_cell = collectMeasureFromFiles(h5_file_list, region, 'moving_avg_activity_by_cell', None, False)
-    total_activity_by_cell = (window_size*moving_avg_activity_by_cell).astype(int)
-    variances = np.var(total_activity_by_cell,axis=0) # taking variances across trials, dims are now (num cells, num windows)
-    means = np.mean(total_activity_by_cell, axis=0) # taking means across trials, dims are now (num cells, num windows)
-    fanos = variances/means
-    contains_nans = np.isnan(fanos).any(axis=1) # the fano factors for these cells contain nans
-    full_fanos = fanos[~contains_nans,:]
+    full_fanos = getFanoFactorFromFiles(h5_file_list, region, window_size)
     num_cells, num_windows = full_fanos.shape
     mean_full_fanos = full_fanos.mean(axis=0)
     std_err_full_fanos = full_fanos.std(axis=0)/np.sqrt(num_cells)

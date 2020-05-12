@@ -72,10 +72,14 @@
 \section{Discussion}
 
 \section{Data}
+We used data collected by Nick Steinmetz and his lab `CortexLab at UCL' \cite{steinmetz}. The data can be found online \footnote{\url{http://data.cortexlab.net/dualPhase3/}} and are free to use for research purposes.
 
-Details from data cortex lab here.
+Two `Phase3' Neuropixels \cite{jun} electrode arrays were inserted into the brain of an awake, head-fixed mouse for about an hour and a half. These electrode arrays recorded $384$ channels of neural data each at $30$kHz and  less than $7$µV RMS noise levels. The sites are densely spaced in a `continuous tetrode'-like arrangement, and a whole array records from a $3.8$mm span of the brain. One array recorded from visual cortex, hippocampus,  and thalamus, the other array recorded from motor cortex and striatum. The data were spike-sorted automatically by Kilosort and manually by N. Steinmetz using Phy. In total 831 well-isolated individual neurons were identified.
 
   \subsection{Experimental protocol}
+  The mouse was shown a visual stimulus on three monitors placed around the mouse at right angles to each other, covering about $\pm 135$ degrees azimuth and $\pm 35$ degrees elevation.
+
+  The stimulus consisted of sine-wave modulated full-field drifting gratings of 16 drift directions ($0^{\circ}, 22.5^{\circ}, \dots, 337.5^{\circ}$) with $2$Hz temporal frequency and $0.08$ cycles/degree spatial frequency displayed for $2$ seconds plus a blank condition. Each of these $17$ conditions were presented $10$ times in a random order across $170$ different trials. There were therefore $160$ trials with a visual stimulus present, and $10$ trials without a visual stimulus.
 
 \section{Methods}
 Details about all kinds of things here.
@@ -100,11 +104,28 @@ Details about all kinds of things here.
     
     By continuing to use windows containing $40$ bins, we retained statistical power but sacrificed the number of measurements taken. 
 
-    \subsection{Fano factor}
+    \subsection{Fano factor}\label{sec:faco_factor}
+    The \textit{Fano factor} of a random variable is defined as the ratio of the variable's variance to its mean. 
+    \begin{align}\label{eq:fano_factor}
+      F = \frac{\sigma^2}{\mu}
+    \end{align}
+    We measured the Fano factor of the spike count of a given cell by measuring the mean and variance of the spike count across trials, and taking the ratio of those two quantities. When calculated in this way the Fano factor can be used as a measure of neural variability.  This is similar to the calculation used in \cite{churchland}.
 
     \subsection{Probability Distributions suitable for modelling ensemble activty}
 
       \subsubsection{Binomial distribution}
+      The binomial distribution is a discrete probability distribution that can be thought of as the sum of independent Bernoulli random variables, each with the same probability of success. The binomial distribution has two parameters, $n$, the number of Bernoulli variables, and $p$, the probability of success for each of these variables. A random variable with the binomial distribution can take values  from $\lbrace 0, \dots, n \rbrace$. The probability mass function is
+      \begin{align}\label{eq:binomial_pmf}
+        P(k;n,p) = \binom{n}{k} p^k (1-p)^{n-k}
+      \end{align}
+
+      If we have $N$ samples from a binomial distribution and we know $n$ but want to estimate $p$, we can maximise the log likelihood function
+      \begin{align}\label{eq:binomial_log_like}
+        L(p) & = \log P(\lbrace k_1, \dots, k_N \rbrace; n,p) \\ 
+            & = \sum_{i=1}^N \log \binom{n}{k_i} + k_i \log p + (n-k_i)\log(1-p) 
+      \end{align}
+
+      If we do not know $n$ there is no closed form way way of maximising this equation. Therefore the binomial distribution is generally only used in cases where we do know $n$. Consequently, the distribution is practically a one parameter distribution.
 
       \subsubsection{Beta-binomial distribution}
 

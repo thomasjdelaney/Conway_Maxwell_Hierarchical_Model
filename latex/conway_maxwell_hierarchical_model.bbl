@@ -21,6 +21,13 @@
     635-658,
     (2016)
 
+  \bibitem{jun}
+    James J. Jun, Nicholas A. Steinmetz, Joshua H. Siegle, Daniel J. Denman 5, Marius Bauza, Brian Barbarits, Albert K. Lee, Costas A. Anastassiou, Alexandru Andrei, Çağatay Aydın, Mladen Barbic, Timothy J. Blanche, Vincent Bonin, João Couto, Barundeb Dutta, Sergey L. Gratiy, Diego A. Gutnisky, Michael Häusser, Bill Karsh, Peter Ledochowitsch, Carolina Mora Lopez, Catalin Mitelut, Silke Musa, Michael Okun, Marius Pachitariu, Jan Putzeys, P. Dylan Rich, Cyrille Rossant, Wei-lung Sun, Karel Svoboda, Matteo Carandini, Kenneth D. Harris, Christof Koch, John O’Keefe, Timothy D. Harris,
+    \emph{Fully integrated silicon probes for high-density recording of neural activity.}
+    Nature 551,
+    232-236,
+    (2017)
+
   \bibitem{kadane_2016}
     Joseph B. Kadane,
     \emph{Sums of Possibly Associated Bernoulli Variables: The Conway–Maxwell-Binomial Distribution.}
@@ -47,6 +54,13 @@
     Applied Statistics 54,
     127-142,
     (2005)
+
+  \bibitem{steinmetz}
+    Nick Steinmetz, Matteo Carandini, Kenneth D. Harris,
+    \emph{"Single Phase3" and "Dual Phase3" Neuropixels Datasets.} 
+    figshare, 
+    Dataset: https://doi.org/10.6084/m9.figshare.7666892.v2
+    (2019)
 
   \bibitem{verducci}
     Joseph S. Verducci,  Michael E. Mack, Morris H. DeGroot,

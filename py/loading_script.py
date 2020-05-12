@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import matplotlib.pyplot as plt
-from scipy.stats import binom, betabinom
+from scipy.stats import binom, betabinom, mannwhitneyu
 from scipy.optimize import minimize
 from multiprocessing import Pool
 
@@ -39,18 +39,9 @@ import ConwayMaxwellBinomial as comb
 
 print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
 cell_info = comh.loadCellInfo(csv_dir)
-h5_file_list = comh.getFileListFromTrialIndices(h5_dir, list(range(170)), bin_width=0.001, window_size=100)
-regions=['thalamus','v1','striatum','motor_cortex','hippocampus']
-relevant_h5_files = []
-relevant_regions = []
-for h5_file_name in h5_file_list:
-    h5_file = h5py.File(h5_file_name, 'r')
-    for region in regions:
-        binom_log_like = h5_file.get(region).get('binom_log_like')
-        betabinom_log_like = h5_file.get(region).get('betabinom_log_like')
-        comb_log_like = h5_file.get(region).get('comb_log_like')
-        winning_distns_for_region_file = np.argmax([binom_log_like, betabinom_log_like, comb_log_like], axis=0)
-        if np.any(winning_distns_for_region_file != 2):
-            relevant_h5_files.append(h5_file_name)
-            relevant_regions.append(region)
-            
+stim_info, stim_ids = comh.loadStimulusInfo(mat_dir)
+h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
+full_fanos = comh.getFanoFactorFromFiles(h5_file_list, args.region, args.window_size)
+p_value, last_unstimulated_window_ind, first_all_stimulated_window_ind = comh.runFanoStatTest(full_fanos, h5_file_list[0], args.region)
+num_cells, num_windows = full_fanos.shape
+
