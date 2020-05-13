@@ -42,6 +42,6 @@ cell_info = comh.loadCellInfo(csv_dir)
 stim_info, stim_ids = comh.loadStimulusInfo(mat_dir)
 h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
 full_fanos = comh.getFanoFactorFromFiles(h5_file_list, args.region, args.window_size)
-p_value, last_unstimulated_window_ind, first_all_stimulated_window_ind = comh.runFanoStatTest(full_fanos, h5_file_list[0], args.region)
+p_value, last_unstimulated_window_time, first_all_stimulated_window_time, last_unstimulated_window_ind, first_all_stimulated_window_ind = comh.runFanoStatTest(full_fanos, h5_file_list[0], args.region)
 num_cells, num_windows = full_fanos.shape
 

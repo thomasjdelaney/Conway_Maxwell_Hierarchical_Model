@@ -382,17 +382,18 @@ def runFanoStatTest(full_fanos, h5_file_name, region):
                 h5_file_name, name of a file for getting the stimulated and unstimulated indices
                 region, str
     Returns:    p_value, the p-value resulting from the Mann-Whitney U test
-                last_unstimulated_window_ind, int
-                first_all_stimulated_window_ind, int
+                last_unstimulated_window_time, int
+                first_all_stimulated_window_time, int
     """
     h5_file = h5py.File(h5_file_name,'r')
+    window_centres = h5_file.get('window_centre_times')[()]
     last_unstimulated_window_ind = h5_file.get(region).get('any_stimulated')[()].nonzero()[0].min()-1
     first_all_stimulated_window_ind = h5_file.get(region).get('all_stimulated')[()].nonzero()[0].min()
     h5_file.close()
     last_unstimulated_fanos = full_fanos[:,last_unstimulated_window_ind]
     first_all_stimulated_fanos = full_fanos[:,first_all_stimulated_window_ind]
     mw_res = mannwhitneyu(last_unstimulated_fanos, first_all_stimulated_fanos)
-    return mw_res, last_unstimulated_window_ind, first_all_stimulated_window_ind
+    return mw_res, window_centres[last_unstimulated_window_ind], window_centres[first_all_stimulated_window_ind], last_unstimulated_window_ind, first_all_stimulated_window_ind
 
 ##########################################################
 ########## PLOTTING FUNCTIONS ############################
@@ -578,21 +579,30 @@ def plotCellFanoFactors(h5_file_list, region, stim_times=[], colour='blue', is_t
     """
     x_axis, time_adjustor = getXAxisTimeAdjustor(h5_file_list[0])
     full_fanos = getFanoFactorFromFiles(h5_file_list, region, window_size)
+    p_value, last_unstimulated_window_time, first_all_stimulated_window_time, last_unstimulated_window_ind, first_all_stimulated_window_ind = runFanoStatTest(full_fanos, h5_file_list[0], region)
+    last_unstimulated_window_time, first_all_stimulated_window_time = [last_unstimulated_window_time, first_all_stimulated_window_time] - time_adjustor
     num_cells, num_windows = full_fanos.shape
     mean_full_fanos = full_fanos.mean(axis=0)
     std_err_full_fanos = full_fanos.std(axis=0)/np.sqrt(num_cells)
     lower_bound = np.min(np.min(mean_full_fanos - std_err_full_fanos),0)
     plt.plot(x_axis, mean_full_fanos, color=colour)
     plt.fill_between(x_axis, mean_full_fanos - std_err_full_fanos, mean_full_fanos + std_err_full_fanos, color=colour, alpha=0.25, label='Std. Err.')
+    sig_indicator_y = np.min((mean_full_fanos - std_err_full_fanos)[[last_unstimulated_window_ind, first_all_stimulated_window_ind]])
+    sig_indicator_y = sig_indicator_y - sig_indicator_y*0.03
+    sig_indicator_base = sig_indicator_y - sig_indicator_y*0.02
+    sig_indicator_text = sig_indicator_base - sig_indicator_base*0.005
+    sig_indicator_x = [last_unstimulated_window_time, first_all_stimulated_window_time]
+    plt.plot([sig_indicator_x[0], sig_indicator_x[0], sig_indicator_x[1], sig_indicator_x[1]], [sig_indicator_y, sig_indicator_base, sig_indicator_base, sig_indicator_y], lw=1.5, c='k')
+    plt.text(np.mean(sig_indicator_x), sig_indicator_text, '***', ha='center', va='top', color='k')
     plot_peak = np.max(mean_full_fanos + std_err_full_fanos)
-    plt.ylim((lower_bound, plot_peak))
+    plt.ylim((plt.ylim()[0], plot_peak))
     if stim_times != []: # include the grey shaded area to indicate the stimulus 
-        plotShadedStimulus([stim_times[0]]-time_adjustor, [stim_times[1]]-time_adjustor, plt.ylim()[1], lower_bound=lower_bound)
-    plt.ylabel('Fano Factor', fontsize='large')
-    plt.xlabel('Time (s)', fontsize='large')
+        plotShadedStimulus([stim_times[0]]-time_adjustor, [stim_times[1]]-time_adjustor, plt.ylim()[1], lower_bound=plt.ylim()[0])
+    plt.ylabel('Mean Fano Factor', fontsize='x-large')
+    plt.xlabel('Time (s)', fontsize='x-large')
     plt.xlim((x_axis[0], x_axis[-1]))
     plt.legend(fontsize='large')
-    plt.title('Region = ' + region + ', Num fully responsive cells = ' + str(num_cells), fontsize='large') if use_title else None
+    plt.title(region.replace('_', ' ').capitalize() + ', n = ' + str(num_cells) + ' cells', fontsize='large') if use_title else None
     plt.tight_layout() if is_tight_layout else None
     return None
 
