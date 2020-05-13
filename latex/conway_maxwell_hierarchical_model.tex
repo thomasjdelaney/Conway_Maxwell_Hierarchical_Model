@@ -113,23 +113,54 @@ Details about all kinds of things here.
 
     \subsection{Probability Distributions suitable for modelling ensemble activty}
 
+    We present here three different probability that could be suitable to model the number of active neurons in an ensemble. Each distribution has a the set $\lbrace 0, \dots, n \rbrace$ as its support, where $n$ is the number of neurons in the ensemble. These are simple distributions with either two or three parameters each. However, we regard $n$ as known when using these distributions for modelling, so in effect each distribution has either one or two free parameters.
+
       \subsubsection{Binomial distribution}
-      The binomial distribution is a discrete probability distribution that can be thought of as the sum of independent Bernoulli random variables, each with the same probability of success. The binomial distribution has two parameters, $n$, the number of Bernoulli variables, and $p$, the probability of success for each of these variables. A random variable with the binomial distribution can take values  from $\lbrace 0, \dots, n \rbrace$. The probability mass function is
+      The binomial distribution is a two parameter discrete probability distribution that can be thought of as the sum of independent Bernoulli random trials, each with the same probability of success. The parameters of the binomial distribution are  $n$, the number of Bernoulli trials, and $0 \leq p \leq 1$, the probability of success for each of these trials. A random variable with the binomial distribution can take values from $\lbrace 0, \dots, n \rbrace$. The probability mass function of the distribution is
       \begin{align}\label{eq:binomial_pmf}
         P(k;n,p) = \binom{n}{k} p^k (1-p)^{n-k}
       \end{align}
 
-      If we have $N$ samples from a binomial distribution and we know $n$ but want to estimate $p$, we can maximise the log likelihood function
+      %%%%%%%%%% MAY REMOVE THIS PART %%%%%%%%%%%%%%
+      If we have $N$ independent samples from a binomial distribution and we know $n$ but want to estimate $p$, we can maximise the log likelihood function
       \begin{align}\label{eq:binomial_log_like}
         L(p) & = \log P(\lbrace k_1, \dots, k_N \rbrace; n,p) \\ 
             & = \sum_{i=1}^N \log \binom{n}{k_i} + k_i \log p + (n-k_i)\log(1-p) 
       \end{align}
 
       If we do not know $n$ there is no closed form way way of maximising this equation. Therefore the binomial distribution is generally only used in cases where we do know $n$. Consequently, the distribution is practically a one parameter distribution.
+      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+      As model for the activity of a neuronal ensemble, the main problem with the binomial distribution is that it treats each neuron, represented as a Bernoulli trial, as independent. It is well know that neurons are not independent, and that correlated behaviour between neurons is vital for representing sensory information. The binomial distribution falls short in this area, but it is useful as performance benchmark when  assessing the performance of other models.
 
       \subsubsection{Beta-binomial distribution}
+      The beta distribution is the conjugate distribution of the binomial distribution. The Beta-binomial distribution is the combination of the beta distribution and the binomial distribution, in that the probability of success for the binomial distribution is sampled from the beta distribution. This allows the beta-binomial distribution to capture some over dispersion relative to the binomial distribution.
+
+      The beta-binomial distribution is a three parameter distribution, $n$ the number of Bernoulli trials, and $\alpha \in \mathbb{R}_{>0}$ and $\beta \in \mathbb{R}_{>0}$ the shape parameters of the beta distribution. The probability mass function for the beta-binomial distribution is
+      \begin{align}\label{eq:betabinomial_pdf}
+        P(k;n, \alpha, \beta) = \binom{n}{k}\frac{B(k + \alpha, n - k + \beta)}{B(\alpha, \beta)}
+      \end{align}
+      where $B(\alpha, \beta)$ is the beta function.
+
+      This probability distribution can be reparametrised in a number of ways. One of which defines new parameters $\pi$ and $\rho$ by
+      \begin{align}\label{eq:betabinomial_reparam}
+        \pi &= \frac{\alpha}{\alpha + \beta} \\
+        \rho &= \frac{1}{\alpha + \beta + 1}
+      \end{align}
+      This reparametrisation is useful because $\pi$ acts as a location parameter analogous to the $p$ parameter of a binomial distribution. A value of $\rho > 0$ indicates overdispersion relative to a binomial distribution.
 
       \subsubsection{Conway-Maxwell-binomial distribution}
+      The Conway-Maxwell-binomial distribution (COMB distribution) is a three parameter generalisation of the binomial distribution that allows for over dispersion and under dispersion relative to the binomial distribution. The parameters of the distribution are $n$ the number of Bernoulli trials, $0 \leq p \leq 1$, the location parameter, and $\nu \in \mathbb{R}$ the shape parameter.  
+
+      The probability mass function of the COMB distribution is 
+      \begin{align}\label{eq:comb_pmf}
+        P(k;n,p,\nu) = \frac{1}{S(n,p,\nu)}\binom{n}{k}^{\nu} p^k (1-p)^{n-k}
+      \end{align}
+      where 
+      \begin{align}\label{eq:comb_norm}
+        S(n,p,\nu) = \sum_{j=0}^n \binom{n}{k}^{\nu} p^j (1-p)^{n-j}
+      \end{align}
+      The only difference between this PMF and the PMF for the standard binomial is the introduction of $\nu$ and the consequent introduction of the normalising function $S(n,p,\nu)$.
 
     \subsection{Goodness-of-fit}
 

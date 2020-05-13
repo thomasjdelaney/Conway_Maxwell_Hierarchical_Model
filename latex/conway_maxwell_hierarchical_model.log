@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2019.2.24)  11 MAY 2020 18:14
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2019.2.24)  13 MAY 2020 19:09
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -552,9 +552,9 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <14.4> not available
 (Font)              Font shape `OT1/ptm/b/it' tried instead on input line 90.
  [3]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 116.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 118.
  [4]
-[5] (./conway_maxwell_hierarchical_model.bbl
+[5] [6] [7] (./conway_maxwell_hierarchical_model.bbl
 (/usr/share/texlive/texmf-dist/tex/latex/ucs/data/uni-1.def
 File: uni-1.def 2013/05/13 UCS: Unicode data U+0100..U+01FF
 )
@@ -566,7 +566,7 @@ Underfull \hbox (badness 2547) in paragraph at lines 32--37
  Bayesian Anal-y-sis 11, 403-420,
  []
 
-[6]
+[8]
 Underfull \hbox (badness 10000) in paragraph at lines 59--64
 []\OT1/ptm/m/n/10.95 Nick Stein-metz, Mat-teo Caran-dini, Ken-neth D. Har-ris, 
 \OT1/ptm/m/it/10.95 "Sin-gle
@@ -579,22 +579,22 @@ m/n/10.95 figshare, Dataset:
  []
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 144.
- [7]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 144.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 175.
+ [9]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 175.
  (./conway_maxwell_hierarchical_model.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 144.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 144.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 175.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 175.
 Package rerunfilecheck Info: File `conway_maxwell_hierarchical_model.out' has n
 ot changed.
 (rerunfilecheck)             Checksum: EB40AAD1FBD453F83C50BA6AFFDEC9D2;1123.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 144.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 175.
  ) 
 Here is how much of TeX's memory you used:
- 10639 strings out of 492701
- 155217 string characters out of 6134504
- 252247 words of memory out of 5000000
- 14305 multiletter control sequences out of 15000+600000
+ 10650 strings out of 492701
+ 155362 string characters out of 6134504
+ 252475 words of memory out of 5000000
+ 14309 multiletter control sequences out of 15000+600000
  38281 words of font info for 88 fonts, out of 8000000 for 9000
  1137 hyphenation exceptions out of 8191
  42i,9n,43p,836b,613s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -608,17 +608,18 @@ onts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/ty
 pe1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
 onts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb><
-/usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/t
-exlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-di
-st/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1
-/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr
-i8a.pfb>
-Output written on conway_maxwell_hierarchical_model.pdf (7 pages, 142710 bytes)
+m/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/
+msbm10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></
+usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/te
+xlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dis
+t/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri
+8a.pfb>
+Output written on conway_maxwell_hierarchical_model.pdf (9 pages, 151803 bytes)
 .
 PDF statistics:
- 192 PDF objects out of 1000 (max. 8388607)
- 168 compressed objects within 2 object streams
- 41 named destinations out of 1000 (max. 500000)
+ 210 PDF objects out of 1000 (max. 8388607)
+ 183 compressed objects within 2 object streams
+ 48 named destinations out of 1000 (max. 500000)
  137 words of extra memory for PDF output out of 10000 (max. 10000000)
 
