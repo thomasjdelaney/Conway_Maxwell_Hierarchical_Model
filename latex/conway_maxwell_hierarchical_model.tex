@@ -113,10 +113,10 @@ Details about all kinds of things here.
 
     \subsection{Probability Distributions suitable for modelling ensemble activty}
 
-    We present here three different probability that could be suitable to model the number of active neurons in an ensemble. Each distribution has a the set $\lbrace 0, \dots, n \rbrace$ as its support, where $n$ is the number of neurons in the ensemble. These are simple distributions with either two or three parameters each. However, we regard $n$ as known when using these distributions for modelling, so in effect each distribution has either one or two free parameters.
+    We present here three different probability distributions that could be suitable to model the number of active neurons in an ensemble. Each distribution has the set $\lbrace 0, \dots, n \rbrace$ as its support, where $n$ is the number of neurons in the ensemble. These are simple distributions with either two or three parameters each. However, we regard $n$ as known when using these distributions for modelling, so in effect each distribution has either one or two free parameters.
 
       \subsubsection{Binomial distribution}
-      The binomial distribution is a two parameter discrete probability distribution that can be thought of as the sum of independent Bernoulli random trials, each with the same probability of success. The parameters of the binomial distribution are  $n$, the number of Bernoulli trials, and $0 \leq p \leq 1$, the probability of success for each of these trials. A random variable with the binomial distribution can take values from $\lbrace 0, \dots, n \rbrace$. The probability mass function of the distribution is
+      The binomial distribution is a two parameter discrete probability distribution that can be thought of as the sum of independent Bernoulli random trials, each with the same probability of success. The parameters of the binomial distribution are $n$, the number of Bernoulli trials, and $0 \leq p \leq 1$, the probability of success for each of these trials. A random variable with the binomial distribution can take values from $\lbrace 0, \dots, n \rbrace$. The probability mass function of the distribution is
       \begin{align}\label{eq:binomial_pmf}
         P(k;n,p) = \binom{n}{k} p^k (1-p)^{n-k}
       \end{align}
@@ -131,10 +131,10 @@ Details about all kinds of things here.
       If we do not know $n$ there is no closed form way way of maximising this equation. Therefore the binomial distribution is generally only used in cases where we do know $n$. Consequently, the distribution is practically a one parameter distribution.
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-      As model for the activity of a neuronal ensemble, the main problem with the binomial distribution is that it treats each neuron, represented as a Bernoulli trial, as independent. It is well know that neurons are not independent, and that correlated behaviour between neurons is vital for representing sensory information. The binomial distribution falls short in this area, but it is useful as performance benchmark when  assessing the performance of other models.
+      As model for the activity of a neuronal ensemble, the main problem with the binomial distribution is that it treats each neuron, represented as a Bernoulli trial, as independent. It is well know that neurons are not independent, and that correlated behaviour between neurons is vital for representing sensory information. The binomial distribution falls short in this regard, but it is useful as performance benchmark when assessing the performance of other models.
 
       \subsubsection{Beta-binomial distribution}
-      The beta distribution is the conjugate distribution of the binomial distribution. The Beta-binomial distribution is the combination of the beta distribution and the binomial distribution, in that the probability of success for the binomial distribution is sampled from the beta distribution. This allows the beta-binomial distribution to capture some over dispersion relative to the binomial distribution.
+      The beta distribution is the conjugate distribution of the binomial distribution. The beta-binomial distribution is the combination of the beta distribution and the binomial distribution, in that the probability of success for the binomial distribution is sampled from the beta distribution. This allows the beta-binomial distribution to capture some over dispersion relative to the binomial distribution.
 
       The beta-binomial distribution is a three parameter distribution, $n$ the number of Bernoulli trials, and $\alpha \in \mathbb{R}_{>0}$ and $\beta \in \mathbb{R}_{>0}$ the shape parameters of the beta distribution. The probability mass function for the beta-binomial distribution is
       \begin{align}\label{eq:betabinomial_pdf}
@@ -147,12 +147,28 @@ Details about all kinds of things here.
         \pi &= \frac{\alpha}{\alpha + \beta} \\
         \rho &= \frac{1}{\alpha + \beta + 1}
       \end{align}
-      This reparametrisation is useful because $\pi$ acts as a location parameter analogous to the $p$ parameter of a binomial distribution. A value of $\rho > 0$ indicates overdispersion relative to a binomial distribution.
+      This reparametrisation is useful because $\pi$ acts as a location parameter analogous to the $p$ parameter of a binomial distribution. A value of $\rho > 0$ indicates over-dispersion relative to a binomial distribution.
+
+      As a model for the activity of a neuronal ensemble, the beta-binomial distribution is more suitable than a binomial distribution because the over-dispersion of the beta-binomial distribution can be used to model positive association between the neurons. An extreme example of this over-dispersion/positive association can be seen in figure \ref{fig:betabinomial_big_overdispersion}. In this figure, the neurons are positively associated and so tend to take the same value, consequently the probability mass of the beta-binomial distribution builds up close to $k=0$ and $k=n$. It is worth noting that the location parameter for each distribution has the same value, $p=\pi=0.5$. 
+
+      \begin{figure}[h]
+        \begin{subfigure}[h]{0.5\linewidth}
+          \includegraphics[width=\textwidth]{figures/betabinomial_overdispersion.eps}
+          \caption{$n=100, p=0.5, \alpha=\beta=10$}
+          \label{fig:betabinomial_overdispersion}
+        \end{subfigure}
+        \begin{subfigure}[h]{0.5\linewidth}
+          \includegraphics[width=\textwidth]{figures/betabinomial_big_overdispersion.eps}
+          \caption{$n=100, p=0.5, \alpha=\beta=0.3$}
+          \label{fig:betabinomial_big_overdispersion}
+        \end{subfigure}
+        \caption{Figures showing the over-dispersion possible for a beta-binomial distribution relative to a binomial distribution. Parameters are shown in the captions. }
+      \end{figure}
 
       \subsubsection{Conway-Maxwell-binomial distribution}
-      The Conway-Maxwell-binomial distribution (COMB distribution) is a three parameter generalisation of the binomial distribution that allows for over dispersion and under dispersion relative to the binomial distribution. The parameters of the distribution are $n$ the number of Bernoulli trials, $0 \leq p \leq 1$, the location parameter, and $\nu \in \mathbb{R}$ the shape parameter.  
+      The Conway-Maxwell-binomial distribution (COMb distribution) is a three parameter generalisation of the binomial distribution that allows for over dispersion and under dispersion relative to the binomial distribution. The parameters of the distribution are $n$ the number of Bernoulli trials, $0 \leq p \leq 1$, the location parameter, and $\nu \in \mathbb{R}$ the shape parameter.  
 
-      The probability mass function of the COMB distribution is 
+      The probability mass function of the COMb distribution is 
       \begin{align}\label{eq:comb_pmf}
         P(k;n,p,\nu) = \frac{1}{S(n,p,\nu)}\binom{n}{k}^{\nu} p^k (1-p)^{n-k}
       \end{align}
@@ -160,7 +176,16 @@ Details about all kinds of things here.
       \begin{align}\label{eq:comb_norm}
         S(n,p,\nu) = \sum_{j=0}^n \binom{n}{k}^{\nu} p^j (1-p)^{n-j}
       \end{align}
-      The only difference between this PMF and the PMF for the standard binomial is the introduction of $\nu$ and the consequent introduction of the normalising function $S(n,p,\nu)$.
+      The only difference between this PMF and the PMF for the standard binomial is the introduction of $\nu$ and the consequent introduction of the normalising function $S(n,p,\nu)$. 
+
+      Indeed, if $\nu = 1$ the COMb distribution is identical to the binomial distribution with the same values for $n$ and $p$. 
+
+      If $\nu < 1$ the COMb distribution will exhibit over-dispersion relative to the binomial distribution. If $p=0.5$ and $\nu=0$ the COMb distribution is the discrete uniform distribution, and if $\nu < 0$ the mass of the COMb distribution will tend to build up near $k=0$ and $k=n$. % POSITIVE ASSOCIATION
+
+      If $\nu > 1$ the COMb distribution will exhibit under-dispersion relative to the binomial distribution. The larger the value of $\nu$ the more probability mass will build up at $n/2$ for even $n$, or at $\lfloor n/2 \rfloor$ and $\lceil n/2 \rceil$ for odd $n$. % NEGATIVE ASSOCIATION
+
+      % could include figures showing the D_kl between comb distributions and binomial distributions
+
 
     \subsection{Goodness-of-fit}
 
