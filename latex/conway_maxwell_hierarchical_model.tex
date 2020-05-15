@@ -158,12 +158,12 @@ Details about all kinds of things here.
 
       \begin{figure}[h]
         \begin{subfigure}[h]{0.5\linewidth}
-          \includegraphics[width=\textwidth]{figures/betabinomial_overdispersion.eps}
+          \includegraphics[width=\textwidth]{figures/betabinomial_overdispersion.png}
           \caption{$n=100, p=0.5, \alpha=\beta=10$}
           \label{fig:betabinomial_overdispersion}
         \end{subfigure}
         \begin{subfigure}[h]{0.5\linewidth}
-          \includegraphics[width=\textwidth]{figures/betabinomial_big_overdispersion.eps}
+          \includegraphics[width=\textwidth]{figures/betabinomial_big_overdispersion.png}
           \caption{$n=100, p=0.5, \alpha=\beta=0.3$}
           \label{fig:betabinomial_big_overdispersion}
         \end{subfigure}
@@ -183,11 +183,13 @@ Details about all kinds of things here.
       \end{align}
       The only difference between this PMF and the PMF for the standard binomial is the introduction of $\nu$ and the consequent introduction of the normalising function $S(n,p,\nu)$. 
 
-      Indeed, if $\nu = 1$ the COMb distribution is identical to the binomial distribution with the same values for $n$ and $p$.  
+      Indeed, if $\nu = 1$ the COMb distribution is identical to the binomial distribution with the same values for $n$ and $p$. We can see in figure \ref{fig:comb_bin_dkl} that the KL-divergence $D_{KL}(P_{COMb}(n,p,\nu), P_{Bin}(n,p))=0$ along the line where $\nu=1$. 
 
-      If $\nu < 1$ the COMb distribution will exhibit over-dispersion relative to the binomial distribution. If $p=0.5$ and $\nu=0$ the COMb distribution is the discrete uniform distribution, and if $\nu < 0$ the mass of the COMb distribution will tend to build up near $k=0$ and $k=n$. This over-dispersion represents positive association in the Bernoulli variables. 
+      If $\nu < 1$ the COMb distribution will exhibit over-dispersion relative to the binomial distribution. If $p=0.5$ and $\nu=0$ the COMb distribution is the discrete uniform distribution, and if $\nu < 0$ the mass of the COMb distribution will tend to build up near $k=0$ and $k=n$. This over-dispersion represents positive association in the Bernoulli variables. An example of this over-dispersion can be seen in figure \ref{fig:comb_overrdispersion}. 
 
-      If $\nu > 1$ the COMb distribution will exhibit under-dispersion relative to the binomial distribution. The larger the value of $\nu$ the more probability mass will build up at $n/2$ for even $n$, or at $\lfloor n/2 \rfloor$ and $\lceil n/2 \rceil$ for odd $n$. This under-dispersion represents negative association in the Bernoulli variables. 
+      If $\nu > 1$ the COMb distribution will exhibit under-dispersion relative to the binomial distribution. The larger the value of $\nu$ the more probability mass will build up at $n/2$ for even $n$, or at $\lfloor n/2 \rfloor$ and $\lceil n/2 \rceil$ for odd $n$. This under-dispersion represents negative association in the Bernoulli variables. An example of this under-dispersion can be seen in figure \ref{fig:comb_underdispersion}.
+
+      It should be noted that the shape parameter of the COMb distribution, $p$, does not correspond to the mean of the distribution, as is the case for the binomial and beta-binomial distributions. An illustration of this can be seen in figure \ref{fig:comb_skewed}. This is because an interaction between the $p$ and $\nu$ parameters skews the mean. There is no analytical expression for the mean of the COMb distribution.
 
       \begin{center}
         \begin{tabular}[h]{|c|c|c|}
@@ -201,8 +203,33 @@ Details about all kinds of things here.
 
       Since the COMb distribution has the potential to capture positive and negative associatons between the neurons/Bernoulli variables, it should be an excellent candidate for modelling the number of active neurons in a neuronal ensemble.
 
-      % could include figures showing the D_kl between comb distributions and binomial distributions
+      \newpage
 
+      \begin{figure}[h]
+        \begin{subfigure}[h]{0.5\linewidth}
+          \includegraphics[width=\textwidth]{figures/comb_underdispersion.png}
+          \caption{$n=100, p=0.5, \alpha=\beta=10, \nu=2.5$}
+          \label{fig:comb_underdispersion}
+        \end{subfigure}
+        \begin{subfigure}[h]{0.5\linewidth}
+          \includegraphics[width=\textwidth]{figures/comb_overrdispersion.png}
+          \caption{$n=100, p=0.5, \alpha=\beta=0.3, \nu=0.1$}
+          \label{fig:comb_overrdispersion}
+        \end{subfigure}
+        \begin{subfigure}[h]{0.5\linewidth}
+          \includegraphics[width=\textwidth]{figures/comb_skewed.png}
+          \caption{$n=100, p=0.4, \alpha=10, \beta=15, \nu=0.1$}
+          \label{fig:comb_skewed}
+        \end{subfigure}
+        \begin{subfigure}[h]{0.5\linewidth} 
+          \includegraphics[width=\textwidth]{figures/comb_bin_dkl.png}
+          \caption{KL-Divergence as a function of $p$ and $\nu$. $n=100$.}
+          \label{fig:comb_bin_dkl}
+        \end{subfigure}
+        \caption{Figures showing (a) the over-dispersion and (b) under-dispersion permitted by the COMb distribution. (c) illustrates that the shape parameter of the COMb distribution, $p$, does not correspond to the mean of the distribution, as it does for the binomial and beta-binomial distributions. (d) shows a heatmap for the value of the Kullback-Liebler divergence between the COMb distribution and the standard binomial distribution with same value for $n$, as a function of $p$ and $\nu$. Parameters are shown in the captions.}
+      \end{figure}
+    
+      \newpage
 
     \subsection{Goodness-of-fit}
 
