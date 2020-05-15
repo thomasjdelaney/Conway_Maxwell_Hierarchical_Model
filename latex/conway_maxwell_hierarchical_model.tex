@@ -115,8 +115,13 @@ Details about all kinds of things here.
 
     We present here three different probability distributions that could be suitable to model the number of active neurons in an ensemble. Each distribution has the set $\lbrace 0, \dots, n \rbrace$ as its support, where $n$ is the number of neurons in the ensemble. These are simple distributions with either two or three parameters each. However, we regard $n$ as known when using these distributions for modelling, so in effect each distribution has either one or two free parameters.
 
+      \subsubsection{Association}
+      \textit{Association} between random variables is similar to the correlation between random variables but is more general in concept. The correlation is a measure of association; and association doesn't have a mathematical definition like correlation does. Essentially, the association between two random variables is their tendency to take the same or similar values. Positively associated variables tend to take the same value, and negatively associated variables tend to take differnt values. In this research, we work with probability distributions of the number of successes in a set of Bernoulli trials. These Bernoulli variables may or may not be associated. 
+
+      A probability distribution over the number of successes in $n$ Bernoulli trials, where the Bernoulli variables may be associated, could constitute a good model for the number of active neurons in an ensemble of $n$ neurons. 
+
       \subsubsection{Binomial distribution}
-      The binomial distribution is a two parameter discrete probability distribution that can be thought of as the sum of independent Bernoulli random trials, each with the same probability of success. The parameters of the binomial distribution are $n$, the number of Bernoulli trials, and $0 \leq p \leq 1$, the probability of success for each of these trials. A random variable with the binomial distribution can take values from $\lbrace 0, \dots, n \rbrace$. The probability mass function of the distribution is
+      The binomial distribution is a two parameter discrete probability distribution that can be thought of as a probability distribution the number of successes from $n$ independent Bernoulli trials, each with the same probability of success. The parameters of the binomial distribution are $n$, and $0 \leq p \leq 1$, the probability of success for each of these trials. A random variable with the binomial distribution can take values from $\lbrace 0, \dots, n \rbrace$. The probability mass function of the distribution is
       \begin{align}\label{eq:binomial_pmf}
         P(k;n,p) = \binom{n}{k} p^k (1-p)^{n-k}
       \end{align}
@@ -178,11 +183,23 @@ Details about all kinds of things here.
       \end{align}
       The only difference between this PMF and the PMF for the standard binomial is the introduction of $\nu$ and the consequent introduction of the normalising function $S(n,p,\nu)$. 
 
-      Indeed, if $\nu = 1$ the COMb distribution is identical to the binomial distribution with the same values for $n$ and $p$. 
+      Indeed, if $\nu = 1$ the COMb distribution is identical to the binomial distribution with the same values for $n$ and $p$.  
 
-      If $\nu < 1$ the COMb distribution will exhibit over-dispersion relative to the binomial distribution. If $p=0.5$ and $\nu=0$ the COMb distribution is the discrete uniform distribution, and if $\nu < 0$ the mass of the COMb distribution will tend to build up near $k=0$ and $k=n$. % POSITIVE ASSOCIATION
+      If $\nu < 1$ the COMb distribution will exhibit over-dispersion relative to the binomial distribution. If $p=0.5$ and $\nu=0$ the COMb distribution is the discrete uniform distribution, and if $\nu < 0$ the mass of the COMb distribution will tend to build up near $k=0$ and $k=n$. This over-dispersion represents positive association in the Bernoulli variables. 
 
-      If $\nu > 1$ the COMb distribution will exhibit under-dispersion relative to the binomial distribution. The larger the value of $\nu$ the more probability mass will build up at $n/2$ for even $n$, or at $\lfloor n/2 \rfloor$ and $\lceil n/2 \rceil$ for odd $n$. % NEGATIVE ASSOCIATION
+      If $\nu > 1$ the COMb distribution will exhibit under-dispersion relative to the binomial distribution. The larger the value of $\nu$ the more probability mass will build up at $n/2$ for even $n$, or at $\lfloor n/2 \rfloor$ and $\lceil n/2 \rceil$ for odd $n$. This under-dispersion represents negative association in the Bernoulli variables. 
+
+      \begin{center}
+        \begin{tabular}[h]{|c|c|c|}
+          \hline 
+          $\boldsymbol{\nu}$  & \textbf{Relative dispersion}  & \textbf{Associaton between neurons/variables} \\ \hline
+          $<1$                & over                          & positive                                      \\ \hline
+          $0$                 & none                          & none                                          \\ \hline
+          $>1$                & under                         & negative                                      \\ \hline
+        \end{tabular}
+      \end{center}
+
+      Since the COMb distribution has the potential to capture positive and negative associatons between the neurons/Bernoulli variables, it should be an excellent candidate for modelling the number of active neurons in a neuronal ensemble.
 
       % could include figures showing the D_kl between comb distributions and binomial distributions
 

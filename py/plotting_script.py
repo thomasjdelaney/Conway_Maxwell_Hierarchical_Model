@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import binom, betabinom
 from scipy.optimize import minimize
 from multiprocessing import Pool
+from itertools import product
 
 parser = argparse.ArgumentParser(description='For loading in the functions and loading the cell info.')
 parser.add_argument('-b', '--bin_width', help='Time bin with to use (in seconds).', default=0.001, type=float)
@@ -19,6 +20,7 @@ parser.add_argument('-w', '--window_size', help='The number of bins to use for f
 parser.add_argument('-t', '--plot_trial_summaries', help='Flag to plot the trial summaries, or skip them.', default=False, action='store_true')
 parser.add_argument('-a', '--plot_averages', help='Flag to plot the averages across trials', default=False, action='store_true')
 parser.add_argument('-f', '--plot_fano', help='Flag to plot the fano factors.', default=False, action='store_true')
+parser.add_argument('-c', '--compare_dists', help='Flag to plot the distribution comparison plot.', default=False, action='store_true')
 parser.add_argument('-d', '--debug', help='Enter debug mode.', default=False, action='store_true')
 args = parser.parse_args()
 
@@ -33,6 +35,7 @@ h5_dir = os.path.join(proj_dir, 'h5')
 image_dir = os.path.join(proj_dir, 'images')
 posterior_dir = os.path.join(proj_dir, 'posterior')
 frontal_dir = os.path.join(proj_dir, 'frontal')
+fig_dir = os.path.join(proj_dir, 'latex', 'figures')
 
 sys.path.append(py_dir)
 sys.path.append(os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Binomial_Distribution'))
@@ -62,6 +65,61 @@ def plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, 
         plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg'))
         print(dt.datetime.now().isoformat() + ' INFO: ' + 'Saved: ' + save_name)
         plt.close('all')
+    return None
+
+def plotDistributions(distributions, labels, colours, n, use_legend=False):
+    """
+    For plotting comparisons of COMb and binomial and beta-binomial distributions.
+    Arguments:  distributions, list of distributions
+                labels, list of str
+                colours, list of str
+                n, int, number of neurons/bernoulli trials
+    Returns:    nothing
+    """
+    x_range = range(n+1)
+    x_lims=[0,n]
+    for i, (dist, colour, label) in enumerate(zip(distributions, colours, labels)):
+        plt.plot(x_range, dist.pmf(x_range), color=colour, label=label)
+    plt.ylabel('P(k)', fontsize='x-large')
+    plt.xlabel('k', fontsize='x-large')
+    plt.xticks(fontsize='large')
+    plt.yticks(fontsize='large')
+    plt.legend(fontsize='large') if use_legend else None
+    plt.xlim(x_lims)
+    plt.tight_layout()
+    return None
+
+def binCombDkl(n,p,nu):
+    """
+    For calulating D_kl(Comb, bin)
+    Arguments:  n, int
+                p, between 0 and 1
+                nu, float
+    Returns:    the kl divergance
+    """
+    comb_dist = comb.ConwayMaxwellBinomial(p,nu,n)
+    support = range(n+1)
+    expected_value = np.sum([v*np.log(comb.comb(n,k)) for k,v in comb_dist.samp_des_dict.items()])
+    return (nu - 1)*expected_value - np.log(comb_dist.normaliser)
+
+def plotBinCombKLDiv(n):
+    """
+    For plotting the heatmap of the KL divergence between a binomial distribution and a COMb distribution as a function of p and nu
+    Arguments:  n, int
+    Returns:    nothing
+    """
+    possible_p_values = np.linspace(0.0001,0.9999, 101)
+    possible_nu_values = np.linspace(0.5, 2.0, 101)
+    grid_p, grid_nu = np.meshgrid(possible_p_values, possible_nu_values)
+    d_kl_values = np.zeros(grid_p.shape)
+    for i,j in product(range(grid_p.shape[0]), range(grid_p.shape[1])):
+        d_kl_values[i,j] = binCombDkl(n, grid_p[i,j], grid_nu[i,j])
+    plt.contourf(grid_p, grid_nu, d_kl_values, levels=100)
+    plt.xlabel('$p$', fontsize='x-large')
+    plt.ylabel(r'$\nu$', fontsize='x-large')
+    plt.colorbar()
+    plt.title(r'$D_{KL}(COMb, Binomial)$', fontsize='x-large')
+    plt.tight_layout()
     return None
 
 if not args.debug:
@@ -117,3 +175,52 @@ if not args.debug:
         save_name = os.path.join(image_dir, 'Fano_factors', args.region, str(int(1000*args.bin_width)) + 'ms', args.region + '_' + str(int(1000*args.bin_width)) + 'ms' + '_fano_factor.svg')
         plt.savefig(save_name)
         print(dt.datetime.now().isoformat() + ' INFO: ' + 'Fano factor plots saved: ' + save_name)
+
+
+    ################ Comparing distributions #####################
+    if args.compare_dists:
+        print(dt.datetime.now().isoformat() + ' INFO: ' + 'Plotting distribution comparisons...')
+        [n,p,a,b]=100,0.5,10,10
+        plt.figure(figsize=(4,3))
+        plotDistributions([binom(n,p), betabinom(n,a,b)], ['Binom PMF', 'Beta-binom PMF'], ['blue', 'orange'], n, use_legend=True)
+        y_lims = plt.ylim()
+        save_name = os.path.join(fig_dir, 'betabinomial_overdispersion.png')
+        plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg')); plt.savefig(save_name.replace('.png','.eps'))
+        print(dt.datetime.now().isoformat() + ' INFO: ' + 'Beta-binom overdispersion: ' + save_name)
+        plt.close('all')
+        [a,b] = [0.15, 0.15]
+        plt.figure(figsize=(4,3))
+        plotDistributions([binom(n,p), betabinom(n,a,b)], ['Binom PMF', 'Beta-binom PMF'], ['blue', 'orange'], n)
+        plt.ylim(y_lims)
+        save_name = os.path.join(fig_dir, 'betabinomial_big_overdispersion.png')
+        plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg')); plt.savefig(save_name.replace('.png','.eps'))
+        print(dt.datetime.now().isoformat() + ' INFO: ' + 'Beta-binom big overdispersion: ' + save_name)
+        plt.close('all')
+        a,b,nu=10,10,2.5
+        plt.figure(figsize=(4,3))
+        plotDistributions([binom(n,p), betabinom(n,a,b), comb.ConwayMaxwellBinomial(p,nu,n)], ['Binom PMF', 'Beta-binom PMF', 'COMb PMF'], ['blue', 'orange', 'green'], n, use_legend=True)
+        save_name = os.path.join(fig_dir, 'comb_underdispersion.png')
+        plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg')); plt.savefig(save_name.replace('.png','.eps'))
+        print(dt.datetime.now().isoformat() + ' INFO: ' + 'COMb under-dispersion: ' + save_name)
+        plt.close('all')
+        plt.figure(figsize=(4,3))
+        plotBinCombKLDiv(n)
+        save_name = os.path.join(fig_dir, 'comb_bin_dkl.png')
+        plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg')); plt.savefig(save_name.replace('.png','.eps'))
+        print(dt.datetime.now().isoformat() + ' INFO: ' + 'COMb-bin Dkl: ' + save_name)
+        plt.close('all')
+        a,b,nu=10,10,0.1
+        plt.figure(figsize=(4,3))
+        plotDistributions([binom(n,p), betabinom(n,a,b), comb.ConwayMaxwellBinomial(p,nu,n)], ['Binom PMF', 'Beta-binom PMF', 'COMb PMF'], ['blue', 'orange', 'green'], n)
+        save_name = os.path.join(fig_dir, 'comb_overrdispersion.png')
+        plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg')); plt.savefig(save_name.replace('.png','.eps'))
+        print(dt.datetime.now().isoformat() + ' INFO: ' + 'COMb over-dispersion: ' + save_name)
+        plt.close('all')
+        p=0.4; a=10; b = (a/p)*(1-p);
+        plt.figure(figsize=(4,3))
+        plotDistributions([binom(n,p), betabinom(n,a,b), comb.ConwayMaxwellBinomial(p,nu,n)], ['Binom PMF', 'Beta-binom PMF', 'COMb PMF'], ['blue', 'orange', 'green'], n)
+        save_name = os.path.join(fig_dir, 'comb_skewed.png')
+        plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg')); plt.savefig(save_name.replace('.png','.eps'))
+        print(dt.datetime.now().isoformat() + ' INFO: ' + 'COMb skewed: ' + save_name)
+        plt.close('all')
+
