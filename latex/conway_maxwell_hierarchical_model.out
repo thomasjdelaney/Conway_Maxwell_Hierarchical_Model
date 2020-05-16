@@ -8,11 +8,12 @@
 \BOOKMARK [2][-]{subsection.5.2}{Number of active neurons}{section.5}% 8
 \BOOKMARK [2][-]{subsection.5.3}{Moving windows for measurements}{section.5}% 9
 \BOOKMARK [2][-]{subsection.5.4}{Fano factor}{section.5}% 10
-\BOOKMARK [2][-]{subsection.5.5}{Probability Distributions suitable for modelling ensemble activty}{section.5}% 11
+\BOOKMARK [2][-]{subsection.5.5}{Probability Distributions suitable for modelling ensemble activity}{section.5}% 11
 \BOOKMARK [3][-]{subsubsection.5.5.1}{Association}{subsection.5.5}% 12
 \BOOKMARK [3][-]{subsubsection.5.5.2}{Binomial distribution}{subsection.5.5}% 13
 \BOOKMARK [3][-]{subsubsection.5.5.3}{Beta-binomial distribution}{subsection.5.5}% 14
 \BOOKMARK [3][-]{subsubsection.5.5.4}{Conway-Maxwell-binomial distribution}{subsection.5.5}% 15
-\BOOKMARK [2][-]{subsection.5.6}{Goodness-of-fit}{section.5}% 16
-\BOOKMARK [2][-]{subsection.5.7}{Spike count correlations}{section.5}% 17
-\BOOKMARK [1][-]{section.6}{Discussion}{}% 18
+\BOOKMARK [2][-]{subsection.5.6}{Fitting}{section.5}% 16
+\BOOKMARK [2][-]{subsection.5.7}{Goodness-of-fit}{section.5}% 17
+\BOOKMARK [2][-]{subsection.5.8}{Spike count correlations}{section.5}% 18
+\BOOKMARK [1][-]{section.6}{Discussion}{}% 19
