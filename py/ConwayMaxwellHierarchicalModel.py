@@ -13,7 +13,7 @@ import ConwayMaxwellBinomial as comb
 
 def loadCellInfo(csv_dir):
     """
-    For loading the csv containing information about each cell. 
+    For loading the csv containing information about each cell.
     Arguments:  csv_dir, the directory where the file can be found
     Returns:    pandas DataFrame
     """
@@ -38,7 +38,7 @@ def loadStimulusInfo(mat_dir, stim_number=2):
     stim_file = 'experiment' + str(stim_number) + 'stimInfo.mat'
     stim_info_dict = loadmat(os.path.join(mat_dir, stim_file))
     stim_ids = np.unique(stim_info_dict['stimIDs'][0])
-    stim_info = pd.DataFrame(data={'stim_ids':stim_info_dict['stimIDs'][0], 'stim_starts':stim_info_dict['stimStarts'][0], 
+    stim_info = pd.DataFrame(data={'stim_ids':stim_info_dict['stimIDs'][0], 'stim_starts':stim_info_dict['stimStarts'][0],
         'stim_stops':stim_info_dict['stimStops'][0]})
     stim_info['read_starts'] = stim_info['stim_starts'] - getExtraTrialTime(stim_info)
     stim_info['read_stops'] = stim_info['stim_stops'] + getExtraTrialTime(stim_info)
@@ -129,7 +129,7 @@ def loadSpikeTimeDict(adj_cell_ids, posterior_dir, frontal_dir, cell_info):
 
 def divideSpikeTimeDictByRegion(spike_time_dict, cell_info):
     """
-    For dividing the spike time dict into more dictionaries, one for each region. 
+    For dividing the spike time dict into more dictionaries, one for each region.
     Arguments:  spike_time_dict, dictionary adj_cell_id => spike_times
                 cell_info, pandas DataFrame
     Returns:    a dictionary of spike time dictionaries for each region from which we have cells.
@@ -206,7 +206,7 @@ def fitBinomialDistn(num_active_cells_binned, total_cells):
     """
     num_trials = num_active_cells_binned.size
     total_successes = num_active_cells_binned.sum()
-    return binom(total_cells, total_successes/(total_cells*num_trials)) 
+    return binom(total_cells, total_successes/(total_cells*num_trials))
 
 def movingAverage(a, n=3):
     """
@@ -239,8 +239,11 @@ def getAverageSpikeCountCorrelation(spike_count_array):
     Returns:    float, the average of the spike count correlations
     """
     corr_matrix = np.corrcoef(spike_count_array)
-    corr_matrix[np.isnan(corr_matrix)] = 0.0
-    return corr_matrix[np.triu_indices(corr_matrix.shape[0], k=1)].mean()
+    if np.isnan(spike_count_array).all():
+        return np.nan
+    else:
+        top_tri = corr_matrix[np.triu_indices(corr_matrix.shape[0], k=1)]
+        return top_tri[~np.isnan(top_tri)].mean()
 
 def getTrialMeasurements(num_active_cells_binned, spike_count_array, is_stimulated, window_inds, num_cells, window_size=100, window_skip=10):
     """
@@ -255,8 +258,8 @@ def getTrialMeasurements(num_active_cells_binned, spike_count_array, is_stimulat
                     and therefore has a major effect on how long it takes to process everything.
     Returns:    moving_avg,
                 corr_avg,
-                binom_params, 
-                betabinom_params, 
+                binom_params,
+                betabinom_params,
                 comb_params,
                 binom_log_like,
                 betabinom_log_like,
@@ -301,7 +304,7 @@ def getH5FileName(h5_dir, trial_index, bin_width, window_size):
     """
     For getting the name of the h5 file. Can be used for saving or loading or whatever.
     Arguments:  h5_dir, string, the directory
-                trial_index, int, the index of the trial 
+                trial_index, int, the index of the trial
                 bin_width, float,
                 window_size, number of bins used to fit the distributions.
     Returns:    string
@@ -312,7 +315,7 @@ def getFileListFromTrialIndices(h5_dir, trial_indices, bin_width=0.001, window_s
     """
     For getting a list of hdf5 files given a list of trial_indices, and maybe some more info.
     Arguments:  h5_dir, str, directory
-                trial_indices, list of ints, 
+                trial_indices, list of ints,
                 bin_width, float
                 window_size, int
     Returns:    list of file names, list(str)
@@ -352,7 +355,7 @@ def getTrialIndexFromH5File(h5_file):
 def reparametriseBetaBinomial(ab_params):
     """
     For converting alpha beta parametrisation to the pi rho parametrisation
-    Arguments:  ab_params, 
+    Arguments:  ab_params,
     returns:    pr_params
     """
     ab_params = np.array([ab_params]) if ab_params.ndim == 1 else ab_params
@@ -363,7 +366,7 @@ def getFanoFactorFromFiles(h5_file_list, region, window_size):
     Get the fano factors for each cell given the trials in the file list, and using the given region.
     Arguments:  h5_file_list, list of str
                 region, str
-                window_size, int, 
+                window_size, int,
     Returns:    fano factors, numpy array (float) (num cells, num windows)
     """
     moving_avg_activity_by_cell = collectMeasureFromFiles(h5_file_list, region, 'moving_avg_activity_by_cell', None, False)
@@ -414,7 +417,7 @@ def plotShadedStimulus(stim_starts, stim_stops, upper_bound, lower_bound=0):
 def plotNumActiveCellsByTime(bin_borders, num_active_cells_binned, stim_starts=[], stim_stops=[], get_centres=False, **kwargs):
     """
     For plotting the number of active cells across bins, optionally with stimulus time shaded.
-    Arguments:  bin_borders, array (float) 
+    Arguments:  bin_borders, array (float)
                 num_active_cells_binned, array (int)
                 stim_starts, list or array, the start times of stimuli
                 stim_stops, list or array, the stop times of stimuli
@@ -431,7 +434,7 @@ def plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_s
     Plot the number of active cells for each region on the same plot.
     Arguments:  bin_borders,
                 region_to_active_cells, dictionary
-                stim_starts, list or array, 
+                stim_starts, list or array,
                 stim_stops, list or array,
                 **kwargs
     Returns:    nothing
@@ -472,7 +475,7 @@ def plotTrialSummary(h5_file, region, stim_info):
     """
     Make some plots giving a summary of a trial.
     Arguments:  h5_file, the file that contains the information that we need.
-                stim_info, pandas DataFrame, information about each trial 
+                stim_info, pandas DataFrame, information about each trial
     Returns:    nothing
     """
     trial_index = getTrialIndexFromH5File(h5_file)
@@ -555,7 +558,7 @@ def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[],
     plt.plot(x_axis, measures.T, color=colour, alpha=0.05)
     plt.plot(x_axis, measures.mean(axis=0), color=colour, **kwargs)
     lower_bound = np.min(np.min(measures),0)
-    if stim_times != []: # include the grey shaded area to indicate the stimulus 
+    if stim_times != []: # include the grey shaded area to indicate the stimulus
         plotShadedStimulus([stim_times[0]]-time_adjustor, [stim_times[1]]-time_adjustor, plt.ylim()[1], lower_bound=lower_bound)
     plt.ylim(lower_bound, np.max(measures))
     plt.xlim((x_axis[0], x_axis[-1]))
@@ -566,12 +569,12 @@ def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[],
 
 def plotCellFanoFactors(h5_file_list, region, stim_times=[], colour='blue', is_tight_layout=True, use_title=False, window_size=100):
     """
-    For plotting the Fano factor for active cells, and the mean fano factor across cells. Making this to compare to Churchland et al. 2010. 
+    For plotting the Fano factor for active cells, and the mean fano factor across cells. Making this to compare to Churchland et al. 2010.
         'Stimulus onset quenches neural variability: a widespread cortical phenomenon'
     Arguments:  h5_file_list, list of strings
-                region, string 
-                stim_times, the stimulus, 
-                colour, str, 
+                region, string
+                stim_times, the stimulus,
+                colour, str,
                 is_tight_layout, use the tight layout
                 use_title,
                 window_size, int
@@ -596,7 +599,7 @@ def plotCellFanoFactors(h5_file_list, region, stim_times=[], colour='blue', is_t
     plt.text(np.mean(sig_indicator_x), sig_indicator_text, '***', ha='center', va='top', color='k')
     plot_peak = np.max(mean_full_fanos + std_err_full_fanos)
     plt.ylim((plt.ylim()[0], plot_peak))
-    if stim_times != []: # include the grey shaded area to indicate the stimulus 
+    if stim_times != []: # include the grey shaded area to indicate the stimulus
         plotShadedStimulus([stim_times[0]]-time_adjustor, [stim_times[1]]-time_adjustor, plt.ylim()[1], lower_bound=plt.ylim()[0])
     plt.ylabel('Mean Fano Factor', fontsize='x-large')
     plt.xlabel('Time (s)', fontsize='x-large')
@@ -605,4 +608,3 @@ def plotCellFanoFactors(h5_file_list, region, stim_times=[], colour='blue', is_t
     plt.title(region.replace('_', ' ').capitalize() + ', n = ' + str(num_cells) + ' cells', fontsize='large') if use_title else None
     plt.tight_layout() if is_tight_layout else None
     return None
-
