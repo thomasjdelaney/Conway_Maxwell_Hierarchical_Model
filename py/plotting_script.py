@@ -1,7 +1,7 @@
 """
 Script for loading in all all the functions. Testing that loading is working.
 
-python3 -i py/loading_script.py -d -n 2000 -b 0.005 -w 100 -s 5 
+python3 -i py/loading_script.py -d -n 2000 -b 0.005 -w 100 -s 5
 """
 import argparse, sys, os, shutil, h5py, glob
 import numpy as np
@@ -42,7 +42,7 @@ sys.path.append(os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Binomial_Distri
 import ConwayMaxwellHierarchicalModel as comh
 import ConwayMaxwellBinomial as comb
 
-def plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, measure_list, index_list, label_list, reparametrise_list, file_name_prefix_list):
+def plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, measure_list, y_label_list, index_list, label_list, reparametrise_list, file_name_prefix_list):
     """
     For plotting the average of measures across trials. Loops through all those lists.
     Arguments:  h5_file_list, list of str
@@ -56,13 +56,13 @@ def plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, 
                 file_name_prefix_list, list of str
     Returns:    Nothing
     """
-    for measure, index, label, reparametrise, file_name_prefix in zip(measure_list,index_list,label_list,reparametrise_list,file_name_prefix_list):
-        plt.figure(figsize=(10,4))
-        comh.plotAverageMeasure(h5_file_list, args.region, measure, index=index, stim_times=stim_times, label=label, title=title, reparametrise=reparametrise)
+    for measure, y_label, index, label, reparametrise, file_name_prefix in zip(measure_list,y_label_list,index_list,label_list,reparametrise_list,file_name_prefix_list):
+        plt.figure(figsize=(9,3))
+        comh.plotAverageMeasure(h5_file_list, args.region, measure, index=index, stim_times=stim_times, label=label, title=title, reparametrise=reparametrise, y_label=y_label)
         save_dir = os.path.join(image_dir, 'Averaging_measurements_across_trials', args.region, str(int(1000*args.bin_width)) + 'ms', measure)
         os.makedirs(save_dir) if not os.path.exists(save_dir) else None
         save_name = os.path.join(save_dir, file_name_prefix + file_name_suffix)
-        plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg'))
+        plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg'));
         print(dt.datetime.now().isoformat() + ' INFO: ' + 'Saved: ' + save_name)
         plt.close('all')
     return None
@@ -89,19 +89,6 @@ def plotDistributions(distributions, labels, colours, n, use_legend=False):
     plt.tight_layout()
     return None
 
-def binCombDkl(n,p,nu):
-    """
-    For calulating D_kl(Comb, bin)
-    Arguments:  n, int
-                p, between 0 and 1
-                nu, float
-    Returns:    the kl divergance
-    """
-    comb_dist = comb.ConwayMaxwellBinomial(p,nu,n)
-    support = range(n+1)
-    expected_value = np.sum([v*np.log(comb.comb(n,k)) for k,v in comb_dist.samp_des_dict.items()])
-    return (nu - 1)*expected_value - np.log(comb_dist.normaliser)
-
 def plotBinCombKLDiv(n):
     """
     For plotting the heatmap of the KL divergence between a binomial distribution and a COMb distribution as a function of p and nu
@@ -113,7 +100,7 @@ def plotBinCombKLDiv(n):
     grid_p, grid_nu = np.meshgrid(possible_p_values, possible_nu_values)
     d_kl_values = np.zeros(grid_p.shape)
     for i,j in product(range(grid_p.shape[0]), range(grid_p.shape[1])):
-        d_kl_values[i,j] = binCombDkl(n, grid_p[i,j], grid_nu[i,j])
+        d_kl_values[i,j] = comh.binCombDkl(n, grid_p[i,j], grid_nu[i,j])
     plt.contourf(grid_p, grid_nu, d_kl_values, levels=100)
     plt.xlabel('$p$', fontsize='x-large')
     plt.ylabel(r'$\nu$', fontsize='x-large')
@@ -134,11 +121,12 @@ if not args.debug:
         trial_info = stim_info.loc[comh.getTrialIndexFromH5File(h5py.File(h5_file_list[0],'r'))]
         stim_times = [trial_info['stim_starts'], trial_info['stim_stops']]
         measure_list = ['moving_avg', 'moving_var', 'corr_avg', 'binom_params', 'comb_params', 'comb_params', 'betabinom_ab', 'betabinom_ab']
+        y_label_list = ['Act. Cells Moving Avg.', 'Act. Cells Moving Var.', 'Avg. Corr. Coef.', r'Bin. $p$', r'COMb $p$', r'COMb $\nu$', r'Beta-bin $\pi$', r'Beta-bin $\rho$']
         index_list = [None, None, None, None, 0, 1, 0, 1]
         label_list = ['Moving Avg.', 'Moving Var.', 'Avg. Corr.', r'Binomial $p$', r'COM-Binomial $p$', r'COM-Binomial $\nu$', r'Beta-Binomial $\pi$', r'Beta-Binomial $\rho$']
         reparametrise_list = [False, False, False, False, False, True, True]
         file_name_prefix_list = ['moving_avg', 'moving_var', 'corr_avg', 'binom_p', 'comb_p', 'comb_nu', 'betabinom_pi', 'betabinom_rho']
-        plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, measure_list, index_list, label_list, reparametrise_list, file_name_prefix_list)
+        plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, measure_list, y_label_list, index_list, label_list, reparametrise_list, file_name_prefix_list)
 
     ######## Average across all unstimulated trials ##########
         h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] == 17].index.values, args.bin_width, args.window_size)
@@ -146,7 +134,7 @@ if not args.debug:
         file_name_suffix = '_all_unstimulated_trials.png'
         trial_info = stim_info.loc[comh.getTrialIndexFromH5File(h5py.File(h5_file_list[0],'r'))]
         stim_times = [trial_info['stim_starts'], trial_info['stim_stops']]
-        plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, measure_list, index_list, label_list, reparametrise_list, file_name_prefix_list) 
+        plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, measure_list, y_label_list, index_list, label_list, reparametrise_list, file_name_prefix_list)
 
     ################# Plotting Trial summaries ###################
     if args.plot_trial_summaries:
@@ -161,7 +149,7 @@ if not args.debug:
             plt.savefig(save_name);plt.savefig(save_name.replace('.png', '.svg'));
             plt.close('all')
         print(dt.datetime.now().isoformat() + ' INFO: ' + 'Trial summaries complete: ' + save_dir)
-     
+
     ################## Fano Factors ###############################
     if args.plot_fano:
         h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
@@ -223,4 +211,3 @@ if not args.debug:
         plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg')); plt.savefig(save_name.replace('.png','.eps'))
         print(dt.datetime.now().isoformat() + ' INFO: ' + 'COMb skewed: ' + save_name)
         plt.close('all')
-

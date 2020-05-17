@@ -398,6 +398,19 @@ def runFanoStatTest(full_fanos, h5_file_name, region):
     mw_res = mannwhitneyu(last_unstimulated_fanos, first_all_stimulated_fanos)
     return mw_res, window_centres[last_unstimulated_window_ind], window_centres[first_all_stimulated_window_ind], last_unstimulated_window_ind, first_all_stimulated_window_ind
 
+def binCombDkl(n,p,nu):
+    """
+    For calulating D_kl(Comb, bin)
+    Arguments:  n, int
+                p, between 0 and 1
+                nu, float
+    Returns:    the kl divergance
+    """
+    comb_dist = comb.ConwayMaxwellBinomial(p,nu,n)
+    support = range(n+1)
+    expected_value = np.sum([v*np.log(comb.comb(n,k)) for k,v in comb_dist.samp_des_dict.items()])
+    return (nu - 1)*expected_value - np.log(comb_dist.normaliser)
+
 ##########################################################
 ########## PLOTTING FUNCTIONS ############################
 ##########################################################
@@ -541,7 +554,7 @@ def collectMeasureFromFiles(h5_file_list, region, measure, index, reparametrise)
         h5_file.close()
     return np.array(measures)
 
-def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[], colour='blue', reparametrise=False, title='', **kwargs):
+def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[], colour='blue', reparametrise=False, title='', y_label='', **kwargs):
     """
     For plotting the average of a given measure taking the average across the given files.
     Arguments:  h5_file_list, list(str), file_names
@@ -562,7 +575,9 @@ def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[],
         plotShadedStimulus([stim_times[0]]-time_adjustor, [stim_times[1]]-time_adjustor, plt.ylim()[1], lower_bound=lower_bound)
     plt.ylim(lower_bound, np.max(measures))
     plt.xlim((x_axis[0], x_axis[-1]))
-    plt.xlabel('Time (s)', fontsize='large')
+    plt.xticks(fontsize='large');plt.yticks(fontsize='large')
+    plt.xlabel('Time (s)', fontsize='x-large')
+    plt.ylabel(y_label, fontsize='x-large') if y_label != '' else None
     plt.title(title, fontsize='large') if title != '' else None
     plt.legend(fontsize='large') if 'label' in kwargs else None
     return None
