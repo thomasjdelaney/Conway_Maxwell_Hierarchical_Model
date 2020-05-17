@@ -69,6 +69,14 @@
 
 \section{Results}
 
+  \subsection{Transient increases in mean number of active neurons and variance in number of active neurons at stimulus onset}
+
+  \subsection{Conway-Maxwell-binomial distribution fits better than binomial or beta-binomial}
+
+  \subsection{Conway-Maxwell-binomial distribution captures changes in association at stimulus onset}
+
+  \subsection{Reproduced stimulus related quenching of neural variability}
+
 \section{Discussion}
 
 \section{Data}
@@ -105,6 +113,19 @@ Details about all kinds of things here.
     By continuing to use windows containing $40$ bins, we retained statistical power but sacrificed the number of measurements taken.
 
     There was an interval between each trial with a grey image in place of the moving of the moving bar stimulus. This interval varied in time. But we included some of this interval when recording the data for each trial. We started recording the number of active neurons, and the number of spikes from each neuron from $280$ms before each trial until $280$ms after each trial. This way, we could see the change in our measurements at the onset of a stimulus.
+
+    The actual measurements we took in each window were as follows:
+    \begin{description}
+      \item[Number of active neurons] The number of neurons firing a spike in each bin. Most of the other measurements are aggregations of these measurements, or models fitted to these measurements.
+      \item[Spike counts for each cell] The number of spikes fired by each cell in each bin.
+      \item[Moving average] The average number of active cells in each window.
+      \item[Moving variance] The variance of the number of active cells in each window.
+      \item[Average correlation] We measured the correlation between the spike counts of each pair of cells in the ensemble, and took the average of these measurements.
+      \item[Binomial $\mathbf{p}$] We fitted a binomial distribution to the data in each window and recorded the fitted probability of success, $p$ in each case.
+      \item[Beta-binomial $\boldsymbol{\alpha}$, $\boldsymbol{\beta}$] We fitted a beta-binomial distribution to the data in each window, and recorded the values of the fitted shape parameters, $\alpha$ and $\beta$, of each distribution.
+      \item[Conway-Maxwell-binomial distribution $\mathbf{p}$, $\boldsymbol{\nu}$] We fitted a Conway-Maxwell-binomial distribution to the data in each window, and recorded the fitted values of $p$ and $\nu$ for each distribution.
+      \item[Log-likelihoods] We also recorded the log-likelihood of each of the fitted distributions for each window.
+    \end{description}
 
     \subsection{Fano factor}\label{sec:faco_factor}
     The \textit{Fano factor} of a random variable is defined as the ratio of the variable's variance to its mean.
@@ -258,9 +279,6 @@ Details about all kinds of things here.
 
     \subsection{Goodness-of-fit}
     After fitting, we measured the goodness-of-fit of each model/distribution with their log likelihood. We calculated this directly using the \texttt{logpmf} functions of the distribution objects in Python.
-
-    \subsection{Spike count correlations}
-    We measured the spike count correlations using the \texttt{corrcoef} function.
 
 \section{Discussion}
 Point out that the Conway-Maxwell-binomial distribution could be used to measure activity and association without having to sort the voltage traces into spikes. That does defeat the purpose slightly, however.
