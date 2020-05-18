@@ -242,8 +242,7 @@ def getAverageSpikeCountCorrelation(spike_count_array):
     if np.isnan(spike_count_array).all():
         return np.nan
     else:
-        top_tri = corr_matrix[np.triu_indices(corr_matrix.shape[0], k=1)]
-        return top_tri[~np.isnan(top_tri)].mean()
+        return np.nanmean(corr_matrix[np.triu_indices(corr_matrix.shape[0], k=1)])
 
 def getTrialMeasurements(num_active_cells_binned, spike_count_array, is_stimulated, window_inds, num_cells, window_size=100, window_skip=10):
     """
@@ -569,11 +568,11 @@ def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[],
     x_axis, time_adjustor = getXAxisTimeAdjustor(h5_file_list[0])
     measures = collectMeasureFromFiles(h5_file_list, region, measure, index, reparametrise)
     plt.plot(x_axis, measures.T, color=colour, alpha=0.05)
-    plt.plot(x_axis, measures.mean(axis=0), color=colour, **kwargs)
-    lower_bound = np.min(np.min(measures),0)
+    plt.plot(x_axis, np.nanmean(measures, axis=0), color=colour, **kwargs)
+    lower_bound = np.nanmin(np.nanmin(measures),0)
     if stim_times != []: # include the grey shaded area to indicate the stimulus
         plotShadedStimulus([stim_times[0]]-time_adjustor, [stim_times[1]]-time_adjustor, plt.ylim()[1], lower_bound=lower_bound)
-    plt.ylim(lower_bound, np.max(measures))
+    plt.ylim(lower_bound, np.nanmax(measures))
     plt.xlim((x_axis[0], x_axis[-1]))
     plt.xticks(fontsize='large');plt.yticks(fontsize='large')
     plt.xlabel('Time (s)', fontsize='x-large')
