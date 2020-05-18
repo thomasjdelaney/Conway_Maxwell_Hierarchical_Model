@@ -68,22 +68,33 @@
   Point out that we don't necessarily need to measure correlations anyway.
 
 \section{Results}
+Defining a neuron as \textit{active} in a time bin if it fires at least one spike during the time interval covered by that bin. We measured the number of active neurons in the primary visual cortex of a mouse in $1$ms bins across $160$ trials of a moving bar visual stimulus. We then slid a $100$ms window across these $1$ms bins taking mesurements, and fiting distributions along the way.
 
   \subsection{Transient increases in mean number of active neurons and variance in number of active neurons at stimulus onset}
+  We measured the averge number of active neurons, and the variance of the number of active neurons in a $100$ms sliding window starting $280$ms before stimulus onset until $780$ms after stimulus onset. We found a transient increase in both the average and variance of the number of active neurons at stimulus onset, followed by a fall to pre-stimulus levels, followed by another transient increase (see figure \ref{fig:moving_avg_and_var}). The oscillation in both these measurements appear to reflect the frequency of the stimulus.
+
+  \newpage
 
   \begin{figure}[h]
-    \includegraphics[width=\linewidth]{figures/v1_1ms_moving_avg_all_stimulated_trials.png}
-    \caption{A moving average of the number of active neurons in V1. Averages were taken across $100$ms windows split into $100$ bins. The midpoint of the time interval for each window is used as the timepoint (x-axis point) for that window. The shaded area indicates the presence of a visual stimulus. Translucent lines indicate the moving averages for each of the $160$ trials, the opaque line is an average across trials. We can see a transient increase in the average number of active neurons, followed by a fluctuation and another increase.}
-    \label{fig:moving_avg_num_active_cells}
+    \begin{subfigure}[h]{\linewidth}
+      \includegraphics[width=\linewidth]{figures/v1_1ms_moving_avg_all_stimulated_trials.png}
+      \caption{Moving average.}
+      \label{fig:moving_avg_num_active_cells}
+    \end{subfigure}
+    \begin{subfigure}[h]{\linewidth}
+      \includegraphics[width=\linewidth]{figures/v1_1ms_moving_var_all_stimulated_trials.png}
+      \caption{Moving variance.}
+      \label{fig:moving_var_num_active_cells}
+    \end{subfigure}
+    \caption{The (a) average and (b) variance of the number of active neurons, measured using a sliding window $100$ms wide, split into $100$ bins. The midpoint of the time interval for each window is used as the timepoint (x-axis point) for the measurements using that window. The grey shaded area indicates the presence of a visual stimulus. The opaque line is an average across the $160$ trials that included a visual stimulus of any kind. We can see a transient increase in the average number of active neurons and the variance of this number, followed by a fluctuation and another increase.}
+    \label{fig:moving_avg_and_var}
   \end{figure}
 
-  \begin{figure}[h]
-    \includegraphics[width=\linewidth]{figures/v1_1ms_moving_var_all_stimulated_trials.png}
-    \caption{A moving variance of the number of active neurons in V1. Variances were taken across $100$ms windows split into $100$ bins. The midpoint of the time interval for each window is used as the timepoint (x-axis point) for that window. The shaded area indicates the presence of a visual stimulus. Translucent lines indicate the moving variances for each of the $160$ trials, the opaque line is an average across trials. We can see a transient increase in the variance of the number of active neurons, followed by a fluctuation and another increase.}
-    \label{fig:moving_var_num_active_cells}
-  \end{figure}
+  \newpage
 
   \subsection{Conway-Maxwell-binomial distribution fits better than binomial or beta-binomial}
+
+  % Need a figure showing a histogram of a 100ms window data, and the three distributions on top, showing COMb fitting the best.
 
   \subsection{Conway-Maxwell-binomial distribution captures changes in association at stimulus onset}
 

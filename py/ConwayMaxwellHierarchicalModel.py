@@ -39,9 +39,9 @@ def loadStimulusInfo(mat_dir, stim_number=2):
     stim_info_dict = loadmat(os.path.join(mat_dir, stim_file))
     stim_ids = np.unique(stim_info_dict['stimIDs'][0])
     stim_info = pd.DataFrame(data={'stim_ids':stim_info_dict['stimIDs'][0], 'stim_starts':stim_info_dict['stimStarts'][0],
-        'stim_stops':stim_info_dict['stimStops'][0]})
+        'stim_stops':stim_info_dict['stimStarts'][0]+1.5})
     stim_info['read_starts'] = stim_info['stim_starts'] - getExtraTrialTime(stim_info)
-    stim_info['read_stops'] = stim_info['stim_stops'] + getExtraTrialTime(stim_info)
+    stim_info['read_stops'] = stim_info_dict['stimStops'][0] + getExtraTrialTime(stim_info)
     return stim_info, stim_ids
 
 def getIdAdjustor(cell_info):
@@ -567,12 +567,17 @@ def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[],
     """
     x_axis, time_adjustor = getXAxisTimeAdjustor(h5_file_list[0])
     measures = collectMeasureFromFiles(h5_file_list, region, measure, index, reparametrise)
-    plt.plot(x_axis, measures.T, color=colour, alpha=0.05)
-    plt.plot(x_axis, np.nanmean(measures, axis=0), color=colour, **kwargs)
-    lower_bound = np.nanmin(np.nanmin(measures),0)
+    measures_mean = np.nanmean(measures, axis=0)
+    measures_std = np.nanstd(measures, axis=0)
+    measures_samples = np.sum(~np.isnan(measures), axis=0)
+    measures_stderr = measures_std/np.sqrt(measures_samples)
+    plt.plot(x_axis, measures_mean, color=colour, **kwargs)
+    plt.fill_between(x_axis, measures_mean-measures_stderr, measures_mean+measures_stderr, alpha=0.3, color=colour, label='Std. Err.')
+    lower_bound = np.nanmin(np.nanmin(measures_mean - measures_stderr),0)
+    upper_bound = np.nanmax(measures_mean + measures_stderr)
     if stim_times != []: # include the grey shaded area to indicate the stimulus
-        plotShadedStimulus([stim_times[0]]-time_adjustor, [stim_times[1]]-time_adjustor, plt.ylim()[1], lower_bound=lower_bound)
-    plt.ylim(lower_bound, np.nanmax(measures))
+        plotShadedStimulus([stim_times[0]]-time_adjustor, [stim_times[1]]-time_adjustor, upper_bound, lower_bound=lower_bound)
+    plt.ylim(lower_bound, upper_bound)
     plt.xlim((x_axis[0], x_axis[-1]))
     plt.xticks(fontsize='large');plt.yticks(fontsize='large')
     plt.xlabel('Time (s)', fontsize='x-large')

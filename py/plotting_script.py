@@ -124,7 +124,7 @@ if not args.debug:
         y_label_list = ['Act. Cells Moving Avg.', 'Act. Cells Moving Var.', 'Avg. Corr. Coef.', r'Bin. $p$', r'COMb $p$', r'COMb $\nu$', r'Beta-bin $\pi$', r'Beta-bin $\rho$']
         index_list = [None, None, None, None, 0, 1, 0, 1]
         label_list = ['Moving Avg.', 'Moving Var.', 'Avg. Corr.', r'Binomial $p$', r'COM-Binomial $p$', r'COM-Binomial $\nu$', r'Beta-Binomial $\pi$', r'Beta-Binomial $\rho$']
-        reparametrise_list = [False, False, False, False, False, True, True]
+        reparametrise_list = [False, False, False, False, False, False, True, True]
         file_name_prefix_list = ['moving_avg', 'moving_var', 'corr_avg', 'binom_p', 'comb_p', 'comb_nu', 'betabinom_pi', 'betabinom_rho']
         plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, measure_list, y_label_list, index_list, label_list, reparametrise_list, file_name_prefix_list)
 
