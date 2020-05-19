@@ -21,6 +21,7 @@ parser.add_argument('-t', '--plot_trial_summaries', help='Flag to plot the trial
 parser.add_argument('-a', '--plot_averages', help='Flag to plot the averages across trials', default=False, action='store_true')
 parser.add_argument('-f', '--plot_fano', help='Flag to plot the fano factors.', default=False, action='store_true')
 parser.add_argument('-c', '--compare_dists', help='Flag to plot the distribution comparison plot.', default=False, action='store_true')
+parser.add_argument('-e', '--fitted_example', help='Flag to plot the example of data and fitted distributions.', default=False, action='store_true')
 parser.add_argument('-d', '--debug', help='Enter debug mode.', default=False, action='store_true')
 args = parser.parse_args()
 
@@ -108,6 +109,30 @@ def plotBinCombKLDiv(n):
     plt.title(r'$D_{KL}(COMb, Binomial)$', fontsize='x-large')
     plt.tight_layout()
     return None
+
+def findBiggestFittingDifference(h5_file_list, region):
+    """
+    For finding the sample that shows the biggest difference in fitting quality between the models.
+    Arguments:  h5_file_list, list str
+                region, str
+    Returns:    h5_file_name,
+                window_ind, int, the index of the window
+    """
+    max_diff = 0
+    max_file = ''
+    max_ind = 0
+    for h5_file_name in h5_file_list:
+        h5_file = h5py.File(h5_file_name,'r')
+        binom_log_like = h5_file.get(region).get('binom_log_like')[()]
+        betabinom_log_like = h5_file.get(region).get('betabinom_log_like')[()]
+        comb_log_like = h5_file.get(region).get('comb_log_like')[()]
+        log_like_diffs = np.mean([comb_log_like - binom_log_like, comb_log_like - betabinom_log_like], axis=0)
+        max_diff_for_file = log_like_diffs.max()
+        if max_diff_for_file > max_diff:
+            max_diff = max_diff_for_file
+            max_file = h5_file_name
+            max_ind = np.argmax(log_like_diffs)
+    return max_file, max_ind
 
 if not args.debug:
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
@@ -211,3 +236,22 @@ if not args.debug:
         plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg')); plt.savefig(save_name.replace('.png','.eps'))
         print(dt.datetime.now().isoformat() + ' INFO: ' + 'COMb skewed: ' + save_name)
         plt.close('all')
+
+    ################## Example of fitting #######################
+    if args.fitted_example:
+        h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info.index.values, args.bin_width, args.window_size)
+        max_file, max_ind = findBiggestFittingDifference(h5_file_list)
+        h5_file = h5py.File(max_file,'r')
+        window_inds = range(h5_file.get('window_skip')[()]*max_ind, h5_file.get('window_skip')[()]*max_ind + h5_file.get('window_size')[()])
+        num_active_cells_binned = h5_file.get(region).get('num_active_cells_binned')[()]
+        unique_counts = np.unique(num_active_cells_binned)
+        comb_p, nu = h5_file.get(region).get('comb_params')[()][max_ind]
+        bin_p = h5_file.get(region).get('binom_params')[()][max_ind]
+        a,b = h5_file.get(region).get('betabinom_ab')[()][max_ind]
+        comb_dist = comb.ConwayMaxwellBinomial(comb_p, nu, h5_file.get(region).get('num_cells')[()])
+        bin_dist = binom(h5_file.get(region).get('num_cells')[()], bin_p)
+        betabin_dist = betabinom(h5_file.get(region).get('num_cells')[()], a, b)
+        plt.hist(num_active_cells_binned,bins=unique_counts,align='left',density=True)
+        plt.plot(unique_counts, comb_dist.pmf(unique_counts), label='Fitted COMb PMF', color='green')
+        plt.plot(unique_counts, bin_dist.pmf(unique_counts), label='Fitted Bin. PMF', color='blue')
+        plt.plot(unique_counts, betabin_dist.pmf(unique_counts), label='Fitted Beta-Bin. PMF', color='orange')

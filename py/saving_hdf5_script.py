@@ -1,7 +1,7 @@
 """
 Script for loading in all all the functions. Testing that loading is working.
 
-python3 -i py/loading_script.py -d -n 2000 -b 0.005 -w 100 -s 5 
+python3 -i py/loading_script.py -d -n 2000 -b 0.005 -w 100 -s 5
 """
 import argparse, sys, os, shutil, h5py
 import numpy as np
@@ -38,7 +38,7 @@ import ConwayMaxwellBinomial as comb
 
 def saveMeasurementsForAllTrials(bin_width, stim_info, region_to_spike_time_dict, h5_dir, window_size=100, window_skip=10):
     """
-    Get the measurements for each trial and save them down, one by one. 
+    Get the measurements for each trial and save them down, one by one.
     Arguments:  bin_width, float,
                 stim_info, pandas DataFrame
     Returns:    nothing
@@ -82,13 +82,13 @@ def saveMeasurementsForAllTrials(bin_width, stim_info, region_to_spike_time_dict
             regional_group.create_dataset('binom_params',data=binom_params)
             regional_group.create_dataset('binom_log_like',data=binom_log_like)
             regional_group.create_dataset('betabinom_ab',data=betabinom_ab)
-            regional_group.create_dataset('betabinom_log_like',data=binom_log_like)
+            regional_group.create_dataset('betabinom_log_like',data=betabinom_log_like)
             regional_group.create_dataset('comb_params',data=comb_params)
             regional_group.create_dataset('comb_log_like',data=comb_log_like)
         trial_bin_width_file.close()
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Done saving.')
     return None
-        
+
 if not args.debug:
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
     cell_info = comh.loadCellInfo(csv_dir)
@@ -100,4 +100,3 @@ if not args.debug:
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Loaded.')
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Measuring and saving...')
     saveMeasurementsForAllTrials(args.bin_width, stim_info, region_to_spike_time_dict, h5_dir, window_size=args.window_size, window_skip=args.window_skip)
-
