@@ -110,29 +110,22 @@ def plotBinCombKLDiv(n):
     plt.tight_layout()
     return None
 
-def findBiggestFittingDifference(h5_file_list, region):
+def findBestDists(h5_file_list, region):
     """
-    For finding the sample that shows the biggest difference in fitting quality between the models.
+    For finding the the index of the best fitting distribution for every window and every trial
     Arguments:  h5_file_list, list str
                 region, str
-    Returns:    h5_file_name,
-                window_ind, int, the index of the window
+    Returns:    best_fit_inds, numpy array (int) (num trials, num windows),
     """
-    max_diff = 0
-    max_file = ''
-    max_ind = 0
-    for h5_file_name in h5_file_list:
+    best_fit_inds = np.zeros((len(h5_file_list), h5py.File(h5_file_list[0],'r').get('window_centre_times').size), dtype=int)
+    for i,h5_file_name in enumerate(h5_file_list):
         h5_file = h5py.File(h5_file_name,'r')
         binom_log_like = h5_file.get(region).get('binom_log_like')[()]
         betabinom_log_like = h5_file.get(region).get('betabinom_log_like')[()]
         comb_log_like = h5_file.get(region).get('comb_log_like')[()]
-        log_like_diffs = np.mean([comb_log_like - binom_log_like, comb_log_like - betabinom_log_like], axis=0)
-        max_diff_for_file = log_like_diffs.max()
-        if max_diff_for_file > max_diff:
-            max_diff = max_diff_for_file
-            max_file = h5_file_name
-            max_ind = np.argmax(log_like_diffs)
-    return max_file, max_ind
+        best_fit_inds_file = np.vstack([binom_log_like, betabinom_log_like, comb_log_like]).argmax(axis=0)
+        best_fit_inds[i] = best_fit_inds_file
+    return best_fit_inds
 
 if not args.debug:
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
@@ -239,19 +232,27 @@ if not args.debug:
 
     ################## Example of fitting #######################
     if args.fitted_example:
-        h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info.index.values, args.bin_width, args.window_size)
-        max_file, max_ind = findBiggestFittingDifference(h5_file_list)
-        h5_file = h5py.File(max_file,'r')
-        window_inds = range(h5_file.get('window_skip')[()]*max_ind, h5_file.get('window_skip')[()]*max_ind + h5_file.get('window_size')[()])
-        num_active_cells_binned = h5_file.get(region).get('num_active_cells_binned')[()]
-        unique_counts = np.unique(num_active_cells_binned)
-        comb_p, nu = h5_file.get(region).get('comb_params')[()][max_ind]
-        bin_p = h5_file.get(region).get('binom_params')[()][max_ind]
-        a,b = h5_file.get(region).get('betabinom_ab')[()][max_ind]
-        comb_dist = comb.ConwayMaxwellBinomial(comb_p, nu, h5_file.get(region).get('num_cells')[()])
-        bin_dist = binom(h5_file.get(region).get('num_cells')[()], bin_p)
-        betabin_dist = betabinom(h5_file.get(region).get('num_cells')[()], a, b)
-        plt.hist(num_active_cells_binned,bins=unique_counts,align='left',density=True)
-        plt.plot(unique_counts, comb_dist.pmf(unique_counts), label='Fitted COMb PMF', color='green')
-        plt.plot(unique_counts, bin_dist.pmf(unique_counts), label='Fitted Bin. PMF', color='blue')
-        plt.plot(unique_counts, betabin_dist.pmf(unique_counts), label='Fitted Beta-Bin. PMF', color='orange')
+        h5_file_name = comh.getFileListFromTrialIndices(h5_dir, [0], args.bin_width, args.window_size)[0]
+        h5_file = h5py.File(h5_file_name,'r')
+        num_cells = h5_file.get(args.region).get('num_cells')[()]
+        num_active_cells_binned = h5_file.get(args.region).get('num_active_cells_binned')[2100 + np.arange(h5_file.get('window_size')[()])]
+        bin_dist = comh.fitBinomialDistn(num_active_cells_binned, num_cells)
+        betabin_dist = comh.easyLogLikeFit(betabinom, num_active_cells_binned, [1.0,1.0], ((1e-08,None),(1e-08,None)), num_cells)
+        comb_fitted_params = comb.estimateParams(num_cells, num_active_cells_binned)
+        comb_dist = comb.ConwayMaxwellBinomial(comb_fitted_params[0], comb_fitted_params[1], num_cells)
+        plt.figure(figsize=(4,3))
+        comh.plotCompareDataFittedDistn(num_active_cells_binned, [bin_dist, betabin_dist, comb_dist], plot_type='pdf', data_label='Empirical Distn', distn_label=['Binomial PMF', 'Beta-binomial PMF', 'COM-binomial PMF'], title='', colours=['blue', 'orange', 'green'])
+        save_name = os.path.join(fig_dir, 'fitting_example.png')
+        plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg'));
+        plt.close('all')
+
+        h5_file_list = comh.getFileListFromTrialIndices(h5_dir, range(170), args.bin_width, args.window_size)
+        best_fit_inds = findBestDists(h5_file_list, args.region)
+        plt.figure(figsize=(4,3))
+        plt.hist(best_fit_inds.flatten(), bins=[-0.5,0.5,1.5,2.5], density=True)
+        plt.xticks([0,1,2],['Bin.', 'Beta-bin.', 'COMb'], fontsize='large') # 93% COMB
+        plt.ylabel('Proportion best fit', fontsize='x-large')
+        plt.tight_layout()
+        save_name = os.path.join(fig_dir, 'best_fit_proportion.png')
+        plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg'));
+        plt.close('all')

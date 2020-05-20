@@ -14,6 +14,13 @@
     369-378,
     (2010)
 
+  \bibitem{cohen}
+    Marlene R Cohen, Adam Kohn,
+    \emph{Measuring and interpreting neuronal correlations}
+    Nature neuroscience 14,
+    811-819,
+    (2011)
+
   \bibitem{daly}
     Fraser Daly, Robert E. Gaunt,
     \emph{The Conway-Maxwell-Poisson distribution: Distributional theory and approximation.}
@@ -57,8 +64,8 @@
 
   \bibitem{steinmetz}
     Nick Steinmetz, Matteo Carandini, Kenneth D. Harris,
-    \emph{"Single Phase3" and "Dual Phase3" Neuropixels Datasets.} 
-    figshare, 
+    \emph{"Single Phase3" and "Dual Phase3" Neuropixels Datasets.}
+    figshare,
     Dataset: https://doi.org/10.6084/m9.figshare.7666892.v2
     (2019)
 

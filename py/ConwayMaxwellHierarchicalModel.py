@@ -461,7 +461,7 @@ def plotNumActiveCellsByTimeByRegion(bin_borders, region_to_active_cells, stim_s
     plt.tight_layout() if is_tight_layout else None
     return None
 
-def plotCompareDataFittedDistn(num_active_cells_binned, fitted_distn, plot_type='pdf', data_label='Num. Active Cells', distn_label=['Fitted Distn. PMF'], title=''):
+def plotCompareDataFittedDistn(num_active_cells_binned, fitted_distn, plot_type='pdf', data_label='Num. Active Cells', distn_label=['Fitted Distn. PMF'], title='', colours=['blue']):
     """
     For comparing a fitted distribution to some data. (pdf and/or cdf?)
     Arguments:  num_active_cells_binned, array int
@@ -473,12 +473,13 @@ def plotCompareDataFittedDistn(num_active_cells_binned, fitted_distn, plot_type=
     num_distns = len(fitted_distn)
     distn_label = distn_label * num_distns if len(distn_label) != num_distns else distn_label
     bin_borders = range(num_active_cells_binned.max()+1)
-    plt.hist(num_active_cells_binned, bins=bin_borders, density=True, label=data_label, align='left')
-    for distn, d_label in zip(fitted_distn,distn_label):
-        plt.plot(bin_borders, distn.pmf(bin_borders), label=d_label)
-    plt.legend(fontsize='large')
-    plt.xlabel('Num. Active Cells', fontsize='large')
-    plt.ylabel('P(k)', fontsize='large')
+    plt.hist(num_active_cells_binned, bins=bin_borders, density=True, label=data_label, align='left', alpha=0.35)
+    for distn, d_label, colour in zip(fitted_distn,distn_label,colours):
+        plt.plot(bin_borders, distn.pmf(bin_borders), label=d_label, color=colour)
+    plt.legend()
+    plt.xticks(fontsize='large');plt.yticks(fontsize='large')
+    plt.xlabel('Num. Active Cells', fontsize='x-large')
+    plt.ylabel('P(k)', fontsize='x-large')
     plt.title(title, fontsize='large') if title != '' else None
     plt.tight_layout()
     return None

@@ -68,10 +68,10 @@
   Point out that we don't necessarily need to measure correlations anyway.
 
 \section{Results}
-Defining a neuron as \textit{active} in a time bin if it fires at least one spike during the time interval covered by that bin. We measured the number of active neurons in the primary visual cortex of a mouse in $1$ms bins across $160$ trials of a moving bar visual stimulus. We then slid a $100$ms window across these $1$ms bins taking mesurements, and fiting distributions along the way.
+Defining a neuron as \textit{active} in a time bin if it fires at least one spike during the time interval covered by that bin. We measured the number of active neurons in the primary visual cortex of a mouse in $1$ms bins across $160$ trials of a moving bar visual stimulus. We then slid a $100$ms window across these $1$ms bins taking mesurements, and fitting distributions along the way.
 
   \subsection{Transient increases in mean number of active neurons and variance in number of active neurons at stimulus onset}
-  We measured the averge number of active neurons, and the variance of the number of active neurons in a $100$ms sliding window starting $280$ms before stimulus onset until $780$ms after stimulus onset. We found a transient increase in both the average and variance of the number of active neurons at stimulus onset, followed by a fall to pre-stimulus levels, followed by another transient increase (see figure \ref{fig:moving_avg_and_var}). The oscillation in both these measurements appear to reflect the frequency of the stimulus.
+  We measured the averge number of active neurons, and the variance of the number of active neurons in a $100$ms sliding window starting $280$ms before stimulus onset until $780$ms after stimulus onset. We found a transient increase in both the average and variance of the number of active neurons at stimulus onset, followed by a fall to pre-stimulus levels, followed by another transient increase (see figure \ref{fig:moving_avg_and_var}). The oscillation in both of these measurements appear to reflect the frequency of the stimulus.
 
   \newpage
 
@@ -92,13 +92,55 @@ Defining a neuron as \textit{active} in a time bin if it fires at least one spik
 
   \newpage
 
-  \subsection{Conway-Maxwell-binomial distribution fits better than binomial or beta-binomial}
+  \subsection{Conway-Maxwell-binomial distribution is usually a better fit than binomial or beta-binomial}
 
-  % Need a figure showing a histogram of a 100ms window data, and the three distributions on top, showing COMb fitting the best.
+  \newpage
+
+  \begin{figure}[h]
+    \begin{subfigure}[h]{0.5\linewidth}
+      \includegraphics[width=\linewidth]{figures/fitting_example.png}
+      \caption{Example of fitted distributions.}
+      \label{fig:fitting_example}
+    \end{subfigure}
+    \begin{subfigure}[h]{0.5\linewidth}
+      \includegraphics[width=\linewidth]{figures/best_fit_proportion.png}
+      \caption{Proportion of best fit}
+      \label{fig:best_fit_proportion}
+    \end{subfigure}
+    \caption{(a) An example of the binomial, beta-binomial, and Conway-Maxwell-binomial distributions fitted to a sample of neural activity. The Conway-Maxwell-binomial distribution is the best fit in this case. The histogram shows the empirical distribution of the sample. The probability mass function of each distribution is indicated by a differently coloured line. (b) Across all samples in all trials, the proportion of samples for which each fitted distribution was the the best fit. The Conway-Maxwell-binomial distribution was the best fit for $93\%$ of the samples.}
+    \label{fig:fitting}
+  \end{figure}
+
+  \newpage
 
   \subsection{Conway-Maxwell-binomial distribution captures changes in association at stimulus onset}
+  We fit a Conway-Maxwell-binomial (COMb) distribution to the number of active neurons in the $1$ms time bins in a $100$ms sliding window. We also measured the correlation coefficient between the spike counts of all possible pairs of neurons, and took the average of these coefficients. We did this for all the trials with a visual stimulus. We observed a reduction in the COMb distribution's $\nu$ parameter at stimulus onset from around $1$ to between $0$ and $1$ (see figure \ref{fig:comb_nu_parameter}). A value of $\nu$ less than $1$ indicates positive association between the neurons (see section \ref{sec:conway_maxwell_binomial_distribution}). We might expect to see this positive association reflected in the correlation coefficients, but this is not the case. We see no change in the time series of average correlation measures at stimulus onset.
+
+  This may be due to the very short time bin we used in this case. We know that using small time bins can artificially reduce correlation measurements \cite{cohen}. In this case, fitting the COMb distribution may be a useful way to measure association in a neuronal ensemble over very short timescales ($<10$ms).
+
+  \newpage
+
+  \begin{figure}[h]
+    \begin{subfigure}[h]{\linewidth}
+      \includegraphics[width=\linewidth]{figures/v1_1ms_comb_nu_all_stimulated_trials.png}
+      \caption{COMb $\nu$ parameter.}
+      \label{fig:comb_nu_parameter}
+    \end{subfigure}
+    \begin{subfigure}[h]{\linewidth}
+      \includegraphics[width=\linewidth]{figures/v1_1ms_corr_avg_all_stimulated_trials.png}
+      \caption{Average correlation coefficient.}
+      \label{fig:avg_corr_coef}
+    \end{subfigure}
+    \caption{(a) We fit a Conway-Maxwell-binomial distribution to the number of active neurons in $1$ms time bins of a $100$ms sliding window. We did this for all trials with a visual stimulus and took the average across those trials. We see a transient drop in value for the distribution's $\nu$ parameter at stimulus onset. This shows an increase in association between the neurons. (b) We measured the correlation coefficient between the spike counts of all possible pairs of neurons in the same sliding window. The took the average of those coefficients. We also did this for every visually stimulated trial, and took the average across trials. The increase in association is not reflected with an increase in average correlation.}
+    \label{fig:comb_nu_and_corr}
+  \end{figure}
+
+  \newpage
 
   \subsection{Reproduced stimulus related quenching of neural variability}
+  In the paper, they found a reduction in neural variability as measured by the fano factor. We did the same thing, got the same result.
+
+
 
 \section{Discussion}
 
@@ -113,7 +155,7 @@ Two `Phase3' Neuropixels \cite{jun} electrode arrays were inserted into the brai
   The stimulus consisted of sine-wave modulated full-field drifting gratings of 16 drift directions ($0^{\circ}, 22.5^{\circ}, \dots, 337.5^{\circ}$) with $2$Hz temporal frequency and $0.08$ cycles/degree spatial frequency displayed for $2$ seconds plus a blank condition. Each of these $17$ conditions were presented $10$ times in a random order across $170$ different trials. There were therefore $160$ trials with a visual stimulus present, and $10$ trials without a visual stimulus.
 
 \section{Methods}
-Details about all kinds of things here.
+
     \subsection{Binning data}
     We converted the spike times for each cell into spike counts by putting the spike times into time bins of a given `width' (in seconds). We used time bins of $1$ms, $5$ms, and $10$ms. We used different time bin widths to assess the impact of choosing a bin width.
 
@@ -216,7 +258,7 @@ Details about all kinds of things here.
         \caption{Figures showing the over-dispersion possible for a beta-binomial distribution relative to a binomial distribution. Parameters are shown in the captions. }
       \end{figure}
 
-      \subsubsection{Conway-Maxwell-binomial distribution}
+      \subsubsection{Conway-Maxwell-binomial distribution}\label{sec:conway_maxwell_binomial_distribution}
       The Conway-Maxwell-binomial distribution (COMb distribution) is a three parameter generalisation of the binomial distribution that allows for over dispersion and under dispersion relative to the binomial distribution. The parameters of the distribution are $n$ the number of Bernoulli trials, $0 \leq p \leq 1$, the location parameter, and $\nu \in \mathbb{R}$ the shape parameter.
 
       The probability mass function of the COMb distribution is
@@ -229,7 +271,12 @@ Details about all kinds of things here.
       \end{align}
       The only difference between this PMF and the PMF for the standard binomial is the introduction of $\nu$ and the consequent introduction of the normalising function $S(n,p,\nu)$.
 
-      Indeed, if $\nu = 1$ the COMb distribution is identical to the binomial distribution with the same values for $n$ and $p$. We can see in figure \ref{fig:comb_bin_dkl} that the KL-divergence $D_{KL}(P_{COMb}(n,p,\nu), P_{Bin}(n,p))=0$ along the line where $\nu=1$.
+      Indeed, if $\nu = 1$ the COMb distribution is identical to the binomial distribution with the same values for $n$ and $p$. We can see in figure \ref{fig:comb_bin_dkl} that the KL-divergence $D_{KL}(P_{COMb}(n,p,\nu) || P_{Bin}(n,p))=0$ along the line where $\nu=1$. The analytical expression for the divergence is
+      \begin{align}
+        D_{KL}(P_{COMb}(k;n,p,\nu) || P_{Bin}(k;n,p)) = &(\nu - 1) E_{P_{COMb}(k;n,p,\nu)}\left[ \log \binom{n}{k} \right] \\
+          &- \log S(n,p,\nu)
+      \end{align}
+      At $\nu = 1$, we have $S(n,p,1)$ which is just the sum over the binomial PMF, so $S(n,p,1) = 1$ and therefore $D_{KL}(P_{COMb}(n,p,\nu) || P_{Bin}(n,p))=0$.
 
       If $\nu < 1$ the COMb distribution will exhibit over-dispersion relative to the binomial distribution. If $p=0.5$ and $\nu=0$ the COMb distribution is the discrete uniform distribution, and if $\nu < 0$ the mass of the COMb distribution will tend to build up near $k=0$ and $k=n$. This over-dispersion represents positive association in the Bernoulli variables. An example of this over-dispersion can be seen in figure \ref{fig:comb_overrdispersion}.
 
@@ -237,15 +284,18 @@ Details about all kinds of things here.
 
       It should be noted that the shape parameter of the COMb distribution, $p$, does not correspond to the mean of the distribution, as is the case for the binomial and beta-binomial distributions. An illustration of this can be seen in figure \ref{fig:comb_skewed}. This is because an interaction between the $p$ and $\nu$ parameters skews the mean. There is no analytical expression for the mean of the COMb distribution.
 
-      \begin{center}
+      \begin{table}
+        \centering
         \begin{tabular}[h]{|c|c|c|}
           \hline
           $\boldsymbol{\nu}$  & \textbf{Relative dispersion}  & \textbf{Associaton between neurons/variables} \\ \hline
           $<1$                & over                          & positive                                      \\ \hline
-          $0$                 & none                          & none                                          \\ \hline
+          $1$                 & none                          & none                                          \\ \hline
           $>1$                & under                         & negative                                      \\ \hline
         \end{tabular}
-      \end{center}
+        \caption{Relative dispersion of the COMb distribution, and association between Bernoulli variables as represented by the value of the $\nu$ parameter.}
+      \end{table}
+
 
       Since the COMb distribution has the potential to capture positive and negative associatons between the neurons/Bernoulli variables, it should be an excellent candidate for modelling the number of active neurons in a neuronal ensemble.
 

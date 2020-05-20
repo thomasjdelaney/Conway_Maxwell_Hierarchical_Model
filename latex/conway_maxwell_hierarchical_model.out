@@ -1,7 +1,7 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 1
 \BOOKMARK [1][-]{section.2}{Results}{}% 2
 \BOOKMARK [2][-]{subsection.2.1}{Transient increases in mean number of active neurons and variance in number of active neurons at stimulus onset}{section.2}% 3
-\BOOKMARK [2][-]{subsection.2.2}{Conway-Maxwell-binomial distribution fits better than binomial or beta-binomial}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.2}{Conway-Maxwell-binomial distribution is usually a better fit than binomial or beta-binomial}{section.2}% 4
 \BOOKMARK [2][-]{subsection.2.3}{Conway-Maxwell-binomial distribution captures changes in association at stimulus onset}{section.2}% 5
 \BOOKMARK [2][-]{subsection.2.4}{Reproduced stimulus related quenching of neural variability}{section.2}% 6
 \BOOKMARK [1][-]{section.3}{Discussion}{}% 7
