@@ -1,11 +1,11 @@
 # Fdb version 3
-["bibtex conway_maxwell_hierarchical_model"] 1590007678 "conway_maxwell_hierarchical_model.aux" "conway_maxwell_hierarchical_model.bbl" "conway_maxwell_hierarchical_model" 1590007680
-  "conway_maxwell_hierarchical_model.aux" 1590007680 13057 a6842b110044aaba6392639ed6ed51e1 "pdflatex"
+["bibtex conway_maxwell_hierarchical_model"] 1590089449 "conway_maxwell_hierarchical_model.aux" "conway_maxwell_hierarchical_model.bbl" "conway_maxwell_hierarchical_model" 1590089451
+  "conway_maxwell_hierarchical_model.aux" 1590089451 17647 82b55ecfb30e694ba0cf914f72117c43 "pdflatex"
   "conway_maxwell_hierarchical_model.bbl.bib" 0 -1 0 ""
   (generated)
   "conway_maxwell_hierarchical_model.blg"
   "conway_maxwell_hierarchical_model.bbl"
-["pdflatex"] 1590007678 "conway_maxwell_hierarchical_model.tex" "conway_maxwell_hierarchical_model.pdf" "conway_maxwell_hierarchical_model" 1590007680
+["pdflatex"] 1590089449 "conway_maxwell_hierarchical_model.tex" "conway_maxwell_hierarchical_model.pdf" "conway_maxwell_hierarchical_model" 1590089451
   "/home/thomas/.texlive2019/texmf-var/web2c/pdftex/pdflatex.fmt" 1589722506 3704429 0303ff8f3ada1c5655ff4477b651b125 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1580927601 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
@@ -144,10 +144,10 @@
   "/usr/share/texlive/texmf-dist/tex/latex/ucs/utf8x.def" 1368571634 8036 21f7ac37aafb6cfeddbb196b8bfd6280 ""
   "/usr/share/texlive/texmf-dist/tex/latex/url/url.sty" 1388531844 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1580927610 35594 9aef19174c178978f61d14961262af5d ""
-  "conway_maxwell_hierarchical_model.aux" 1590007680 13057 a6842b110044aaba6392639ed6ed51e1 "pdflatex"
+  "conway_maxwell_hierarchical_model.aux" 1590089451 17647 82b55ecfb30e694ba0cf914f72117c43 "pdflatex"
   "conway_maxwell_hierarchical_model.bbl" 1589917935 3331 76307b5e14bd4ef032a98e6a96bd6202 "bibtex conway_maxwell_hierarchical_model"
-  "conway_maxwell_hierarchical_model.out" 1590007680 1725 5d7dacdebe8531810f615ca37a77b632 "pdflatex"
-  "conway_maxwell_hierarchical_model.tex" 1590007675 29655 11bbddd3685d3ee6fcebaed3c3bddf60 ""
+  "conway_maxwell_hierarchical_model.out" 1590089451 1951 6ad54fcb661d001dfb0c873bbda5c212 "pdflatex"
+  "conway_maxwell_hierarchical_model.tex" 1590089446 34776 7709c958f27a6c4556df70494762a2fc ""
   "figures/best_fit_proportion.png" 1590006585 11428 343e8d52fcf0c8a162bb17d539db1dfc ""
   "figures/betabinomial_big_overdispersion.png" 1589567460 17085 d7c56c4eeafcfd254c36e005712ce39b ""
   "figures/betabinomial_overdispersion.png" 1589567459 21321 7a00813539686176eb591d4ecd36cbb5 ""
@@ -155,13 +155,17 @@
   "figures/comb_overrdispersion.png" 1589567577 20798 95716d369f2b3b586076d430c7fbaf7c ""
   "figures/comb_skewed.png" 1589567578 19935 5733900a725f21c9fdaa13337ae830dd ""
   "figures/comb_underdispersion.png" 1589567460 26217 982fc4e04452207e1a8cfd4894d53e41 ""
-  "figures/fitting_example.png" 1590006585 28429 a7e4537cc7984b7661491483ca838dd5 ""
+  "figures/fitting_example.png" 1590081558 28429 a7e4537cc7984b7661491483ca838dd5 ""
+  "figures/hippocampus_1ms_moving_avg_all_stimulated_trials.png" 1590088824 61640 8da9b3c89c0dc83c9b39276de8aecfef ""
+  "figures/hippocampus_1ms_moving_var_all_stimulated_trials.png" 1590088847 68245 e5979703d289c8f761b9c5eed765280c ""
+  "figures/thalamus_1ms_moving_avg_all_stimulated_trials.png" 1590088876 61202 d9132215da399cecb1960318aee16a3e ""
+  "figures/thalamus_1ms_moving_var_all_stimulated_trials.png" 1590088891 69280 39e33d96f60a3ebd4e348055981c883e ""
   "figures/v1_1ms_comb_nu_all_stimulated_trials.png" 1589914999 59743 1d7a3374bee1ce4cd856478176fb9787 ""
   "figures/v1_1ms_corr_avg_all_stimulated_trials.png" 1589914919 70240 61306d52d2f1f9bfd8563c0ae47833cb ""
-  "figures/v1_1ms_moving_avg_all_stimulated_trials.png" 1589819431 48821 42539c7b8c7f26dd887168c28390e1de ""
-  "figures/v1_1ms_moving_var_all_stimulated_trials.png" 1589819455 51131 4e852e4e9cd9b1153c2cfc384b85de11 ""
+  "figures/v1_1ms_moving_avg_all_stimulated_trials.png" 1590086539 50036 05994037dd7f4f7e2e3d351691b6c6c8 ""
+  "figures/v1_1ms_moving_var_all_stimulated_trials.png" 1590086554 52266 7af3b4e62d9fb3c6637a2ef2979d190b ""
   (generated)
-  "conway_maxwell_hierarchical_model.out"
   "conway_maxwell_hierarchical_model.aux"
-  "conway_maxwell_hierarchical_model.log"
   "conway_maxwell_hierarchical_model.pdf"
+  "conway_maxwell_hierarchical_model.log"
+  "conway_maxwell_hierarchical_model.out"

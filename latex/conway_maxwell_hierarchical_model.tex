@@ -68,31 +68,73 @@
   Point out that we don't necessarily need to measure correlations anyway.
 
 \section{Results}
-Defining a neuron as \textit{active} in a time bin if it fires at least one spike during the time interval covered by that bin. We measured the number of active neurons in the primary visual cortex of a mouse in $1$ms bins across $160$ trials of a moving bar visual stimulus. We then slid a $100$ms window across these $1$ms bins taking mesurements, and fitting distributions along the way.
+We defined a neuron as \textit{active} in a time bin if it fires at least one spike during the time interval covered by that bin. We measured the number of active neurons in the primary visual cortex of a mouse in $1$ms bins across $160$ trials of a moving bar visual stimulus. We then slid a $100$ms window across these $1$ms bins taking mesurements, and fitting distributions along the way. We did the same for neurons in the thalamus, hippocampus, striatum, and motor cortex. We repeated the analysis for $5$ms time bins with $40$ bin windows, and $10$ms time bins with $40$ bin windows.
 
-  \subsection{Transient increases in mean number of active neurons and variance in number of active neurons at stimulus onset}
-  We measured the averge number of active neurons, and the variance of the number of active neurons in a $100$ms sliding window starting $280$ms before stimulus onset until $780$ms after stimulus onset. We found a transient increase in both the average and variance of the number of active neurons at stimulus onset, followed by a fall to pre-stimulus levels, followed by another transient increase (see figure \ref{fig:moving_avg_and_var}). The oscillation in both of these measurements appear to reflect the frequency of the stimulus.
+  \subsection{Increases in mean number of active neurons and variance in number of active neurons at stimulus onset in some regions}
+  We measured the averge number of active neurons, and the variance of the number of active neurons in a $100$ms sliding window starting $280$ms before stimulus onset until $780$ms after stimulus onset.
 
-  \newpage
+    \subsubsection{Primary visual cortex}
+    We found a transient increase in both the average and variance of the number of active neurons at stimulus onset, followed by a fall to pre-stimulus levels, followed by another transient increase (see figure \ref{fig:v1_moving_avg_and_var}). The oscillation in both of these measurements appear to reflect the frequency of the stimulus.
 
-  \begin{figure}[h]
-    \begin{subfigure}[h]{\linewidth}
-      \includegraphics[width=\linewidth]{figures/v1_1ms_moving_avg_all_stimulated_trials.png}
-      \caption{Moving average.}
-      \label{fig:moving_avg_num_active_cells}
-    \end{subfigure}
-    \begin{subfigure}[h]{\linewidth}
-      \includegraphics[width=\linewidth]{figures/v1_1ms_moving_var_all_stimulated_trials.png}
-      \caption{Moving variance.}
-      \label{fig:moving_var_num_active_cells}
-    \end{subfigure}
-    \caption{The (a) average and (b) variance of the number of active neurons, measured using a sliding window $100$ms wide, split into $100$ bins. The midpoint of the time interval for each window is used as the timepoint (x-axis point) for the measurements using that window. The grey shaded area indicates the presence of a visual stimulus. The opaque line is an average across the $160$ trials that included a visual stimulus of any kind. We can see a transient increase in the average number of active neurons and the variance of this number, followed by a fluctuation and another increase.}
-    \label{fig:moving_avg_and_var}
-  \end{figure}
+    \begin{figure}[h]
+      \begin{subfigure}[h]{\linewidth}
+        \includegraphics[width=\linewidth]{figures/v1_1ms_moving_avg_all_stimulated_trials.png}
+        \caption{Moving average.}
+        \label{fig:v1_moving_avg_num_active_cells}
+      \end{subfigure}
+      \begin{subfigure}[h]{\linewidth}
+        \includegraphics[width=\linewidth]{figures/v1_1ms_moving_var_all_stimulated_trials.png}
+        \caption{Moving variance.}
+        \label{fig:v1_moving_var_num_active_cells}
+      \end{subfigure}
+      \caption{The (a) average and (b) variance of the number of active neurons, measured using a sliding window $100$ms wide, split into $100$ bins. The midpoint of the time interval for each window is used as the timepoint (x-axis point) for the measurements using that window. The grey shaded area indicates the presence of a visual stimulus. The opaque line is an average across the $160$ trials that included a visual stimulus of any kind. We can see a transient increase in the average number of active neurons and the variance of this number, followed by a fluctuation and another increase.}
+      \label{fig:v1_moving_avg_and_var}
+    \end{figure}
 
-  \newpage
+    \newpage
+
+    \subsubsection{Hippocampus}
+
+    \begin{figure}[h]
+      \begin{subfigure}[h]{\linewidth}
+        \includegraphics[width=\linewidth]{figures/hippocampus_1ms_moving_avg_all_stimulated_trials.png}
+        \caption{Moving average.}
+        \label{fig:hippocampus_moving_avg_num_active_cells}
+      \end{subfigure}
+      \begin{subfigure}[h]{\linewidth}
+        \includegraphics[width=\linewidth]{figures/hippocampus_1ms_moving_var_all_stimulated_trials.png}
+        \caption{Moving variance.}
+        \label{fig:hippocampus_moving_var_num_active_cells}
+      \end{subfigure}
+      \caption{The (a) average and (b) variance of the number of active neurons, measured using a sliding window $100$ms wide, split into $100$ bins. The midpoint of the time interval for each window is used as the timepoint (x-axis point) for the measurements using that window. The grey shaded area indicates the presence of a visual stimulus. The opaque line is an average across the $160$ trials that included a visual stimulus of any kind. We can see a transient increase in the average number of active neurons and the variance of this number, followed by a fluctuation and another increase.}
+      \label{fig:hippocampus_moving_avg_and_var}
+    \end{figure}
+
+    \newpage
+
+    \subsubsection{Thalamus}
+
+    \begin{figure}[h]
+      \begin{subfigure}[h]{\linewidth}
+        \includegraphics[width=\linewidth]{figures/thalamus_1ms_moving_avg_all_stimulated_trials.png}
+        \caption{Moving average.}
+        \label{fig:thalamus_moving_avg_num_active_cells}
+      \end{subfigure}
+      \begin{subfigure}[h]{\linewidth}
+        \includegraphics[width=\linewidth]{figures/thalamus_1ms_moving_var_all_stimulated_trials.png}
+        \caption{Moving variance.}
+        \label{fig:thalamus_moving_var_num_active_cells}
+      \end{subfigure}
+      \caption{The (a) average and (b) variance of the number of active neurons, measured using a sliding window $100$ms wide, split into $100$ bins. The midpoint of the time interval for each window is used as the timepoint (x-axis point) for the measurements using that window. The grey shaded area indicates the presence of a visual stimulus. The opaque line is an average across the $160$ trials that included a visual stimulus of any kind. We can see a transient increase in the average number of active neurons and the variance of this number, followed by a fluctuation and another increase.}
+      \label{fig:thalamus_moving_avg_and_var}
+    \end{figure}
+
+    \newpage
 
   \subsection{Conway-Maxwell-binomial distribution is usually a better fit than binomial or beta-binomial}
+  After fitting a binomial, a beta-binomial, and a Conway-Maxwell-binomial (COMb) distribution to each window for each bin width, and each region, we assessed the goodness-of-fit of each distribution by calculating the log-likelihood of each fitted distribution using the associated sample. We measured the proportion of samples for which each distribution was the best fit, for each bin width value and each region.
+
+  We found that the COMb distribution was the best fit for most of the samples regardless of bin width or region. The bin width had an effect on the number of samples for which the COMb distribution was the best fit. For a bin width of $1$ms, the COMb distribution was the best fit for over $90\%$ of samples, the beta-binomial distribution was the best fit for less than $10\%$ of samples, and the binomial distribution was the best fit for less that $1\%$ of samples, across regions. For $5$ms bins, the COMb distribution was the best fit for $70-80\%$ of samples, the beta-binomial distribution was the best fit for $20-30\%$ of the samples, and again the binomial distribution was the best fit for less that $1\%$ of samples, across regions. Finally, for $10$ms bins,  the COMb distribution was the best fit for $53-80\%$ of samples, the beta-binomial distribution was the best fit for $20-47\%$ of the samples, and the binomial distribution was the best fit for less that $0.1\%$ of samples, across regions. These findings are summarised in table \ref{tab:proportions}.
 
   \newpage
 
@@ -107,9 +149,22 @@ Defining a neuron as \textit{active} in a time bin if it fires at least one spik
       \caption{Proportion of best fit}
       \label{fig:best_fit_proportion}
     \end{subfigure}
-    \caption{(a) An example of the binomial, beta-binomial, and Conway-Maxwell-binomial distributions fitted to a sample of neural activity. The Conway-Maxwell-binomial distribution is the best fit in this case. The histogram shows the empirical distribution of the sample. The probability mass function of each distribution is indicated by a differently coloured line. (b) Across all samples in all trials, the proportion of samples for which each fitted distribution was the the best fit. The Conway-Maxwell-binomial distribution was the best fit for $93\%$ of the samples.}
+    \caption{(a) An example of the binomial, beta-binomial, and Conway-Maxwell-binomial distributions fitted to a sample of neural activity. The Conway-Maxwell-binomial distribution is the best fit in this case. The histogram shows the empirical distribution of the sample. The probability mass function of each distribution is indicated by a differently coloured line. (b) Across all samples in all trials, the proportion of samples for which each fitted distribution was the the best fit. The Conway-Maxwell-binomial distribution was the best fit for $93\%$ of the samples taken from V1 using a bin width of $1$ms.}
     \label{fig:fitting}
   \end{figure}
+
+  \begin{table}
+    \centering
+    \begin{tabular}[h]{|c|c|c|c|}
+      \hline
+      \textbf{Bin Width (ms)} & \textbf{Binomial}  & \textbf{Beta-binomial} & \textbf{COMb}  \\ \hline
+      $1$ms                   & $<1\%$                        & $<10\%$                           & $>90\%$                   \\ \hline
+      $5$ms                   & $<0.1\%$                      & $20-30\%$                         & $70-80\%$                 \\ \hline
+      $10$ms                  & $<0.1\%$                      & $20-47\%$                         & $53-80\%$                 \\ \hline
+    \end{tabular}
+    \caption{Proportion of samples for which each distribution was the best fit, grouped by bin width. The COMb distribution is the best fit most of the time.}
+    \label{tab:proportions}
+  \end{table}
 
   \newpage
 
