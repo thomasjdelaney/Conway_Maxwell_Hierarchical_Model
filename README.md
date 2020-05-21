@@ -9,5 +9,4 @@ The data used is available online from Nick Steinmetz's lab. You can find it [he
 We wrote a repository specifically for creating and fitting Conway-Maxwell-binomial distributions. You can find it [here](https://github.com/thomasjdelaney/Conway_Maxwell_Binomial_Distribution).
 
 ##### TODO
-- Continue to rebuild results.
 - Change the x-axis on figures so that the stimulus onset is at 0s.

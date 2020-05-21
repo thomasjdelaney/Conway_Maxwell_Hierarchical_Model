@@ -231,7 +231,7 @@ if not args.debug:
         plt.close('all')
 
     ################## Example of fitting #######################
-    if args.fitted_example:
+    if (args.fitted_example) & (args.region == 'v1') & (args.bin_width == 0.001):
         h5_file_name = comh.getFileListFromTrialIndices(h5_dir, [0], args.bin_width, args.window_size)[0]
         h5_file = h5py.File(h5_file_name,'r')
         num_cells = h5_file.get(args.region).get('num_cells')[()]
@@ -246,13 +246,25 @@ if not args.debug:
         plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg'));
         plt.close('all')
 
+    if args.fitted_example:
         h5_file_list = comh.getFileListFromTrialIndices(h5_dir, range(170), args.bin_width, args.window_size)
         best_fit_inds = findBestDists(h5_file_list, args.region)
         plt.figure(figsize=(4,3))
-        plt.hist(best_fit_inds.flatten(), bins=[-0.5,0.5,1.5,2.5], density=True)
+        n, bins, patches = plt.hist(best_fit_inds.flatten(), bins=[-0.5,0.5,1.5,2.5], density=True)
+        csv_file_name = os.path.join(csv_dir, 'best_fits.csv')
+        csv_exists = os.path.isfile(csv_file_name)
+        if csv_exists:
+            prop_frame = pd.read_csv(csv_file_name, index_col=['bin_width','region'])
+            prop_frame.loc[(str(int(args.bin_width*1000))+'ms',args.region),:] = n
+            os.remove(csv_file_name)
+        else:
+            prop_frame = pd.DataFrame({'bin_width':[str(int(args.bin_width*1000))+'ms'], 'region':args.region, 'binom_prop':n[0], 'betabinom_prop':n[1], 'comb_binom':n[2]})
+            prop_frame = prop_frame.set_index(['bin_width','region'])
+        prop_frame.to_csv(csv_file_name, mode='w', header=True, index_label=['bin_width','region'])
         plt.xticks([0,1,2],['Bin.', 'Beta-bin.', 'COMb'], fontsize='large') # 93% COMB
         plt.ylabel('Proportion best fit', fontsize='x-large')
         plt.tight_layout()
-        save_name = os.path.join(fig_dir, 'best_fit_proportion.png')
+        save_name = os.path.join(image_dir, 'Best_fit_proportions', args.region, str(int(1000*args.bin_width)) + 'ms', args.region + '_' + str(int(1000*args.bin_width)) + 'ms' + '_best_fit_proportion.png')
+        os.makedirs(os.path.dirname(save_name)) if not os.path.exists(os.path.dirname(save_name)) else None
         plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg'));
         plt.close('all')

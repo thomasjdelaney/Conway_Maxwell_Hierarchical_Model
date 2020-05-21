@@ -493,18 +493,19 @@ def plotTrialSummary(h5_file, region, stim_info):
     """
     trial_index = getTrialIndexFromH5File(h5_file)
     trial_info = stim_info.loc[trial_index]
-    bin_borders = getBinBorders(trial_info.read_starts, trial_info.read_stops, h5_file.get('bin_width')[()])
-    window_centres = h5_file.get('window_centre_times')[()]
+    bin_borders = getBinBorders(trial_info.read_starts, trial_info.read_stops, h5_file.get('bin_width')[()]) - trial_info.stim_starts
+    window_centres = h5_file.get('window_centre_times')[()] - trial_info.stim_starts
+    stim_starts = 0.0; stim_stops = trial_info.stim_stops - trial_info.stim_starts;
     fig=plt.figure(figsize=(12,10))
     plt.subplot(2,2,1)
-    plotNumActiveCellsByTimeByRegion(bin_borders, {'Num. active cells':h5_file.get(region).get('num_active_cells_binned')[()]}, stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops], get_centres=True)
+    plotNumActiveCellsByTimeByRegion(bin_borders, {'Num. active cells':h5_file.get(region).get('num_active_cells_binned')[()]}, stim_starts=[stim_starts], stim_stops=[stim_stops], get_centres=True)
     plt.plot(window_centres, h5_file.get(region).get('moving_avg')[()], label='Moving Average')
     plt.title(region.capitalize().replace('_', ' ') + ', Trial ' + str(trial_index) + ', Total cells = ' + str(h5_file.get(region).get('num_cells')[()]), fontsize='large')
     ax1 = plt.subplot(2,2,2)
     plt.plot(window_centres, h5_file.get(region).get('binom_params')[()], label=r'Binom. $p$', color='blue')
     betabinom_pr = reparametriseBetaBinomial(h5_file.get(region).get('betabinom_ab'))
     plt.plot(window_centres, betabinom_pr[:,0], label=r'Beta-Binom. $\pi$', color='orange')
-    plotShadedStimulus(stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops], upper_bound=plt.ylim()[1])
+    plotShadedStimulus(stim_starts=[stim_starts], stim_stops=[stim_stops], upper_bound=plt.ylim()[1])
     plt.xlabel('Time (s)', fontsize='large')
     plt.legend()
     ax2 = ax1.twinx()
@@ -512,18 +513,18 @@ def plotTrialSummary(h5_file, region, stim_info):
     plt.legend(fontsize='small')
     plt.subplot(2,2,3)
     plt.plot(window_centres, betabinom_pr[:,1], label=r'Beta-Binom. $\rho$')
-    plotShadedStimulus(stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops], upper_bound=plt.ylim()[1])
+    plotShadedStimulus(stim_starts=[stim_starts], stim_stops=[stim_stops], upper_bound=plt.ylim()[1])
     plt.xlabel('Time (s)', fontsize='large')
     plt.legend(fontsize='large')
     plt.subplot(2,2,4)
     plt.plot(window_centres, h5_file.get(region).get('comb_params')[()][:,1], label=r'COM-Binom. $\nu$')
-    plotShadedStimulus(stim_starts=[trial_info.stim_starts], stim_stops=[trial_info.stim_stops], upper_bound=plt.ylim()[1], lower_bound=plt.ylim()[0])
+    plotShadedStimulus(stim_starts=[stim_starts], stim_stops=[stim_stops], upper_bound=plt.ylim()[1], lower_bound=plt.ylim()[0])
     plt.xlabel('Time (s)', fontsize='large')
     plt.legend(fontsize='large')
     plt.tight_layout()
     return None
 
-def getXAxisTimeAdjustor(h5_file_name):
+def getXAxisTimeAdjustor(h5_file_name, stim_start=None):
     """
     For getting the time axis and time adjustor given a file.
     Arguments:  h5_file_name, string
@@ -531,7 +532,7 @@ def getXAxisTimeAdjustor(h5_file_name):
                 time_adjustor, float
     """
     x_axis = h5py.File(h5_file_name,'r').get('window_centre_times')[()]
-    time_adjustor = x_axis[0]
+    time_adjustor = stim_start if stim_start != None else x_axis[0]
     return x_axis - time_adjustor, time_adjustor
 
 def collectMeasureFromFiles(h5_file_list, region, measure, index, reparametrise):
@@ -566,18 +567,18 @@ def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[],
                 reparametrise, bool, whether to reparametrise the betabinomial paramters or not.
     Returns:    None
     """
-    x_axis, time_adjustor = getXAxisTimeAdjustor(h5_file_list[0])
+    x_axis, time_adjustor = getXAxisTimeAdjustor(h5_file_list[0]) if stim_times==[] else getXAxisTimeAdjustor(h5_file_list[0], stim_start=stim_times[0])
     measures = collectMeasureFromFiles(h5_file_list, region, measure, index, reparametrise)
     measures_mean = np.nanmean(measures, axis=0)
     measures_std = np.nanstd(measures, axis=0)
     measures_samples = np.sum(~np.isnan(measures), axis=0)
     measures_stderr = measures_std/np.sqrt(measures_samples)
-    plt.plot(x_axis, measures_mean, color=colour, **kwargs)
-    plt.fill_between(x_axis, measures_mean-measures_stderr, measures_mean+measures_stderr, alpha=0.3, color=colour, label='Std. Err.')
     lower_bound = np.nanmin(np.nanmin(measures_mean - measures_stderr),0)
     upper_bound = np.nanmax(measures_mean + measures_stderr)
     if stim_times != []: # include the grey shaded area to indicate the stimulus
-        plotShadedStimulus([stim_times[0]]-time_adjustor, [stim_times[1]]-time_adjustor, upper_bound, lower_bound=lower_bound)
+        plotShadedStimulus([0.0], [stim_times[1] - stim_times[0]], upper_bound, lower_bound=lower_bound)
+    plt.plot(x_axis, measures_mean, color=colour, **kwargs)
+    plt.fill_between(x_axis, measures_mean-measures_stderr, measures_mean+measures_stderr, alpha=0.3, color=colour, label='Std. Err.')
     plt.ylim(lower_bound, upper_bound)
     plt.xlim((x_axis[0], x_axis[-1]))
     plt.xticks(fontsize='large');plt.yticks(fontsize='large')
@@ -600,27 +601,27 @@ def plotCellFanoFactors(h5_file_list, region, stim_times=[], colour='blue', is_t
                 window_size, int
     Return:     Nothing
     """
-    x_axis, time_adjustor = getXAxisTimeAdjustor(h5_file_list[0])
+    x_axis, time_adjustor = getXAxisTimeAdjustor(h5_file_list[0]) if stim_times==[] else getXAxisTimeAdjustor(h5_file_list[0], stim_start=stim_times[0])
     full_fanos = getFanoFactorFromFiles(h5_file_list, region, window_size)
-    p_value, last_unstimulated_window_time, first_all_stimulated_window_time, last_unstimulated_window_ind, first_all_stimulated_window_ind = runFanoStatTest(full_fanos, h5_file_list[0], region)
+    mw_res, last_unstimulated_window_time, first_all_stimulated_window_time, last_unstimulated_window_ind, first_all_stimulated_window_ind = runFanoStatTest(full_fanos, h5_file_list[0], region)
     last_unstimulated_window_time, first_all_stimulated_window_time = [last_unstimulated_window_time, first_all_stimulated_window_time] - time_adjustor
     num_cells, num_windows = full_fanos.shape
     mean_full_fanos = full_fanos.mean(axis=0)
     std_err_full_fanos = full_fanos.std(axis=0)/np.sqrt(num_cells)
-    lower_bound = np.min(np.min(mean_full_fanos - std_err_full_fanos),0)
-    plt.plot(x_axis, mean_full_fanos, color=colour)
-    plt.fill_between(x_axis, mean_full_fanos - std_err_full_fanos, mean_full_fanos + std_err_full_fanos, color=colour, alpha=0.25, label='Std. Err.')
     sig_indicator_y = np.min((mean_full_fanos - std_err_full_fanos)[[last_unstimulated_window_ind, first_all_stimulated_window_ind]])
-    sig_indicator_y = sig_indicator_y - sig_indicator_y*0.03
+    sig_indicator_y = sig_indicator_y - sig_indicator_y*0.031
     sig_indicator_base = sig_indicator_y - sig_indicator_y*0.02
     sig_indicator_text = sig_indicator_base - sig_indicator_base*0.005
     sig_indicator_x = [last_unstimulated_window_time, first_all_stimulated_window_time]
-    plt.plot([sig_indicator_x[0], sig_indicator_x[0], sig_indicator_x[1], sig_indicator_x[1]], [sig_indicator_y, sig_indicator_base, sig_indicator_base, sig_indicator_y], lw=1.5, c='k')
-    plt.text(np.mean(sig_indicator_x), sig_indicator_text, '***', ha='center', va='top', color='k')
+    plt.plot(x_axis, mean_full_fanos, color=colour)
+    plt.fill_between(x_axis, mean_full_fanos - std_err_full_fanos, mean_full_fanos + std_err_full_fanos, color=colour, alpha=0.25, label='Std. Err.')
+    if mw_res.pvalue < 0.005:
+        plt.plot([sig_indicator_x[0], sig_indicator_x[0], sig_indicator_x[1], sig_indicator_x[1]], [sig_indicator_y, sig_indicator_base, sig_indicator_base, sig_indicator_y], lw=1.5, c='k')
+        plt.text(np.mean(sig_indicator_x), sig_indicator_text, '***', ha='center', va='top', color='k')
+    lower_bound=plt.ylim()[0]
+    plotShadedStimulus([0.0], [stim_times[1] - stim_times[0]], plt.ylim()[1], lower_bound=lower_bound) if stim_times != [] else None
     plot_peak = np.max(mean_full_fanos + std_err_full_fanos)
-    plt.ylim((plt.ylim()[0], plot_peak))
-    if stim_times != []: # include the grey shaded area to indicate the stimulus
-        plotShadedStimulus([stim_times[0]]-time_adjustor, [stim_times[1]]-time_adjustor, plt.ylim()[1], lower_bound=plt.ylim()[0])
+    plt.ylim((lower_bound, plot_peak))
     plt.ylabel('Mean Fano Factor', fontsize='x-large')
     plt.xlabel('Time (s)', fontsize='x-large')
     plt.xlim((x_axis[0], x_axis[-1]))
