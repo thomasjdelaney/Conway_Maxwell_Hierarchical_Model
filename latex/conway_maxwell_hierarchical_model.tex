@@ -71,7 +71,7 @@
 We defined a neuron as \textit{active} in a time bin if it fires at least one spike during the time interval covered by that bin. We measured the number of active neurons in the primary visual cortex of a mouse in $1$ms bins across $160$ trials of a moving bar visual stimulus. We then slid a $100$ms window across these $1$ms bins taking mesurements, and fitting distributions along the way. We did the same for neurons in the thalamus, hippocampus, striatum, and motor cortex. We repeated the analysis for $5$ms time bins with $40$ bin windows, and $10$ms time bins with $40$ bin windows.
 
   \subsection{Increases in mean number of active neurons and variance in number of active neurons at stimulus onset in some regions}
-  We measured the averge number of active neurons, and the variance of the number of active neurons in a $100$ms sliding window starting $280$ms before stimulus onset until $780$ms after stimulus onset.
+  We measured the averge number of active neurons, and the variance of the number of active neurons in a $100$ms sliding window starting $500$ms before stimulus onset until $1000$ms after stimulus onset. We found differences in the response across regions. There were no observed changes in response to the stimulus in the motor cortex or the striatum. The changes in the other regions are detailed below.
 
     \subsubsection{Primary visual cortex}
     We found a transient increase in both the average and variance of the number of active neurons at stimulus onset, followed by a fall to pre-stimulus levels, followed by another transient increase (see figure \ref{fig:v1_moving_avg_and_var}). The oscillation in both of these measurements appear to reflect the frequency of the stimulus.
@@ -94,6 +94,7 @@ We defined a neuron as \textit{active} in a time bin if it fires at least one sp
     \newpage
 
     \subsubsection{Hippocampus}
+    In the hippocampus we observed a transient increase in the mean number of active neurons and in the variance of the number of active neurons at stimulus onset (see figure \ref{fig:hippocampus_moving_avg_and_var}). The increase lasted about $125$ms, and the subsequent fall to baseline took the a similar amount of time.
 
     \begin{figure}[h]
       \begin{subfigure}[h]{\linewidth}
@@ -106,13 +107,14 @@ We defined a neuron as \textit{active} in a time bin if it fires at least one sp
         \caption{Moving variance.}
         \label{fig:hippocampus_moving_var_num_active_cells}
       \end{subfigure}
-      \caption{The (a) average and (b) variance of the number of active neurons, measured using a sliding window $100$ms wide, split into $100$ bins. The midpoint of the time interval for each window is used as the timepoint (x-axis point) for the measurements using that window. The grey shaded area indicates the presence of a visual stimulus. The opaque line is an average across the $160$ trials that included a visual stimulus of any kind. We can see a transient increase in the average number of active neurons and the variance of this number, followed by a fluctuation and another increase.}
+      \caption{The (a) average and (b) variance of the number of active neurons, measured using a sliding window $100$ms wide, split into $100$ bins. The midpoint of the time interval for each window is used as the timepoint (x-axis point) for the measurements using that window. The grey shaded area indicates the presence of a visual stimulus. The opaque line is an average across the $160$ trials that included a visual stimulus of any kind. We can see a transient increase in the average number of active neurons and the variance of this number.}
       \label{fig:hippocampus_moving_avg_and_var}
     \end{figure}
 
     \newpage
 
     \subsubsection{Thalamus}
+    In the thalamus we observed a transient increased in the both the average and variance of the number of active neurons on stimulus onset, followed by a fall to pre-stimulus levels, followed by a sustained increase until the stimulus presentation ends.
 
     \begin{figure}[h]
       \begin{subfigure}[h]{\linewidth}
@@ -125,7 +127,7 @@ We defined a neuron as \textit{active} in a time bin if it fires at least one sp
         \caption{Moving variance.}
         \label{fig:thalamus_moving_var_num_active_cells}
       \end{subfigure}
-      \caption{The (a) average and (b) variance of the number of active neurons, measured using a sliding window $100$ms wide, split into $100$ bins. The midpoint of the time interval for each window is used as the timepoint (x-axis point) for the measurements using that window. The grey shaded area indicates the presence of a visual stimulus. The opaque line is an average across the $160$ trials that included a visual stimulus of any kind. We can see a transient increase in the average number of active neurons and the variance of this number, followed by a fluctuation and another increase.}
+      \caption{The (a) average and (b) variance of the number of active neurons, measured using a sliding window $100$ms wide, split into $100$ bins. The midpoint of the time interval for each window is used as the timepoint (x-axis point) for the measurements using that window. The grey shaded area indicates the presence of a visual stimulus. The opaque line is an average across the $160$ trials that included a visual stimulus of any kind.}
       \label{fig:thalamus_moving_avg_and_var}
     \end{figure}
 
@@ -192,10 +194,29 @@ We defined a neuron as \textit{active} in a time bin if it fires at least one sp
 
   \newpage
 
-  \subsection{Reproduced stimulus related quenching of neural variability}
-  In the paper, they found a reduction in neural variability as measured by the fano factor. We did the same thing, got the same result.
+  \subsection{Replicating stimulus related quenching of neural variability}
+  Churchland et al. (2010) inspected the effect of a stimulus on neural variability. One of the measures of neural variability that they employed was the Fano factor of the spike counts of individual cells (see section \ref{sec:fano_factor}). They found a reduction in neural variability as measured by the Fano factor in various cortical areas in a macaque \cite{churchland}.
 
+  We measured the fano factor of the spike count of each cell in each brain region, during each trial. We measured the mean and standard error of these Fano factors from $500$ms before stimulus onset until $1000$ms after stimulus end. For the primary visual cortex, we found a transient reduction in the Fano factor immediately after stimulus onset. We used a Mann-Whitney U test to check that the Fano factors measured in a window starting at stimulus onset and ending $100$ms later were significantly lower than the factors measured in a window ending at stimulus onset ($p < 0.001$, see figure \ref{fig:v1_1ms_fano_factor}). We did not get this statistically significant result in any other region.
 
+  Our findings agree with those of Churchland et al for the primary visual cortex. However Churchland also found a reduction in the Fano factor in the dorsal premotor cortex (PMd) at stimulus onset. Our measurements from the mouse motor cortex show no change at stimulus onset (see figure \ref{fig:motor_cortex_fano_factor}). This could indicate some difference in the functionality of the motor cortex in a macaque and the motor cortex of a mouse.
+
+  \newpage
+
+  \begin{figure}[h]
+    \begin{subfigure}[h]{0.5\linewidth}
+      \includegraphics[width=\linewidth]{figures/v1_1ms_fano_factor.png}
+      \caption{Primary visual cortex.}
+      \label{fig:v1_1ms_fano_factor}
+    \end{subfigure}
+    \begin{subfigure}[h]{0.5\linewidth}
+      \includegraphics[width=\linewidth]{figures/motor_cortex_1ms_fano_factor.png}
+      \caption{Motor cortex.}
+      \label{fig:motor_cortex_fano_factor}
+    \end{subfigure}
+    \caption{(a) The mean Fano factor of the spike counts of the cells in the primary visual cortex. Means were taken across cells first, then across trials. There was a significant decrease in the Fano factors immediately after stimulus onset. (b) The mean Fano factor of the spike counts of the cells in the motor cortex. No significant change in measurements at any point.}
+    \label{fig:fano_factors}
+  \end{figure}
 
 \section{Discussion}
 
@@ -247,7 +268,7 @@ Two `Phase3' Neuropixels \cite{jun} electrode arrays were inserted into the brai
       \item[Log-likelihoods] We also recorded the log-likelihood of each of the fitted distributions for each window.
     \end{description}
 
-    \subsection{Fano factor}\label{sec:faco_factor}
+    \subsection{Fano factor}\label{sec:fano_factor}
     The \textit{Fano factor} of a random variable is defined as the ratio of the variable's variance to its mean.
     \begin{align}\label{eq:fano_factor}
       F = \frac{\sigma^2}{\mu}

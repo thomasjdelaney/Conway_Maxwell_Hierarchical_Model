@@ -173,7 +173,7 @@ if not args.debug:
         h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
         trial_info = stim_info.loc[comh.getTrialIndexFromH5File(h5py.File(h5_file_list[0],'r'))]
         stim_times = [trial_info['stim_starts'], trial_info['stim_stops']]
-        plt.figure(figsize=(5.5,4))
+        plt.figure(figsize=(4,3))
         comh.plotCellFanoFactors(h5_file_list, args.region, stim_times=stim_times, colour='blue', is_tight_layout=True, use_title=True, window_size=args.window_size)
         save_name = os.path.join(image_dir, 'Fano_factors', args.region, str(int(1000*args.bin_width)) + 'ms', args.region + '_' + str(int(1000*args.bin_width)) + 'ms' + '_fano_factor.png')
         os.makedirs(os.path.dirname(save_name)) if not os.path.exists(os.path.dirname(save_name)) else None

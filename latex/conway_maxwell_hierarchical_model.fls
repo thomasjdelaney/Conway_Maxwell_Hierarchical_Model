@@ -248,6 +248,12 @@ INPUT ./figures/v1_1ms_comb_nu_all_stimulated_trials.png
 INPUT figures/v1_1ms_corr_avg_all_stimulated_trials.png
 INPUT ./figures/v1_1ms_corr_avg_all_stimulated_trials.png
 INPUT ./figures/v1_1ms_corr_avg_all_stimulated_trials.png
+INPUT figures/v1_1ms_fano_factor.png
+INPUT ./figures/v1_1ms_fano_factor.png
+INPUT ./figures/v1_1ms_fano_factor.png
+INPUT figures/motor_cortex_1ms_fano_factor.png
+INPUT ./figures/motor_cortex_1ms_fano_factor.png
+INPUT ./figures/motor_cortex_1ms_fano_factor.png
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam5.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm5.tfm
