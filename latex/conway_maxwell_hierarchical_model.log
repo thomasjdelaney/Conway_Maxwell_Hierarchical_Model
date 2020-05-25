@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2020.5.17)  22 MAY 2020 20:38
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2020.5.17)  25 MAY 2020 23:19
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -477,12 +477,12 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 73.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 76.
-<figures/v1_1ms_moving_avg_all_stimulated_trials.png, id=116, 650.43pt x 216.81pt>
+<figures/v1_1ms_moving_avg_all_stimulated_trials.png, id=115, 650.43pt x 216.81pt>
 File: figures/v1_1ms_moving_avg_all_stimulated_trials.png Graphic file (type png)
 <use figures/v1_1ms_moving_avg_all_stimulated_trials.png>
 Package pdftex.def Info: figures/v1_1ms_moving_avg_all_stimulated_trials.png  used on input line 81.
 (pdftex.def)             Requested size: 426.79135pt x 142.26797pt.
-<figures/v1_1ms_moving_var_all_stimulated_trials.png, id=118, 650.43pt x 216.81pt>
+<figures/v1_1ms_moving_var_all_stimulated_trials.png, id=117, 650.43pt x 216.81pt>
 File: figures/v1_1ms_moving_var_all_stimulated_trials.png Graphic file (type png)
 <use figures/v1_1ms_moving_var_all_stimulated_trials.png>
 Package pdftex.def Info: figures/v1_1ms_moving_var_all_stimulated_trials.png  used on input line 86.
@@ -689,7 +689,7 @@ pdfTeX warning (dest): name{Hfootnote.1} has been referenced but does not exist,
 
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm
 10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on conway_maxwell_hierarchical_model.pdf (22 pages, 826118 bytes).
+Output written on conway_maxwell_hierarchical_model.pdf (22 pages, 826278 bytes).
 PDF statistics:
  395 PDF objects out of 1000 (max. 8388607)
  312 compressed objects within 4 object streams
