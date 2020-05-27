@@ -1,11 +1,11 @@
 # Fdb version 3
-["bibtex conway_maxwell_hierarchical_model"] 1590445156 "conway_maxwell_hierarchical_model.aux" "conway_maxwell_hierarchical_model.bbl" "conway_maxwell_hierarchical_model" 1590445157
-  "conway_maxwell_hierarchical_model.aux" 1590445157 18574 8953cd14bf2c22e8c3d1fd073d53dfe2 "pdflatex"
+["bibtex conway_maxwell_hierarchical_model"] 1590610677 "conway_maxwell_hierarchical_model.aux" "conway_maxwell_hierarchical_model.bbl" "conway_maxwell_hierarchical_model" 1590610679
+  "conway_maxwell_hierarchical_model.aux" 1590610678 18757 1a705eace03a90bf4b5ba54c99423a02 "pdflatex"
   "conway_maxwell_hierarchical_model.bbl.bib" 0 -1 0 ""
   (generated)
-  "conway_maxwell_hierarchical_model.bbl"
   "conway_maxwell_hierarchical_model.blg"
-["pdflatex"] 1590445156 "conway_maxwell_hierarchical_model.tex" "conway_maxwell_hierarchical_model.pdf" "conway_maxwell_hierarchical_model" 1590445157
+  "conway_maxwell_hierarchical_model.bbl"
+["pdflatex"] 1590610677 "conway_maxwell_hierarchical_model.tex" "conway_maxwell_hierarchical_model.pdf" "conway_maxwell_hierarchical_model" 1590610679
   "/home/thomas/.texlive2019/texmf-var/web2c/pdftex/pdflatex.fmt" 1589722506 3704429 0303ff8f3ada1c5655ff4477b651b125 ""
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc" 1580927601 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
@@ -144,10 +144,10 @@
   "/usr/share/texlive/texmf-dist/tex/latex/ucs/utf8x.def" 1368571634 8036 21f7ac37aafb6cfeddbb196b8bfd6280 ""
   "/usr/share/texlive/texmf-dist/tex/latex/url/url.sty" 1388531844 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1580927610 35594 9aef19174c178978f61d14961262af5d ""
-  "conway_maxwell_hierarchical_model.aux" 1590445157 18574 8953cd14bf2c22e8c3d1fd073d53dfe2 "pdflatex"
-  "conway_maxwell_hierarchical_model.bbl" 1589917935 3331 76307b5e14bd4ef032a98e6a96bd6202 "bibtex conway_maxwell_hierarchical_model"
-  "conway_maxwell_hierarchical_model.out" 1590445157 1952 b08de99ad6f3bf3440f01c250d853627 "pdflatex"
-  "conway_maxwell_hierarchical_model.tex" 1590445153 37832 0c2e2f3de42f55294a4c02caee2f6d64 ""
+  "conway_maxwell_hierarchical_model.aux" 1590610678 18757 1a705eace03a90bf4b5ba54c99423a02 "pdflatex"
+  "conway_maxwell_hierarchical_model.bbl" 1590609431 4285 f04d4da98a217197932eac9b177286bb "bibtex conway_maxwell_hierarchical_model"
+  "conway_maxwell_hierarchical_model.out" 1590610678 1952 b08de99ad6f3bf3440f01c250d853627 "pdflatex"
+  "conway_maxwell_hierarchical_model.tex" 1590610674 39899 40379e53ef109660c3d3824b64a81889 ""
   "figures/best_fit_proportion.png" 1590006585 11428 343e8d52fcf0c8a162bb17d539db1dfc ""
   "figures/betabinomial_big_overdispersion.png" 1589567460 17085 d7c56c4eeafcfd254c36e005712ce39b ""
   "figures/betabinomial_overdispersion.png" 1589567459 21321 7a00813539686176eb591d4ecd36cbb5 ""
@@ -167,7 +167,7 @@
   "figures/v1_1ms_moving_avg_all_stimulated_trials.png" 1590086539 50036 05994037dd7f4f7e2e3d351691b6c6c8 ""
   "figures/v1_1ms_moving_var_all_stimulated_trials.png" 1590086554 52266 7af3b4e62d9fb3c6637a2ef2979d190b ""
   (generated)
-  "conway_maxwell_hierarchical_model.log"
-  "conway_maxwell_hierarchical_model.aux"
-  "conway_maxwell_hierarchical_model.out"
   "conway_maxwell_hierarchical_model.pdf"
+  "conway_maxwell_hierarchical_model.out"
+  "conway_maxwell_hierarchical_model.aux"
+  "conway_maxwell_hierarchical_model.log"
