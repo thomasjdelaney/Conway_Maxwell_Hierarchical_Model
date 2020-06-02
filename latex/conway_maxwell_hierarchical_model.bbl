@@ -62,6 +62,13 @@
     Bayesian Analysis 1,
     (2006)
 
+  \bibitem{odonnell}
+    Cian O'Donnell, J Tiago Gonçalves, Nick Whiteley, Carlos Portera-Cailliau, Terrence J Sejnowski,
+    \emph{The population tracking model: A simple, scalable statistical model for neural population data}.
+    Neural Computation 29,
+    50-93,
+    (2017)
+
   \bibitem{prentice}
     R. L. Prentice,
     \emph{Binary Regression Using an Extended Beta-Binomial Distribution, With Discussion of Correlation Induced by Covariate Measurement Errors.}

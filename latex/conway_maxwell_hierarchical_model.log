@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2020.5.17)  27 MAY 2020 21:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2020.5.17)  2 JUN 2020 19:36
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -473,24 +473,24 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <17.28> not available
  [1
 
 {/usr/share/texlive/texmf-dist/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (2.57843pt too wide) in paragraph at lines 72--73
-\OT1/ptm/m/n/10.95 tri-bu-tion to the bi-no-mial dis-tri-bu-tion and the beta-binomial dis-tri-bu-tion. The Conway-
+Overfull \hbox (7.9003pt too wide) in paragraph at lines 76--77
+[]\OT1/ptm/m/n/10.95 We found that fit-ting a Conway-Maxwell-binomial dis-tri-bu-tion was a bet-ter method
  []
 
-LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 77.
 [2]
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 83.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 80.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 86.
 <figures/v1_1ms_moving_avg_all_stimulated_trials.png, id=133, 650.43pt x 216.81pt>
 File: figures/v1_1ms_moving_avg_all_stimulated_trials.png Graphic file (type png)
 <use figures/v1_1ms_moving_avg_all_stimulated_trials.png>
-Package pdftex.def Info: figures/v1_1ms_moving_avg_all_stimulated_trials.png  used on input line 85.
+Package pdftex.def Info: figures/v1_1ms_moving_avg_all_stimulated_trials.png  used on input line 91.
 (pdftex.def)             Requested size: 426.79135pt x 142.26797pt.
 <figures/v1_1ms_moving_var_all_stimulated_trials.png, id=135, 650.43pt x 216.81pt>
 File: figures/v1_1ms_moving_var_all_stimulated_trials.png Graphic file (type png)
 <use figures/v1_1ms_moving_var_all_stimulated_trials.png>
-Package pdftex.def Info: figures/v1_1ms_moving_var_all_stimulated_trials.png  used on input line 90.
+Package pdftex.def Info: figures/v1_1ms_moving_var_all_stimulated_trials.png  used on input line 96.
 (pdftex.def)             Requested size: 426.79135pt x 142.26797pt.
 
 
@@ -500,12 +500,12 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 <figures/hippocampus_1ms_moving_avg_all_stimulated_trials.png, id=142, 650.43pt x 216.81pt>
 File: figures/hippocampus_1ms_moving_avg_all_stimulated_trials.png Graphic file (type png)
 <use figures/hippocampus_1ms_moving_avg_all_stimulated_trials.png>
-Package pdftex.def Info: figures/hippocampus_1ms_moving_avg_all_stimulated_trials.png  used on input line 105.
+Package pdftex.def Info: figures/hippocampus_1ms_moving_avg_all_stimulated_trials.png  used on input line 111.
 (pdftex.def)             Requested size: 426.79135pt x 142.26797pt.
 <figures/hippocampus_1ms_moving_var_all_stimulated_trials.png, id=143, 650.43pt x 216.81pt>
 File: figures/hippocampus_1ms_moving_var_all_stimulated_trials.png Graphic file (type png)
 <use figures/hippocampus_1ms_moving_var_all_stimulated_trials.png>
-Package pdftex.def Info: figures/hippocampus_1ms_moving_var_all_stimulated_trials.png  used on input line 110.
+Package pdftex.def Info: figures/hippocampus_1ms_moving_var_all_stimulated_trials.png  used on input line 116.
 (pdftex.def)             Requested size: 426.79135pt x 142.26797pt.
 
 
@@ -515,19 +515,19 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 <figures/thalamus_1ms_moving_avg_all_stimulated_trials.png, id=152, 650.43pt x 216.81pt>
 File: figures/thalamus_1ms_moving_avg_all_stimulated_trials.png Graphic file (type png)
 <use figures/thalamus_1ms_moving_avg_all_stimulated_trials.png>
-Package pdftex.def Info: figures/thalamus_1ms_moving_avg_all_stimulated_trials.png  used on input line 125.
+Package pdftex.def Info: figures/thalamus_1ms_moving_avg_all_stimulated_trials.png  used on input line 131.
 (pdftex.def)             Requested size: 426.79135pt x 142.26797pt.
 <figures/thalamus_1ms_moving_var_all_stimulated_trials.png, id=153, 650.43pt x 216.81pt>
 File: figures/thalamus_1ms_moving_var_all_stimulated_trials.png Graphic file (type png)
 <use figures/thalamus_1ms_moving_var_all_stimulated_trials.png>
-Package pdftex.def Info: figures/thalamus_1ms_moving_var_all_stimulated_trials.png  used on input line 130.
+Package pdftex.def Info: figures/thalamus_1ms_moving_var_all_stimulated_trials.png  used on input line 136.
 (pdftex.def)             Requested size: 426.79135pt x 142.26797pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 [5 <./figures/hippocampus_1ms_moving_avg_all_stimulated_trials.png> <./figures/hippocampus_1ms_moving_var_all_stimulated_trials.png>]
-Overfull \hbox (2.58133pt too wide) in paragraph at lines 140--140
+Overfull \hbox (2.58133pt too wide) in paragraph at lines 146--146
 []\OT1/ptm/b/n/14.4 Conway-Maxwell-binomial dis-tri-bu-tion is usu-ally a bet-
  []
 
@@ -535,20 +535,20 @@ Overfull \hbox (2.58133pt too wide) in paragraph at lines 140--140
 <figures/fitting_example.png, id=175, 289.08pt x 216.81pt>
 File: figures/fitting_example.png Graphic file (type png)
 <use figures/fitting_example.png>
-Package pdftex.def Info: figures/fitting_example.png  used on input line 149.
+Package pdftex.def Info: figures/fitting_example.png  used on input line 155.
 (pdftex.def)             Requested size: 213.39568pt x 160.04651pt.
 <figures/best_fit_proportion.png, id=176, 289.08pt x 216.81pt>
 File: figures/best_fit_proportion.png Graphic file (type png)
 <use figures/best_fit_proportion.png>
-Package pdftex.def Info: figures/best_fit_proportion.png  used on input line 154.
+Package pdftex.def Info: figures/best_fit_proportion.png  used on input line 160.
 (pdftex.def)             Requested size: 213.39568pt x 160.04651pt.
 
-Overfull \hbox (2.28003pt too wide) in paragraph at lines 148--158
+Overfull \hbox (2.28003pt too wide) in paragraph at lines 154--164
 []$[]$ $[]$ 
  []
 
 [8 <./figures/fitting_example.png> <./figures/best_fit_proportion.png>]
-Overfull \hbox (13.62622pt too wide) in paragraph at lines 177--177
+Overfull \hbox (13.62622pt too wide) in paragraph at lines 183--183
 []\OT1/ptm/b/n/14.4 Conway-Maxwell-binomial dis-tri-bu-tion cap-tures changes
  []
 
@@ -556,103 +556,106 @@ Overfull \hbox (13.62622pt too wide) in paragraph at lines 177--177
 <figures/v1_1ms_comb_nu_all_stimulated_trials.png, id=195, 650.43pt x 216.81pt>
 File: figures/v1_1ms_comb_nu_all_stimulated_trials.png Graphic file (type png)
 <use figures/v1_1ms_comb_nu_all_stimulated_trials.png>
-Package pdftex.def Info: figures/v1_1ms_comb_nu_all_stimulated_trials.png  used on input line 186.
+Package pdftex.def Info: figures/v1_1ms_comb_nu_all_stimulated_trials.png  used on input line 192.
 (pdftex.def)             Requested size: 426.79135pt x 142.26797pt.
 <figures/v1_1ms_corr_avg_all_stimulated_trials.png, id=196, 650.43pt x 216.81pt>
 File: figures/v1_1ms_corr_avg_all_stimulated_trials.png Graphic file (type png)
 <use figures/v1_1ms_corr_avg_all_stimulated_trials.png>
-Package pdftex.def Info: figures/v1_1ms_corr_avg_all_stimulated_trials.png  used on input line 191.
+Package pdftex.def Info: figures/v1_1ms_corr_avg_all_stimulated_trials.png  used on input line 197.
 (pdftex.def)             Requested size: 426.79135pt x 142.26797pt.
  [10 <./figures/v1_1ms_comb_nu_all_stimulated_trials.png> <./figures/v1_1ms_corr_avg_all_stimulated_trials.png>] [11]
 <figures/v1_1ms_fano_factor.png, id=213, 289.08pt x 216.81pt>
 File: figures/v1_1ms_fano_factor.png Graphic file (type png)
 <use figures/v1_1ms_fano_factor.png>
-Package pdftex.def Info: figures/v1_1ms_fano_factor.png  used on input line 212.
+Package pdftex.def Info: figures/v1_1ms_fano_factor.png  used on input line 218.
 (pdftex.def)             Requested size: 213.39568pt x 160.04651pt.
 <figures/motor_cortex_1ms_fano_factor.png, id=214, 289.08pt x 216.81pt>
 File: figures/motor_cortex_1ms_fano_factor.png Graphic file (type png)
 <use figures/motor_cortex_1ms_fano_factor.png>
-Package pdftex.def Info: figures/motor_cortex_1ms_fano_factor.png  used on input line 217.
+Package pdftex.def Info: figures/motor_cortex_1ms_fano_factor.png  used on input line 223.
 (pdftex.def)             Requested size: 213.39568pt x 160.04651pt.
 
-Overfull \hbox (2.28003pt too wide) in paragraph at lines 211--221
+Overfull \hbox (2.28003pt too wide) in paragraph at lines 217--227
 []$[]$ $[]$ 
  []
 
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 228.
-(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
+
+Overfull \hbox (1.11082pt too wide) in paragraph at lines 232--233
+\OT1/ptm/m/n/10.95 Our aim in this piece of re-search was to de-velop a new sta-tis-ti-cal method for analysing
+ []
+
+[12 <./figures/v1_1ms_fano_factor.png> <./figures/motor_cortex_1ms_fano_factor.png>]
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 252.
+ (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 ) (/usr/share/texlive/texmf-dist/tex/latex/ucs/data/uni-0.def
 File: uni-0.def 2013/05/13 UCS: Unicode data U+0000..U+00FF
-) [12 <./figures/v1_1ms_fano_factor.png> <./figures/motor_cortex_1ms_fano_factor.png>]
+) [13]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <14.4> not available
-(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 243.
- [13]
-Overfull \hbox (3.8863pt too wide) in paragraph at lines 269--270
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 267.
+ [14]
+Overfull \hbox (3.8863pt too wide) in paragraph at lines 293--294
 []\OT1/ptm/m/n/10.95 We fit-ted a bi-no-mial dis-tri-bu-tion to the data in each win-dow and recorded
  []
 
-[14]
-Overfull \hbox (14.62614pt too wide) in paragraph at lines 271--272
+
+Overfull \hbox (14.62614pt too wide) in paragraph at lines 295--296
 []\OT1/ptm/m/n/10.95 We fit-ted a Conway-Maxwell-binomial
  []
 
-[15] [16]
-<figures/betabinomial_overdispersion.png, id=253, 289.08pt x 216.81pt>
+[15] [16] [17]
+<figures/betabinomial_overdispersion.png, id=261, 289.08pt x 216.81pt>
 File: figures/betabinomial_overdispersion.png Graphic file (type png)
 <use figures/betabinomial_overdispersion.png>
-Package pdftex.def Info: figures/betabinomial_overdispersion.png  used on input line 329.
+Package pdftex.def Info: figures/betabinomial_overdispersion.png  used on input line 353.
 (pdftex.def)             Requested size: 213.39568pt x 160.04651pt.
-<figures/betabinomial_big_overdispersion.png, id=254, 289.08pt x 216.81pt>
+<figures/betabinomial_big_overdispersion.png, id=262, 289.08pt x 216.81pt>
 File: figures/betabinomial_big_overdispersion.png Graphic file (type png)
 <use figures/betabinomial_big_overdispersion.png>
-Package pdftex.def Info: figures/betabinomial_big_overdispersion.png  used on input line 334.
+Package pdftex.def Info: figures/betabinomial_big_overdispersion.png  used on input line 358.
 (pdftex.def)             Requested size: 213.39568pt x 160.04651pt.
 
-Overfull \hbox (2.28003pt too wide) in paragraph at lines 328--338
+Overfull \hbox (2.28003pt too wide) in paragraph at lines 352--362
 []$[]$ $[]$ 
  []
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[17] [18 <./figures/betabinomial_overdispersion.png> <./figures/betabinomial_big_overdispersion.png>]
-Overfull \hbox (13.01758pt too wide) in paragraph at lines 382--384
+[18 <./figures/betabinomial_overdispersion.png> <./figures/betabinomial_big_overdispersion.png>] [19]
+Overfull \hbox (13.01758pt too wide) in paragraph at lines 406--408
 []$\OT1/pcr/m/n/10.95 https : / / github . com / thomasjdelaney / Conway _ Maxwell _ Binomial _
  []
 
-[19]
-<figures/comb_underdispersion.png, id=289, 289.08pt x 216.81pt>
+[20]
+<figures/comb_underdispersion.png, id=296, 289.08pt x 216.81pt>
 File: figures/comb_underdispersion.png Graphic file (type png)
 <use figures/comb_underdispersion.png>
-Package pdftex.def Info: figures/comb_underdispersion.png  used on input line 389.
+Package pdftex.def Info: figures/comb_underdispersion.png  used on input line 413.
 (pdftex.def)             Requested size: 213.39568pt x 160.04651pt.
-<figures/comb_overrdispersion.png, id=290, 289.08pt x 216.81pt>
+<figures/comb_overrdispersion.png, id=297, 289.08pt x 216.81pt>
 File: figures/comb_overrdispersion.png Graphic file (type png)
 <use figures/comb_overrdispersion.png>
-Package pdftex.def Info: figures/comb_overrdispersion.png  used on input line 394.
+Package pdftex.def Info: figures/comb_overrdispersion.png  used on input line 418.
 (pdftex.def)             Requested size: 213.39568pt x 160.04651pt.
-<figures/comb_skewed.png, id=291, 289.08pt x 216.81pt>
+<figures/comb_skewed.png, id=298, 289.08pt x 216.81pt>
 File: figures/comb_skewed.png Graphic file (type png)
 <use figures/comb_skewed.png>
-Package pdftex.def Info: figures/comb_skewed.png  used on input line 399.
+Package pdftex.def Info: figures/comb_skewed.png  used on input line 423.
 (pdftex.def)             Requested size: 213.39568pt x 160.04651pt.
-<figures/comb_bin_dkl.png, id=292, 289.08pt x 216.81pt>
+<figures/comb_bin_dkl.png, id=299, 289.08pt x 216.81pt>
 File: figures/comb_bin_dkl.png Graphic file (type png)
 <use figures/comb_bin_dkl.png>
-Package pdftex.def Info: figures/comb_bin_dkl.png  used on input line 404.
+Package pdftex.def Info: figures/comb_bin_dkl.png  used on input line 428.
 (pdftex.def)             Requested size: 213.39568pt x 160.04651pt.
 
-Overfull \hbox (2.28003pt too wide) in paragraph at lines 388--408
+Overfull \hbox (2.28003pt too wide) in paragraph at lines 412--432
 []$[]$ $[]$
  []
 
 
-Overfull \hbox (2.28003pt too wide) in paragraph at lines 388--408
+Overfull \hbox (2.28003pt too wide) in paragraph at lines 412--432
 []$ $[]$ 
  []
 
-[20 <./figures/comb_underdispersion.png> <./figures/comb_overrdispersion.png> <./figures/comb_skewed.png> <./figures/comb_bin_dkl.png>] [21] (./conway_maxwell_hierarchical_model.bbl (/usr/share/texlive/texmf-dist/tex/latex/ucs/data/uni-1.def
+[21 <./figures/comb_underdispersion.png> <./figures/comb_overrdispersion.png> <./figures/comb_skewed.png> <./figures/comb_bin_dkl.png>] [22] (./conway_maxwell_hierarchical_model.bbl (/usr/share/texlive/texmf-dist/tex/latex/ucs/data/uni-1.def
 File: uni-1.def 2013/05/13 UCS: Unicode data U+0100..U+01FF
 ) (/usr/share/texlive/texmf-dist/tex/latex/ucs/data/uni-32.def
 File: uni-32.def 2013/05/13 UCS: Unicode data U+2000..U+20FF
@@ -661,32 +664,32 @@ Underfull \hbox (badness 2547) in paragraph at lines 53--58
 \OT1/ptm/m/it/10.95 Conway{Maxwell-Binomial Dis-tri-bu-tion. \OT1/ptm/m/n/10.95 Bayesian Anal-y-sis 11, 403-420,
  []
 
-[22]
-Underfull \hbox (badness 10000) in paragraph at lines 87--92
+[23]
+Underfull \hbox (badness 10000) in paragraph at lines 94--99
 []\OT1/ptm/m/n/10.95 Nick Stein-metz, Mat-teo Caran-dini, Ken-neth D. Har-ris, \OT1/ptm/m/it/10.95 "Sin-gle
  []
 
 
-Underfull \hbox (badness 4505) in paragraph at lines 87--92
+Underfull \hbox (badness 4505) in paragraph at lines 94--99
 \OT1/ptm/m/it/10.95 Phase3" and "Dual Phase3" Neu-ropix-els Datasets. \OT1/ptm/m/n/10.95 figshare, Dataset:
  []
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 442.
- [23]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 442.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 466.
+ [24]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 466.
  (./conway_maxwell_hierarchical_model.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 442.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 442.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 466.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 466.
 Package rerunfilecheck Info: File `conway_maxwell_hierarchical_model.out' has not changed.
 (rerunfilecheck)             Checksum: B08DE99AD6F3BF3440F01C250D853627;1952.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 442.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 466.
  ) 
 Here is how much of TeX's memory you used:
- 10967 strings out of 492667
- 163321 string characters out of 6134097
- 262544 words of memory out of 5000000
- 14588 multiletter control sequences out of 15000+600000
+ 10971 strings out of 492667
+ 163359 string characters out of 6134097
+ 262575 words of memory out of 5000000
+ 14590 multiletter control sequences out of 15000+600000
  43898 words of font info for 108 fonts, out of 8000000 for 9000
  1137 hyphenation exceptions out of 8191
  42i,13n,43p,1133b,611s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -694,10 +697,10 @@ pdfTeX warning (dest): name{Hfootnote.1} has been referenced but does not exist,
 
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm
 10.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on conway_maxwell_hierarchical_model.pdf (23 pages, 830322 bytes).
+Output written on conway_maxwell_hierarchical_model.pdf (24 pages, 833474 bytes).
 PDF statistics:
- 409 PDF objects out of 1000 (max. 8388607)
- 325 compressed objects within 4 object streams
- 89 named destinations out of 1000 (max. 500000)
+ 417 PDF objects out of 1000 (max. 8388607)
+ 332 compressed objects within 4 object streams
+ 91 named destinations out of 1000 (max. 500000)
  291 words of extra memory for PDF output out of 10000 (max. 10000000)
 

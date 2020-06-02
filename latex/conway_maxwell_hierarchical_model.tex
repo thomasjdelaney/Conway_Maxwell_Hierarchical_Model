@@ -60,16 +60,22 @@
 
 %\tableofcontents
 
-\abstract{Recent developments in electrophysiological technology have lead to an increase in the size of electrophysiological datasets. Consequently, there is a requirement for new analysis techniques that can make use of these new datasets, while remaining easy to use in practice. In this work, we fit some one or two parameter probability distributions to spiking data collected from a mouse exposed to visual stimuli. We show that a little known probability distribution entitled the Conway-Maxwell-binomial is a suitable model for the number of active neurons in a neuronal ensemble at any given moment. This distribution fits better than binomial or beta-binomial distributions. It also captures the correlated activity in the primary visual cortex induced by stimulus onset more effectively than simply measuring the correlations, at short timescales.}
+\abstract{Recent developments in electrophysiological technology have lead to an increase in the size of e-phys datasets. Consequently, there is a requirement for new analysis techniques that can make use of these new datasets, while remaining easy to use in practice. In this work, we fit some one or two parameter probability distributions to spiking data collected from a mouse exposed to visual stimuli. We show that a little known probability distribution entitled the Conway-Maxwell-binomial distribution is a suitable model for the number of active neurons in a neuronal ensemble at any given moment. This distribution fits these data better than binomial or beta-binomial distributions. It also captures the correlated activity in the primary visual cortex induced by stimulus onset more effectively than simply measuring the correlations, at short timescales ($<10$ms).}
 
 \section{Introduction}
-Recent advances in electrophysiological technology, such as `Neuropixels' probes\cite{jun} has allowed extracellular voltage measurements to be collected from multiple brain regions simultaneously routinely, and in larger numbers than traditional methods. These larger datasets require innovative methods to extract information from the data in a reasonable amount of time, `reasonable' being subjective in this case.
+Recent advances in electrophysiological technology, such as `Neuropixels' probes\cite{jun} have allowed extracellular voltage measurements to be collected from multiple brain regions simultaneously routinely, and in larger numbers than traditional methods. These larger datasets require innovative methods to extract information from the data in a reasonable amount of time, `reasonable' being subjective in this case.
 
 Theoretically, all the information in an electrophysiological dataset with $n$ neurons could be captured by calculating the probability distribution for every possible spiking pattern. This would require defining a random variable with $2^n$ possible values, a task that quickly becomes impossible as $n$ increases. Attempts at approximating this random variable often involve measuring pairwise or higher order correlations \cite{schneidman, flach, ganmor}. But pairwise correlations may not be enough to characterise neural activity\cite{tkacik}.
 
-Measuring higher order correlations becomes computationally impractical quite quickly also (the number of `three neuron correlations' to measure scales with $\binom{n}{3}$). In this paper, we dispense with measuring correlations directly, and attempt to characterise correlated behaviour by measuring `association'.
+Measuring higher order correlations becomes computationally impractical quite quickly also (the number of `three neuron correlations' to measure scales with $\binom{n}{3}$). In this paper, we dispense with measuring correlations directly, and attempt to characterise correlated behaviour by measuring `association'; a more general concept that includes correlation.
 
-In this work, we examined the ability of very simple distributions to model the number of active (spiking) neurons in a neuronal ensemble at any given timepoint. We compared a little-known distribution named the Conway-Maxwell-binomial distribution to the binomial distribution and the beta-binomial distribution. The Conway-Maxwell-binomial distribution is a probability distribution of the number of successes in a series of Bernoulli trials, but allows over- and under-dispersion relative to the standard binomial distribution. This distribution should therefore be a good candidate for our purposes. We found that Conway-Maxwell-binomial distribution was usually the best candidate of the three that we examined.
+In this work, we examined the ability of simple distributions to model the number of active (spiking) neurons in a neuronal ensemble at any given timepoint. We compared a little-known distribution named the Conway-Maxwell-binomial distribution to the binomial distribution and the beta-binomial distribution. Similar, to the binomial, and beta-binomial, the Conway-Maxwell-binomial distribution is a probability distribution of the number of successes in a series of Bernoulli trials, but allows over- and under-dispersion relative to the standard binomial distribution. This distribution should therefore be a good candidate for our purposes. We found that Conway-Maxwell-binomial distribution was usually the best candidate of the three that we examined.
+
+We also observed some interesting changes in the number of active neurons at stimulus onset in the primary visual cortex and hippocampus. We observed some changes in this activity throughout the stimulus presentation in the thalamus.
+
+We found that fitting a Conway-Maxwell-binomial distribution was a better method of capturing association between neurons than mearing the spike count correlation for the short time bins that we used ($<10$ms).
+
+Finally, we replicated the findings made by Churchland et al. (2010) relating to a reduction in neural variability at stimulus onset in the macaque cortical regions, but for readings taken from the mouse primary visual cortex.
 
 \section{Results}
 We defined a neuron as \textit{active} in a time bin if it fires at least one spike during the time interval covered by that bin. We measured the number of active neurons in the primary visual cortex of a mouse in $1$ms bins across $160$ trials of a moving bar visual stimulus. We then slid a $100$ms window across these $1$ms bins taking mesurements, and fitting distributions along the way. We did the same for neurons in the thalamus, hippocampus, striatum, and motor cortex. We repeated the analysis for $5$ms time bins with $40$ bin windows, and $10$ms time bins with $40$ bin windows.
@@ -223,6 +229,24 @@ We defined a neuron as \textit{active} in a time bin if it fires at least one sp
   \end{figure}
 
 \section{Discussion}
+Our aim in this piece of research was to develop a new statistical method for analysing the activity of a neuronal ensemble at very short timescales. We wanted our method to use information taken from the whole ensemble, but we also wanted the method to be quick and easy to implement. It is likely that analysis methods with these characteristics will become valuable as electrophysiological datasets include readings from more cells over longer time periods.
+
+First of all, we showed that there were changes in behaviour to model at very short time scales ($<10$ms) in some of the brain regions from which we had recordings. Using such short time bins can produce artificially small spike count correlation measurements\cite{cohen}. Overcoming this limitation was one of our objectives for our new method.
+
+We showed that a little known probability distribution, the Conway-Maxwell-binomial distribution, was a good choice compared to the better known options. Furthermore, we showed that the associated behaviour between neurons in the primary visual cortex could be captured by fitting a Conway-Maxwell-binomial distribution, but was not captured by the more standard approach of measuring the spike count correlation.
+
+This work could be just a first step in creating analysis methods based on the Conway-Maxwell-binomial distribution, or similar statistical models. One way to extend the method would be to pair it up with the 'Population Tracking model'\cite{odonnell}. This would give us a model that gives a probability of firing for each cell, and therefore probabilities for full spiking pattern, without adding a hugh number of parameters to fit.
+
+A more complex way to extend the model would be to fit a Conway-Maxwell-binomial distribution to data recorded from multiple brain regions simultaneously, with a different fit for each region, then to analyse the temporal relationship between the fitted parameters of each region. This may give some results relating to the timescales in which information is processed in different brain regions.
+
+
+% Develop new method for analysing activity in neuronal ensemble
+% We found that the Conway-Maxwell-binomial distribution was suitable for fitting to these data.
+% We found that this was a good way to describe changes in association over a short timescale.
+% Future work:  Pairing with population tracking model.
+%               temporal element (shimazaki)
+%               Hierarchical element.
+
 
 \section{Data}
 We used data collected by Nick Steinmetz and his lab `CortexLab at UCL' \cite{steinmetz}. The data can be found online \footnote{\url{http://data.cortexlab.net/dualPhase3/}} and are free to use for research purposes.
