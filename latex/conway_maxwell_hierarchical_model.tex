@@ -81,10 +81,10 @@ Finally, we replicated the findings made by Churchland et al. (2010) relating to
 We defined a neuron as \textit{active} in a time bin if it fires at least one spike during the time interval covered by that bin. We measured the number of active neurons in the primary visual cortex of a mouse in $1$ms bins across $160$ trials of a moving bar visual stimulus. We then slid a $100$ms window across these $1$ms bins taking mesurements, and fitting distributions along the way. We did the same for neurons in the thalamus, hippocampus, striatum, and motor cortex. We repeated the analysis for $5$ms time bins with $40$ bin windows, and $10$ms time bins with $40$ bin windows.
 
   \subsection{Increases in mean number of active neurons and variance in number of active neurons at stimulus onset in some regions}
-  We measured the averge number of active neurons, and the variance of the number of active neurons in a $100$ms sliding window starting $500$ms before stimulus onset until $1000$ms after stimulus onset. We found differences in the response across regions. There were no observed changes in response to the stimulus in the motor cortex or the striatum. The changes in the other regions are detailed below.
+  We measured the average number of active neurons, and the variance of the number of active neurons in a $100$ms sliding window starting $500$ms before stimulus onset until $1000$ms after stimulus onset. We found differences in the response across regions. There were no observed changes in response to the stimulus in the motor cortex or the striatum. The changes in the other regions are detailed below.
 
     \subsubsection{Primary visual cortex}
-    We found a transient increase in both the average and variance of the number of active neurons at stimulus onset, followed by a fall to pre-stimulus levels, followed by another transient increase (see figure \ref{fig:v1_moving_avg_and_var}). The oscillation in both of these measurements appear to reflect the frequency of the stimulus.
+    We found a transient increase in both the average and variance of the number of active neurons at stimulus onset, followed by a fall to pre-stimulus levels, followed by another transient increase (see figure \ref{fig:v1_moving_avg_and_var}). The oscillation in both of these measurements appear to reflect the frequency of the stimulus. We see a similar but lower amplitude oscillation at the end of the stimulus presentation.
 
     \begin{figure}[h]
       \begin{subfigure}[h]{\linewidth}
@@ -104,7 +104,7 @@ We defined a neuron as \textit{active} in a time bin if it fires at least one sp
     \newpage
 
     \subsubsection{Hippocampus}
-    In the hippocampus we observed a transient increase in the mean number of active neurons and in the variance of the number of active neurons at stimulus onset (see figure \ref{fig:hippocampus_moving_avg_and_var}). The increase lasted about $125$ms, and the subsequent fall to baseline took the a similar amount of time.
+    In the hippocampus we observed a transient increase in the average number of active neurons and in the variance of the number of active neurons at stimulus onset (see figure \ref{fig:hippocampus_moving_avg_and_var}). The increase lasted about $125$ms, and the subsequent fall to baseline took the a similar amount of time.
 
     \begin{figure}[h]
       \begin{subfigure}[h]{\linewidth}
@@ -124,7 +124,7 @@ We defined a neuron as \textit{active} in a time bin if it fires at least one sp
     \newpage
 
     \subsubsection{Thalamus}
-    In the thalamus we observed a transient increased in the both the average and variance of the number of active neurons on stimulus onset, followed by a fall to pre-stimulus levels, followed by a sustained increase until the stimulus presentation ends.
+    In the thalamus we observed a transient increase in the both the average and variance of the number of active neurons on stimulus onset, followed by a fall to pre-stimulus levels, followed by a sustained increase until the stimulus presentation ends.
 
     \begin{figure}[h]
       \begin{subfigure}[h]{\linewidth}
@@ -146,9 +146,7 @@ We defined a neuron as \textit{active} in a time bin if it fires at least one sp
   \subsection{Conway-Maxwell-binomial distribution is usually a better fit than binomial or beta-binomial}
   After fitting a binomial, a beta-binomial, and a Conway-Maxwell-binomial (COMb) distribution to each window for each bin width, and each region, we assessed the goodness-of-fit of each distribution by calculating the log-likelihood of each fitted distribution using the associated sample. We measured the proportion of samples for which each distribution was the best fit, for each bin width value and each region.
 
-  We found that the COMb distribution was the best fit for most of the samples regardless of bin width or region. The bin width had an effect on the number of samples for which the COMb distribution was the best fit. For a bin width of $1$ms, the COMb distribution was the best fit for over $90\%$ of samples, the beta-binomial distribution was the best fit for less than $10\%$ of samples, and the binomial distribution was the best fit for less that $1\%$ of samples, across regions. For $5$ms bins, the COMb distribution was the best fit for $70-80\%$ of samples, the beta-binomial distribution was the best fit for $20-30\%$ of the samples, and again the binomial distribution was the best fit for less that $1\%$ of samples, across regions. Finally, for $10$ms bins,  the COMb distribution was the best fit for $53-80\%$ of samples, the beta-binomial distribution was the best fit for $20-47\%$ of the samples, and the binomial distribution was the best fit for less that $0.1\%$ of samples, across regions. These findings are summarised in table \ref{tab:proportions}.
-
-  \newpage
+  We found that the COMb distribution was the best fit for most of the samples regardless of bin width or region. The bin width had an effect on the number of samples for which the COMb distribution was the best fit. For a quick summary of the results see table \ref{tab:proportions}. For a bin width of $1$ms, the COMb distribution was the best fit for over $90\%$ of samples, the beta-binomial distribution was the best fit for less than $10\%$ of samples, and the binomial distribution was the best fit for less that $1\%$ of samples, across regions. For $5$ms bins, the COMb distribution was the best fit for $70-80\%$ of samples, the beta-binomial distribution was the best fit for $20-30\%$ of the samples, and again the binomial distribution was the best fit for less that $1\%$ of samples, across regions. Finally, for $10$ms bins,  the COMb distribution was the best fit for $53-80\%$ of samples, the beta-binomial distribution was the best fit for $20-47\%$ of the samples, and the binomial distribution was the best fit for less that $0.1\%$ of samples, across regions.
 
   \begin{figure}[h]
     \begin{subfigure}[h]{0.5\linewidth}
@@ -161,7 +159,7 @@ We defined a neuron as \textit{active} in a time bin if it fires at least one sp
       \caption{Proportion of best fit}
       \label{fig:best_fit_proportion}
     \end{subfigure}
-    \caption{(a) An example of the binomial, beta-binomial, and Conway-Maxwell-binomial distributions fitted to a sample of neural activity. The Conway-Maxwell-binomial distribution is the best fit in this case. The histogram shows the empirical distribution of the sample. The probability mass function of each distribution is indicated by a differently coloured line. (b) Across all samples in all trials, the proportion of samples for which each fitted distribution was the the best fit. The Conway-Maxwell-binomial distribution was the best fit for $93\%$ of the samples taken from V1 using a bin width of $1$ms.}
+    \caption{(a) An example of the binomial, beta-binomial, and Conway-Maxwell-binomial distributions fitted to a sample of neural activity. The Conway-Maxwell-binomial distribution is the best fit in this case. The histogram shows the empirical distribution of the sample. The probability mass function of each distribution is indicated by a different coloured line. (b) Across all samples in all trials, the proportion of samples for which each fitted distribution was the the best fit. The Conway-Maxwell-binomial distribution was the best fit for $93\%$ of the samples taken from V1 using a bin width of $1$ms.}
     \label{fig:fitting}
   \end{figure}
 
@@ -205,11 +203,11 @@ We defined a neuron as \textit{active} in a time bin if it fires at least one sp
   \newpage
 
   \subsection{Replicating stimulus related quenching of neural variability}
-  Churchland et al. (2010) inspected the effect of a stimulus on neural variability. One of the measures of neural variability that they employed was the Fano factor of the spike counts of individual cells (see section \ref{sec:fano_factor}). They found a reduction in neural variability as measured by the Fano factor in various cortical areas in a macaque \cite{churchland}.
+  Churchland et al. (2010) inspected the effect of a stimulus on neural variability. One of the measures of neural variability that they employed was the Fano factor of the spike counts of individual cells (see section \ref{sec:fano_factor}). They found a reduction in neural variability as measured by the Fano factor in various cortical areas in a macaque at the onset of various visual stimuli, or a juice reward \cite{churchland}.
 
   We measured the fano factor of the spike count of each cell in each brain region, during each trial. We measured the mean and standard error of these Fano factors from $500$ms before stimulus onset until $1000$ms after stimulus end. For the primary visual cortex, we found a transient reduction in the Fano factor immediately after stimulus onset. We used a Mann-Whitney U test to check that the Fano factors measured in a window starting at stimulus onset and ending $100$ms later were significantly lower than the factors measured in a window ending at stimulus onset ($p < 0.001$, see figure \ref{fig:v1_1ms_fano_factor}). We did not get this statistically significant result in any other region.
 
-  Our findings agree with those of Churchland et al for the primary visual cortex. However Churchland also found a reduction in the Fano factor in the dorsal premotor cortex (PMd) at stimulus onset. Our measurements from the mouse motor cortex show no change at stimulus onset (see figure \ref{fig:motor_cortex_fano_factor}). This could indicate some difference in the functionality of the motor cortex in a macaque and the motor cortex of a mouse.
+  Our findings agree with those of Churchland et al. for the primary visual cortex. However Churchland also found a reduction in the Fano factor in the dorsal premotor cortex (PMd) at stimulus onset. Our measurements from the mouse motor cortex show no change at stimulus onset (see figure \ref{fig:motor_cortex_fano_factor}). This could indicate some difference in the functionality of the motor cortex in a macaque and the motor cortex of a mouse.
 
   \newpage
 
@@ -229,13 +227,13 @@ We defined a neuron as \textit{active} in a time bin if it fires at least one sp
   \end{figure}
 
 \section{Discussion}
-Our aim in this piece of research was to develop a new statistical method for analysing the activity of a neuronal ensemble at very short timescales. We wanted our method to use information taken from the whole ensemble, but we also wanted the method to be quick and easy to implement. It is likely that analysis methods with these characteristics will become valuable as electrophysiological datasets include readings from more cells over longer time periods.
+Our aim in this research was to develop a new statistical method for analysing the activity of a neuronal ensemble at very short timescales. We wanted our method to use information taken from the whole ensemble, but we also wanted the method to be quick and easy to implement. It is likely that analysis methods with these characteristics will become valuable as electrophysiological datasets include readings from more cells over longer time periods. In this case, we used the number of active, or spiking, neurons in a very short time bin ($<10$ms) as a measure of ensemble activity.
 
-First of all, we showed that there were changes in behaviour to model at very short time scales ($<10$ms) in some of the brain regions from which we had recordings. Using such short time bins can produce artificially small spike count correlation measurements\cite{cohen}. Overcoming this limitation was one of our objectives for our new method.
+First of all, we showed that there were changes in behaviour to model at these very short time scales, in some of the brain regions from which we had recordings. Using such short time bins can produce artificially small spike count correlation measurements\cite{cohen}. Overcoming this limitation was one of our objectives for our new method.
 
-We showed that a little known probability distribution, the Conway-Maxwell-binomial distribution, was a good choice compared to the better known options. Furthermore, we showed that the associated behaviour between neurons in the primary visual cortex could be captured by fitting a Conway-Maxwell-binomial distribution, but was not captured by the more standard approach of measuring the spike count correlation.
+We showed that a little known probability distribution, the Conway-Maxwell-binomial distribution, was a good choice compared to the better known options. Furthermore, we showed that the positively associated behaviour between neurons in the primary visual cortex could be captured by fitting a Conway-Maxwell-binomial distribution, but was not captured by the more standard approach of measuring the spike count correlation.
 
-This work could be just a first step in creating analysis methods based on the Conway-Maxwell-binomial distribution, or similar statistical models. One way to extend the method would be to pair it up with the 'Population Tracking model'\cite{odonnell}. This would give us a model that gives a probability of firing for each cell, and therefore probabilities for full spiking pattern, without adding a hugh number of parameters to fit.
+This work could be just a first step in creating analysis methods based on the Conway-Maxwell-binomial distribution, or similar statistical models. One way to extend the method would be to pair it up with the `Population Tracking model'\cite{odonnell}. This would give us a model that gives a probability of firing for each cell, and therefore probabilities for full spiking pattern, without adding a hugh number of parameters to fit.
 
 A more complex way to extend the model would be to fit a Conway-Maxwell-binomial distribution to data recorded from multiple brain regions simultaneously, with a different fit for each region, then to analyse the temporal relationship between the fitted parameters of each region. This may give some results relating to the timescales in which information is processed in different brain regions.
 
@@ -245,27 +243,27 @@ A more complex way to extend the model would be to fit a Conway-Maxwell-binomial
 % We found that this was a good way to describe changes in association over a short timescale.
 % Future work:  Pairing with population tracking model.
 %               temporal element (shimazaki)
-%               Hierarchical element.
+%                 Hierarchical element.
 
 
 \section{Data}
 We used data collected by Nick Steinmetz and his lab `CortexLab at UCL' \cite{steinmetz}. The data can be found online \footnote{\url{http://data.cortexlab.net/dualPhase3/}} and are free to use for research purposes.
 
-Two `Phase3' Neuropixels \cite{jun} electrode arrays were inserted into the brain of an awake, head-fixed mouse for about an hour and a half. These electrode arrays recorded $384$ channels of neural data each at $30$kHz and  less than $7$µV RMS noise levels. The sites are densely spaced in a `continuous tetrode'-like arrangement, and a whole array records from a $3.8$mm span of the brain. One array recorded from visual cortex, hippocampus,  and thalamus, the other array recorded from motor cortex and striatum. The data were spike-sorted automatically by Kilosort and manually by N. Steinmetz using Phy. In total 831 well-isolated individual neurons were identified.
+Two `Phase3' Neuropixels \cite{jun} electrode arrays were inserted into the brain of an awake, head-fixed mouse for about an hour and a half. These electrode arrays recorded $384$ channels of neural data each at $30$kHz and  less than $7$µV RMS noise levels. The sites are densely spaced in a `continuous tetrode'-like arrangement, and a whole array records from a $3.8$mm span of the brain. One array recorded from visual cortex, hippocampus,  and thalamus, the other array recorded from motor cortex and striatum. The data were spike-sorted automatically by Kilosort and manually by Nick Steinmetz using Phy. In total 831 well-isolated individual neurons were identified.
 
   \subsection{Experimental protocol}
   The mouse was shown a visual stimulus on three monitors placed around the mouse at right angles to each other, covering about $\pm 135$ degrees azimuth and $\pm 35$ degrees elevation.
 
-  The stimulus consisted of sine-wave modulated full-field drifting gratings of 16 drift directions ($0^{\circ}, 22.5^{\circ}, \dots, 337.5^{\circ}$) with $2$Hz temporal frequency and $0.08$ cycles/degree spatial frequency displayed for $2$ seconds plus a blank condition. Each of these $17$ conditions were presented $10$ times in a random order across $170$ different trials. There were therefore $160$ trials with a visual stimulus present, and $10$ trials without a visual stimulus.
+  The stimulus consisted of sine-wave modulated full-field drifting gratings of 16 drift directions ($0^{\circ}, 22.5^{\circ}, \dots, 337.5^{\circ}$) with $2$Hz temporal frequency and $0.08$ cycles/degree spatial frequency displayed for $2$ seconds plus a blank condition. Each of these $17$ conditions were presented $10$ times in a random order across $170$ different trials. There were therefore $160$ trials with a drifting-grating visual stimulus present, and $10$ trials with a blank stimulus.
 
 \section{Methods}
 
     \subsection{Binning data}
-    We converted the spike times for each cell into spike counts by putting the spike times into time bins of a given `width' (in seconds). We used time bins of $1$ms, $5$ms, and $10$ms. We used different time bin widths to assess the impact of choosing a bin width.
+    We converted the spike times for each cell into spike counts by putting the spike times into time bins of a given `width' (in milliseconds). We used time bins of $1$ms, $5$ms, and $10$ms. We used different time bin widths to assess the impact of choosing a bin width.
 
 
-    \subsection{Number of \textit{active} neurons}
-    To count the number of active neurons in each neuronal ensemble, we split the time interval for each trial into bins of a given width. We counted the number of spikes fired by each cell in each bin. If a cell fired \textit{at least} one spike in a given bin, we regarded that cell as active in that bin. We recorded the number of active cells in every bin, and we recorded each cell's individual spike counts.
+    \subsection{Number of \textit{active} neurons}\label{sec:num_active_neurons}
+    To count the number of active neurons in each neuronal ensemble, we split the time interval for each trial into bins of a given width. We counted the number of spikes fired by each cell in each bin. If a cell fired \textit{at least} one spike in a given bin, we regarded that cell as active in that bin. We recorded the number of active cells in every bin, and for the purposes of further anaylsis, we recorded each cell's individual spike counts.
 
     It should be noted that when we used a bin width of $1$ms, the maximum number of spikes in any bin was $1$. For the wider time bins, some bins had spike counts greater than $1$. Consequently when using a bin width of $1$ms, the number of active neurons and the total spike count of a given bin were identical. But for wider bin widths, the total spike count was greater than the number of active neurons.
 
@@ -273,26 +271,37 @@ Two `Phase3' Neuropixels \cite{jun} electrode arrays were inserted into the brai
 
     \subsection{Moving windows for measurements}
 
-    When taking measurements (e.g. moving average over the number of active neurons) or fitting distributions (eg. the beta binomial distribution) we slid a window containing a certain number of bins across the data, and made our measurements at each window position. For example, when analysing $1$ms bin data, we used a window containing $100$ bins, and we slid the window across the time interval for each trial moving $10$ bins at a time. So that for $2560$ms of data, we made $246$ measurements.
+    When taking measurements (e.g. moving average over the number of active neurons) or fitting distributions (eg. the beta binomial distribution) we slid a window containing a certain number of bins across the data, and made our measurements at each window position. For example, when analysing $1$ms bin data, we used a window containing $100$ bins, and we slid the window across the time interval for each trial moving $10$ bins at a time. So that for $3060$ms of data, we made $296$ measurements.
 
     For the $5$ms bin width data, we used windows containing $40$ bins, and slid the window $2$ bins at a time when taking measurements.
 
-    For the $10$ms bin width data, we used windows containing $40$ bins, and slid the window $1$ bin at a time when taking measurements.
+    For the $10$ms bin width data, we used windows containing $40$ bins, and slid the window $1$ bin at a time when taking measurements (see table \ref{tab:bin_widths} for concise details).
 
     By continuing to use windows containing $40$ bins, we retained statistical power but sacrificed the number of measurements taken.
 
-    There was an interval between each trial with a grey image in place of the moving of the moving bar stimulus. This interval varied in time. But we included some of this interval when recording the data for each trial. We started recording the number of active neurons, and the number of spikes from each neuron from $280$ms before each trial until $280$ms after each trial. This way, we could see the change in our measurements at the onset of a stimulus.
+    \begin{table}
+      \centering
+      \begin{tabular}[h]{|c|c|c|c|}
+        \hline
+        \textbf{Bin width (ms)}   & \textbf{Window size (bins)}   & \textbf{Window size (ms)} & \textbf{Windows per trial}  \\ \hline
+        $1$ms                     & $100$                         & $100$ms                   & $296$                       \\ \hline
+        $5$ms                     & $40$                          & $200$ms                   & $286$                       \\ \hline
+        $10$ms                    & $40$                          & $400$ms                   & $266$                       \\ \hline
+      \end{tabular}
+      \caption{Details of the different bin width and anaylsis window sizes used when binning spike times, and analysing those data.}
+      \label{tab:bin_widths}
+    \end{table}
 
-    The actual measurements we took in each window were as follows:
+    There was an interval between each trial with a grey image in place of the moving of the moving bar stimulus. This interval varied in time. But we included some of this interval when recording the data for each trial. We started recording the number of active neurons, and the number of spikes from each neuron from $530$ms before each trial until $1030$ms after each trial. This way, we could see the change in our measurements at the onset of a stimulus and the end of stimulus presentation.
+
+    As mentioned in section \ref{sec:num_active_neurons}, we recorded the number of active neurons in each bin, and the spike count for each neuron in each bin. The actual measurements we took using these data in each window were as follows:
     \begin{description}
-      \item[Number of active neurons] The number of neurons firing a spike in each bin. Most of the other measurements are aggregations of these measurements, or models fitted to these measurements.
-      \item[Spike counts for each cell] The number of spikes fired by each cell in each bin.
       \item[Moving average] The average number of active cells in each window.
       \item[Moving variance] The variance of the number of active cells in each window.
       \item[Average correlation] We measured the correlation between the spike counts of each pair of cells in the ensemble, and took the average of these measurements.
-      \item[Binomial $\mathbf{p}$] We fitted a binomial distribution to the data in each window and recorded the fitted probability of success, $p$ in each case.
+      \item[Binomial \textit{\textbf{p}}] We fitted a binomial distribution to the data in each window and recorded the fitted probability of success, $p$ in each case.
       \item[Beta-binomial $\boldsymbol{\alpha}$, $\boldsymbol{\beta}$] We fitted a beta-binomial distribution to the data in each window, and recorded the values of the fitted shape parameters, $\alpha$ and $\beta$, of each distribution.
-      \item[Conway-Maxwell-binomial distribution $\mathbf{p}$, $\boldsymbol{\nu}$] We fitted a Conway-Maxwell-binomial distribution to the data in each window, and recorded the fitted values of $p$ and $\nu$ for each distribution.
+      \item[Conway-Maxwell-binomial distribution \textit{\textbf{p}}, $\boldsymbol{\nu}$] We fitted a Conway-Maxwell-binomial distribution to the data in each window, and recorded the fitted values of $p$ and $\nu$ for each distribution.
       \item[Log-likelihoods] We also recorded the log-likelihood of each of the fitted distributions for each window.
     \end{description}
 
@@ -301,19 +310,19 @@ Two `Phase3' Neuropixels \cite{jun} electrode arrays were inserted into the brai
     \begin{align}\label{eq:fano_factor}
       F = \frac{\sigma^2}{\mu}
     \end{align}
-    We measured the Fano factor of the spike count of a given cell by measuring the mean and variance of the spike count across trials, and taking the ratio of those two quantities. When calculated in this way the Fano factor can be used as a measure of neural variability.  This is similar to the calculation used in \cite{churchland}.
+    We measured the Fano factor of the spike count of a given cell by measuring the mean and variance of the spike count across trials, and taking the ratio of those two quantities. When calculated in this way the Fano factor can be used as a measure of neural variability that controls for changes in the firing rate.  This is similar to the calculation used in \cite{churchland}.
 
     \subsection{Probability Distributions suitable for modelling ensemble activity}
 
     We present here three different probability distributions that could be suitable to model the number of active neurons in an ensemble. Each distribution has the set $\lbrace 0, \dots, n \rbrace$ as its support, where $n$ is the number of neurons in the ensemble. These are simple distributions with either two or three parameters each. However, we regard $n$ as known when using these distributions for modelling, so in effect each distribution has either one or two free parameters.
 
       \subsubsection{Association}
-      \textit{Association} between random variables is similar to the correlation between random variables but is more general in concept. The correlation is a measure of association; and association doesn't have a mathematical definition like correlation does. Essentially, the association between two random variables is their tendency to take the same or similar values. Positively associated variables tend to take the same value, and negatively associated variables tend to take differnt values. In this research, we work with probability distributions of the number of successes in a set of Bernoulli trials. These Bernoulli variables may or may not be associated.
+      \textit{Association} between random variables is similar to the correlation between random variables but is more general in concept. The correlation is a measure of association; and association doesn't have a mathematical definition like correlation does. Essentially, the association between two random variables is their tendency to take the same or similar values. Positively associated variables tend to take the same value, and negatively associated variables tend to take different values. In this research, we work with probability distributions of the number of successes in a set of Bernoulli trials. These Bernoulli variables may or may not be associated.
 
       A probability distribution over the number of successes in $n$ Bernoulli trials, where the Bernoulli variables may be associated, could constitute a good model for the number of active neurons in an ensemble of $n$ neurons.
 
       \subsubsection{Binomial distribution}
-      The binomial distribution is a two parameter discrete probability distribution that can be thought of as a probability distribution the number of successes from $n$ independent Bernoulli trials, each with the same probability of success. The parameters of the binomial distribution are $n$, and $0 \leq p \leq 1$, the probability of success for each of these trials. A random variable with the binomial distribution can take values from $\lbrace 0, \dots, n \rbrace$. The probability mass function of the distribution is
+      The binomial distribution is a two parameter discrete probability distribution that can be thought of as a probability distribution the number of successes from $n$ independent Bernoulli trials, each with the same probability of success. The parameters of the binomial distribution are $n$ the number of trials, and $0 \leq p \leq 1$, the probability of success for each of these trials. A random variable with the binomial distribution can take values from $\lbrace 0, \dots, n \rbrace$. The probability mass function of the distribution is
       \begin{align}\label{eq:binomial_pmf}
         P(k;n,p) = \binom{n}{k} p^k (1-p)^{n-k}
       \end{align}
@@ -328,7 +337,7 @@ Two `Phase3' Neuropixels \cite{jun} electrode arrays were inserted into the brai
       % If we do not know $n$ there is no closed form way way of maximising this equation. Therefore the binomial distribution is generally only used in cases where we do know $n$. Consequently, the distribution is practically a one parameter distribution.
       %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-      As model for the activity of a neuronal ensemble, the main problem with the binomial distribution is that it treats each neuron, represented as a Bernoulli trial, as independent. It is well know that neurons are not independent, and that correlated behaviour between neurons is vital for representing sensory information. The binomial distribution falls short in this regard, but it is useful as performance benchmark when assessing the performance of other models.
+      As a model for the activity of a neuronal ensemble, the main problem with the binomial distribution is that it treats each neuron, represented as a Bernoulli trial, as independent. It is well know that neurons are not independent, and that correlated behaviour between neurons is vital for representing sensory information\cite{cohen}. The binomial distribution falls short in this regard, but it is useful as performance benchmark when assessing the performance of other models.
 
       \subsubsection{Beta-binomial distribution}
       The beta distribution is the conjugate distribution of the binomial distribution. The beta-binomial distribution is the combination of the beta distribution and the binomial distribution, in that the probability of success for the binomial distribution is sampled from the beta distribution. This allows the beta-binomial distribution to capture some over dispersion relative to the binomial distribution.
@@ -363,7 +372,7 @@ Two `Phase3' Neuropixels \cite{jun} electrode arrays were inserted into the brai
       \end{figure}
 
       \subsubsection{Conway-Maxwell-binomial distribution}\label{sec:conway_maxwell_binomial_distribution}
-      The Conway-Maxwell-binomial distribution (COMb distribution) is a three parameter generalisation of the binomial distribution that allows for over dispersion and under dispersion relative to the binomial distribution. The parameters of the distribution are $n$ the number of Bernoulli trials, $0 \leq p \leq 1$, the location parameter, and $\nu \in \mathbb{R}$ the shape parameter.
+      The Conway-Maxwell-binomial distribution (COMb distribution) is a three parameter generalisation of the binomial distribution that allows for over dispersion and under dispersion relative to the binomial distribution. The parameters of the distribution are $n$ the number of Bernoulli trials, and two shape parameters $0 \leq p \leq 1$, and $\nu \in \mathbb{R}$.
 
       The probability mass function of the COMb distribution is
       \begin{align}\label{eq:comb_pmf}
@@ -386,7 +395,7 @@ Two `Phase3' Neuropixels \cite{jun} electrode arrays were inserted into the brai
 
       If $\nu > 1$ the COMb distribution will exhibit under-dispersion relative to the binomial distribution. The larger the value of $\nu$ the more probability mass will build up at $n/2$ for even $n$, or at $\lfloor n/2 \rfloor$ and $\lceil n/2 \rceil$ for odd $n$. This under-dispersion represents negative association in the Bernoulli variables. An example of this under-dispersion can be seen in figure \ref{fig:comb_underdispersion}.
 
-      It should be noted that the shape parameter of the COMb distribution, $p$, does not correspond to the mean of the distribution, as is the case for the binomial and beta-binomial distributions. An illustration of this can be seen in figure \ref{fig:comb_skewed}. This is because an interaction between the $p$ and $\nu$ parameters skews the mean. There is no analytical expression for the mean of the COMb distribution.
+      It should be noted that the $p$ parameter of the COMb distribution does not correspond to the mean of the distribution, as is the case for the binomial $p$ parameter, and beta-binomial $\pi$ parameter. That is, the COMb $p$ parameter is not a location parameter. An illustration of this can be seen in figure \ref{fig:comb_skewed}. This is because an interaction between the $p$ and $\nu$ parameters skews the mean. There is no analytical expression for the mean of the COMb distribution.
 
       \begin{table}
         \centering
@@ -429,36 +438,31 @@ Two `Phase3' Neuropixels \cite{jun} electrode arrays were inserted into the brai
           \caption{KL-Divergence as a function of $p$ and $\nu$. $n=100$.}
           \label{fig:comb_bin_dkl}
         \end{subfigure}
-        \caption{Figures showing (a) the over-dispersion and (b) under-dispersion permitted by the COMb distribution. (c) illustrates that the shape parameter of the COMb distribution, $p$, does not correspond to the mean of the distribution, as it does for the binomial and beta-binomial distributions. (d) shows a heatmap for the value of the Kullback-Liebler divergence between the COMb distribution and the standard binomial distribution with same value for $n$, as a function of $p$ and $\nu$. Parameters are shown in the captions.}
+        \caption{Figures showing (a) the over-dispersion and (b) under-dispersion permitted by the COMb distribution relative to a binomial distribution. (c) illustrates that the $p$ parameter of the COMb distribution does not correspond to the mean of the distribution, as it does for the binomial and beta-binomial distributions. (d) shows a heatmap for the value of the Kullback-Liebler divergence between the COMb distribution and the standard binomial distribution with same value for $n$, as a function of $p$ and $\nu$. Parameters are shown in the captions.}
       \end{figure}
 
       \newpage
 
     \subsection{Fitting}
-    We fitted a binomial, beta-binomial, and Conway-Maxwell-binomial (COMb) distribution to the neural activity in each of the overlapping windows covering each trial. To fit the distributions we minimised the appropriate negative log likelihood function using the data from the window.
+    We fitted binomial, beta-binomial, and Conway-Maxwell-binomial (COMb) distributions to the neural activity in each of the overlapping windows covering each trial. To fit the distributions we minimised the appropriate negative log likelihood function using the data from the window.
 
-    There is an analytical solution for the binomial distribution.
+    There is an analytical solution for maximum likelihood estimate of the binomial distribution's $p$ parameter.
     \begin{align}\label{eq:binomial_log_like_p_estimate}
       \hat{p} = \frac{1}{n}\sum_{i=1}^N k_i
     \end{align}
 
-    We minimised the negative log likelihood function of the beta-binomial distribution numerically.
+    We minimised the negative log likelihood function of the beta-binomial distribution numerically. We calculated the negative log likelihood for a sample directly, by taking the sum of the log of the probability mass function for each value in the sample. We minimised the negation of that function using the \texttt{minimise} function of the \texttt{scipy.optimize} Python package.
 
-    The log likelihood function of the COMb distribution is
+    The log likelihood function of the COMb distribution given some sample \\ $\lbrace k_1, \dots, k_N \rbrace$ is
     \begin{align}\label{eq:comb_log_like}
       \ell (p,\nu | k_1,\dots,k_N) =& N\left[n\log(1-p) - \log S(n,p,\nu)\right]  \\
         &+ \log \frac{p}{1-p} \sum_{i=1}^N k_i \\
         &+ \nu \sum_{i=1}^N \log \binom{n}{k_i}
     \end{align}
-    We minimised the negation of this function using numerical methods.
-
-    More specifically, we used the \texttt{minimise} function of the \texttt{scipy.optimize} Python package.
+    We minimised the negation of this function using numerical methods. More specifically, we used the \texttt{minimise} function of the \texttt{scipy.optimize} Python package.
 
     \subsection{Goodness-of-fit}
     After fitting, we measured the goodness-of-fit of each model/distribution with their log likelihood. We calculated this directly using the \texttt{logpmf} functions of the distribution objects in Python.
-
-\section{Discussion}
-Point out that the Conway-Maxwell-binomial distribution could be used to measure activity and association without having to sort the voltage traces into spikes. That does defeat the purpose slightly, however.
 
 \newpage
 \bibliography{conway_maxwell_hierarchical_model.bbl}

@@ -47,76 +47,79 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces The (a) average and (b) variance of the number of active neurons, measured using a sliding window $100$ms wide, split into $100$ bins. The midpoint of the time interval for each window is used as the timepoint (x-axis point) for the measurements using that window. The grey shaded area indicates the presence of a visual stimulus. The opaque line is an average across the $160$ trials that included a visual stimulus of any kind.\relax }}{6}{figure.caption.3}\protected@file@percent }
 \newlabel{fig:thalamus_moving_avg_and_var}{{3}{6}{The (a) average and (b) variance of the number of active neurons, measured using a sliding window $100$ms wide, split into $100$ bins. The midpoint of the time interval for each window is used as the timepoint (x-axis point) for the measurements using that window. The grey shaded area indicates the presence of a visual stimulus. The opaque line is an average across the $160$ trials that included a visual stimulus of any kind.\relax }{figure.caption.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Conway-Maxwell-binomial distribution is usually a better fit than binomial or beta-binomial}{6}{subsection.2.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Proportion of samples for which each distribution was the best fit, grouped by bin width. The COMb distribution is the best fit most of the time.\relax }}{8}{table.caption.5}\protected@file@percent }
-\newlabel{tab:proportions}{{1}{8}{Proportion of samples for which each distribution was the best fit, grouped by bin width. The COMb distribution is the best fit most of the time.\relax }{table.caption.5}{}}
-\newlabel{fig:fitting_example}{{4a}{8}{Example of fitted distributions.\relax }{figure.caption.4}{}}
-\newlabel{sub@fig:fitting_example}{{a}{8}{Example of fitted distributions.\relax }{figure.caption.4}{}}
-\newlabel{fig:best_fit_proportion}{{4b}{8}{Proportion of best fit\relax }{figure.caption.4}{}}
-\newlabel{sub@fig:best_fit_proportion}{{b}{8}{Proportion of best fit\relax }{figure.caption.4}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces (a) An example of the binomial, beta-binomial, and Conway-Maxwell-binomial distributions fitted to a sample of neural activity. The Conway-Maxwell-binomial distribution is the best fit in this case. The histogram shows the empirical distribution of the sample. The probability mass function of each distribution is indicated by a differently coloured line. (b) Across all samples in all trials, the proportion of samples for which each fitted distribution was the the best fit. The Conway-Maxwell-binomial distribution was the best fit for $93\%$ of the samples taken from V1 using a bin width of $1$ms.\relax }}{8}{figure.caption.4}\protected@file@percent }
-\newlabel{fig:fitting}{{4}{8}{(a) An example of the binomial, beta-binomial, and Conway-Maxwell-binomial distributions fitted to a sample of neural activity. The Conway-Maxwell-binomial distribution is the best fit in this case. The histogram shows the empirical distribution of the sample. The probability mass function of each distribution is indicated by a differently coloured line. (b) Across all samples in all trials, the proportion of samples for which each fitted distribution was the the best fit. The Conway-Maxwell-binomial distribution was the best fit for $93\%$ of the samples taken from V1 using a bin width of $1$ms.\relax }{figure.caption.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Proportion of samples for which each distribution was the best fit, grouped by bin width. The COMb distribution is the best fit most of the time.\relax }}{7}{table.caption.5}\protected@file@percent }
+\newlabel{tab:proportions}{{1}{7}{Proportion of samples for which each distribution was the best fit, grouped by bin width. The COMb distribution is the best fit most of the time.\relax }{table.caption.5}{}}
+\newlabel{fig:fitting_example}{{4a}{7}{Example of fitted distributions.\relax }{figure.caption.4}{}}
+\newlabel{sub@fig:fitting_example}{{a}{7}{Example of fitted distributions.\relax }{figure.caption.4}{}}
+\newlabel{fig:best_fit_proportion}{{4b}{7}{Proportion of best fit\relax }{figure.caption.4}{}}
+\newlabel{sub@fig:best_fit_proportion}{{b}{7}{Proportion of best fit\relax }{figure.caption.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces (a) An example of the binomial, beta-binomial, and Conway-Maxwell-binomial distributions fitted to a sample of neural activity. The Conway-Maxwell-binomial distribution is the best fit in this case. The histogram shows the empirical distribution of the sample. The probability mass function of each distribution is indicated by a different coloured line. (b) Across all samples in all trials, the proportion of samples for which each fitted distribution was the the best fit. The Conway-Maxwell-binomial distribution was the best fit for $93\%$ of the samples taken from V1 using a bin width of $1$ms.\relax }}{7}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:fitting}{{4}{7}{(a) An example of the binomial, beta-binomial, and Conway-Maxwell-binomial distributions fitted to a sample of neural activity. The Conway-Maxwell-binomial distribution is the best fit in this case. The histogram shows the empirical distribution of the sample. The probability mass function of each distribution is indicated by a different coloured line. (b) Across all samples in all trials, the proportion of samples for which each fitted distribution was the the best fit. The Conway-Maxwell-binomial distribution was the best fit for $93\%$ of the samples taken from V1 using a bin width of $1$ms.\relax }{figure.caption.4}{}}
 \citation{cohen}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Conway-Maxwell-binomial distribution captures changes in association at stimulus onset}{9}{subsection.2.3}\protected@file@percent }
-\newlabel{fig:comb_nu_parameter}{{5a}{10}{COMb $\nu $ parameter.\relax }{figure.caption.6}{}}
-\newlabel{sub@fig:comb_nu_parameter}{{a}{10}{COMb $\nu $ parameter.\relax }{figure.caption.6}{}}
-\newlabel{fig:avg_corr_coef}{{5b}{10}{Average correlation coefficient.\relax }{figure.caption.6}{}}
-\newlabel{sub@fig:avg_corr_coef}{{b}{10}{Average correlation coefficient.\relax }{figure.caption.6}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces (a) We fit a Conway-Maxwell-binomial distribution to the number of active neurons in $1$ms time bins of a $100$ms sliding window. We did this for all trials with a visual stimulus and took the average across those trials. We see a transient drop in value for the distribution's $\nu $ parameter at stimulus onset. This shows an increase in association between the neurons. (b) We measured the correlation coefficient between the spike counts of all possible pairs of neurons in the same sliding window. The took the average of those coefficients. We also did this for every visually stimulated trial, and took the average across trials. The increase in association is not reflected with an increase in average correlation.\relax }}{10}{figure.caption.6}\protected@file@percent }
-\newlabel{fig:comb_nu_and_corr}{{5}{10}{(a) We fit a Conway-Maxwell-binomial distribution to the number of active neurons in $1$ms time bins of a $100$ms sliding window. We did this for all trials with a visual stimulus and took the average across those trials. We see a transient drop in value for the distribution's $\nu $ parameter at stimulus onset. This shows an increase in association between the neurons. (b) We measured the correlation coefficient between the spike counts of all possible pairs of neurons in the same sliding window. The took the average of those coefficients. We also did this for every visually stimulated trial, and took the average across trials. The increase in association is not reflected with an increase in average correlation.\relax }{figure.caption.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Conway-Maxwell-binomial distribution captures changes in association at stimulus onset}{8}{subsection.2.3}\protected@file@percent }
+\newlabel{fig:comb_nu_parameter}{{5a}{9}{COMb $\nu $ parameter.\relax }{figure.caption.6}{}}
+\newlabel{sub@fig:comb_nu_parameter}{{a}{9}{COMb $\nu $ parameter.\relax }{figure.caption.6}{}}
+\newlabel{fig:avg_corr_coef}{{5b}{9}{Average correlation coefficient.\relax }{figure.caption.6}{}}
+\newlabel{sub@fig:avg_corr_coef}{{b}{9}{Average correlation coefficient.\relax }{figure.caption.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces (a) We fit a Conway-Maxwell-binomial distribution to the number of active neurons in $1$ms time bins of a $100$ms sliding window. We did this for all trials with a visual stimulus and took the average across those trials. We see a transient drop in value for the distribution's $\nu $ parameter at stimulus onset. This shows an increase in association between the neurons. (b) We measured the correlation coefficient between the spike counts of all possible pairs of neurons in the same sliding window. The took the average of those coefficients. We also did this for every visually stimulated trial, and took the average across trials. The increase in association is not reflected with an increase in average correlation.\relax }}{9}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:comb_nu_and_corr}{{5}{9}{(a) We fit a Conway-Maxwell-binomial distribution to the number of active neurons in $1$ms time bins of a $100$ms sliding window. We did this for all trials with a visual stimulus and took the average across those trials. We see a transient drop in value for the distribution's $\nu $ parameter at stimulus onset. This shows an increase in association between the neurons. (b) We measured the correlation coefficient between the spike counts of all possible pairs of neurons in the same sliding window. The took the average of those coefficients. We also did this for every visually stimulated trial, and took the average across trials. The increase in association is not reflected with an increase in average correlation.\relax }{figure.caption.6}{}}
 \citation{churchland}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Replicating stimulus related quenching of neural variability}{11}{subsection.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}Replicating stimulus related quenching of neural variability}{10}{subsection.2.4}\protected@file@percent }
 \citation{cohen}
-\newlabel{fig:v1_1ms_fano_factor}{{6a}{12}{Primary visual cortex.\relax }{figure.caption.7}{}}
-\newlabel{sub@fig:v1_1ms_fano_factor}{{a}{12}{Primary visual cortex.\relax }{figure.caption.7}{}}
-\newlabel{fig:motor_cortex_fano_factor}{{6b}{12}{Motor cortex.\relax }{figure.caption.7}{}}
-\newlabel{sub@fig:motor_cortex_fano_factor}{{b}{12}{Motor cortex.\relax }{figure.caption.7}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces (a) The mean Fano factor of the spike counts of the cells in the primary visual cortex. Means were taken across cells first, then across trials. There was a significant decrease in the Fano factors immediately after stimulus onset. (b) The mean Fano factor of the spike counts of the cells in the motor cortex. No significant change in measurements at any point.\relax }}{12}{figure.caption.7}\protected@file@percent }
-\newlabel{fig:fano_factors}{{6}{12}{(a) The mean Fano factor of the spike counts of the cells in the primary visual cortex. Means were taken across cells first, then across trials. There was a significant decrease in the Fano factors immediately after stimulus onset. (b) The mean Fano factor of the spike counts of the cells in the motor cortex. No significant change in measurements at any point.\relax }{figure.caption.7}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3}Discussion}{12}{section.3}\protected@file@percent }
+\newlabel{fig:v1_1ms_fano_factor}{{6a}{11}{Primary visual cortex.\relax }{figure.caption.7}{}}
+\newlabel{sub@fig:v1_1ms_fano_factor}{{a}{11}{Primary visual cortex.\relax }{figure.caption.7}{}}
+\newlabel{fig:motor_cortex_fano_factor}{{6b}{11}{Motor cortex.\relax }{figure.caption.7}{}}
+\newlabel{sub@fig:motor_cortex_fano_factor}{{b}{11}{Motor cortex.\relax }{figure.caption.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces (a) The mean Fano factor of the spike counts of the cells in the primary visual cortex. Means were taken across cells first, then across trials. There was a significant decrease in the Fano factors immediately after stimulus onset. (b) The mean Fano factor of the spike counts of the cells in the motor cortex. No significant change in measurements at any point.\relax }}{11}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:fano_factors}{{6}{11}{(a) The mean Fano factor of the spike counts of the cells in the primary visual cortex. Means were taken across cells first, then across trials. There was a significant decrease in the Fano factors immediately after stimulus onset. (b) The mean Fano factor of the spike counts of the cells in the motor cortex. No significant change in measurements at any point.\relax }{figure.caption.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Discussion}{11}{section.3}\protected@file@percent }
 \citation{odonnell}
 \citation{steinmetz}
 \citation{jun}
-\@writefile{toc}{\contentsline {section}{\numberline {4}Data}{13}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Experimental protocol}{13}{subsection.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Methods}{14}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Binning data}{14}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Number of \textit  {active} neurons}{14}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Data}{12}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Experimental protocol}{12}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Methods}{13}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Binning data}{13}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Number of \textit  {active} neurons}{13}{subsection.5.2}\protected@file@percent }
+\newlabel{sec:num_active_neurons}{{5.2}{13}{Number of \textit {active} neurons}{subsection.5.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Details of the different bin width and anaylsis window sizes used when binning spike times, and analysing those data.\relax }}{14}{table.caption.8}\protected@file@percent }
+\newlabel{tab:bin_widths}{{2}{14}{Details of the different bin width and anaylsis window sizes used when binning spike times, and analysing those data.\relax }{table.caption.8}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Moving windows for measurements}{14}{subsection.5.3}\protected@file@percent }
 \citation{churchland}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Fano factor}{16}{subsection.5.4}\protected@file@percent }
-\newlabel{sec:fano_factor}{{5.4}{16}{Fano factor}{subsection.5.4}{}}
-\newlabel{eq:fano_factor}{{1}{16}{Fano factor}{equation.5.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Probability Distributions suitable for modelling ensemble activity}{16}{subsection.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Fano factor}{15}{subsection.5.4}\protected@file@percent }
+\newlabel{sec:fano_factor}{{5.4}{15}{Fano factor}{subsection.5.4}{}}
+\newlabel{eq:fano_factor}{{1}{15}{Fano factor}{equation.5.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Probability Distributions suitable for modelling ensemble activity}{15}{subsection.5.5}\protected@file@percent }
+\citation{cohen}
 \@writefile{toc}{\contentsline {subsubsection}{\numberline {5.5.1}Association}{16}{subsubsection.5.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.5.2}Binomial distribution}{17}{subsubsection.5.5.2}\protected@file@percent }
-\newlabel{eq:binomial_pmf}{{2}{17}{Binomial distribution}{equation.5.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.5.3}Beta-binomial distribution}{17}{subsubsection.5.5.3}\protected@file@percent }
-\newlabel{eq:betabinomial_pdf}{{3}{18}{Beta-binomial distribution}{equation.5.3}{}}
-\newlabel{eq:betabinomial_reparam}{{4}{18}{Beta-binomial distribution}{equation.5.4}{}}
-\newlabel{fig:betabinomial_overdispersion}{{7a}{18}{$n=100, p=0.5, \alpha =\beta =10$\relax }{figure.caption.8}{}}
-\newlabel{sub@fig:betabinomial_overdispersion}{{a}{18}{$n=100, p=0.5, \alpha =\beta =10$\relax }{figure.caption.8}{}}
-\newlabel{fig:betabinomial_big_overdispersion}{{7b}{18}{$n=100, p=0.5, \alpha =\beta =0.3$\relax }{figure.caption.8}{}}
-\newlabel{sub@fig:betabinomial_big_overdispersion}{{b}{18}{$n=100, p=0.5, \alpha =\beta =0.3$\relax }{figure.caption.8}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Figures showing the over-dispersion possible for a beta-binomial distribution relative to a binomial distribution. Parameters are shown in the captions. \relax }}{18}{figure.caption.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.5.4}Conway-Maxwell-binomial distribution}{19}{subsubsection.5.5.4}\protected@file@percent }
-\newlabel{sec:conway_maxwell_binomial_distribution}{{5.5.4}{19}{Conway-Maxwell-binomial distribution}{subsubsection.5.5.4}{}}
-\newlabel{eq:comb_pmf}{{6}{19}{Conway-Maxwell-binomial distribution}{equation.5.6}{}}
-\newlabel{eq:comb_norm}{{7}{19}{Conway-Maxwell-binomial distribution}{equation.5.7}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Relative dispersion of the COMb distribution, and association between Bernoulli variables as represented by the value of the $\nu $ parameter.\relax }}{20}{table.caption.9}\protected@file@percent }
-\newlabel{fig:comb_underdispersion}{{8a}{21}{$n=100, p=0.5, \alpha =\beta =10, \nu =2.5$\relax }{figure.caption.10}{}}
-\newlabel{sub@fig:comb_underdispersion}{{a}{21}{$n=100, p=0.5, \alpha =\beta =10, \nu =2.5$\relax }{figure.caption.10}{}}
-\newlabel{fig:comb_overrdispersion}{{8b}{21}{$n=100, p=0.5, \alpha =\beta =0.3, \nu =0.1$\relax }{figure.caption.10}{}}
-\newlabel{sub@fig:comb_overrdispersion}{{b}{21}{$n=100, p=0.5, \alpha =\beta =0.3, \nu =0.1$\relax }{figure.caption.10}{}}
-\newlabel{fig:comb_skewed}{{8c}{21}{$n=100, p=0.4, \alpha =10, \beta =15, \nu =0.1$\relax }{figure.caption.10}{}}
-\newlabel{sub@fig:comb_skewed}{{c}{21}{$n=100, p=0.4, \alpha =10, \beta =15, \nu =0.1$\relax }{figure.caption.10}{}}
-\newlabel{fig:comb_bin_dkl}{{8d}{21}{KL-Divergence as a function of $p$ and $\nu $. $n=100$.\relax }{figure.caption.10}{}}
-\newlabel{sub@fig:comb_bin_dkl}{{d}{21}{KL-Divergence as a function of $p$ and $\nu $. $n=100$.\relax }{figure.caption.10}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Figures showing (a) the over-dispersion and (b) under-dispersion permitted by the COMb distribution. (c) illustrates that the shape parameter of the COMb distribution, $p$, does not correspond to the mean of the distribution, as it does for the binomial and beta-binomial distributions. (d) shows a heatmap for the value of the Kullback-Liebler divergence between the COMb distribution and the standard binomial distribution with same value for $n$, as a function of $p$ and $\nu $. Parameters are shown in the captions.\relax }}{21}{figure.caption.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Fitting}{22}{subsection.5.6}\protected@file@percent }
-\newlabel{eq:binomial_log_like_p_estimate}{{10}{22}{Fitting}{equation.5.10}{}}
-\newlabel{eq:comb_log_like}{{11}{22}{Fitting}{equation.5.11}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.7}Goodness-of-fit}{22}{subsection.5.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}Discussion}{22}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.5.2}Binomial distribution}{16}{subsubsection.5.5.2}\protected@file@percent }
+\newlabel{eq:binomial_pmf}{{2}{16}{Binomial distribution}{equation.5.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.5.3}Beta-binomial distribution}{16}{subsubsection.5.5.3}\protected@file@percent }
+\newlabel{eq:betabinomial_pdf}{{3}{17}{Beta-binomial distribution}{equation.5.3}{}}
+\newlabel{eq:betabinomial_reparam}{{4}{17}{Beta-binomial distribution}{equation.5.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.5.4}Conway-Maxwell-binomial distribution}{17}{subsubsection.5.5.4}\protected@file@percent }
+\newlabel{sec:conway_maxwell_binomial_distribution}{{5.5.4}{17}{Conway-Maxwell-binomial distribution}{subsubsection.5.5.4}{}}
+\newlabel{fig:betabinomial_overdispersion}{{7a}{18}{$n=100, p=0.5, \alpha =\beta =10$\relax }{figure.caption.9}{}}
+\newlabel{sub@fig:betabinomial_overdispersion}{{a}{18}{$n=100, p=0.5, \alpha =\beta =10$\relax }{figure.caption.9}{}}
+\newlabel{fig:betabinomial_big_overdispersion}{{7b}{18}{$n=100, p=0.5, \alpha =\beta =0.3$\relax }{figure.caption.9}{}}
+\newlabel{sub@fig:betabinomial_big_overdispersion}{{b}{18}{$n=100, p=0.5, \alpha =\beta =0.3$\relax }{figure.caption.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Figures showing the over-dispersion possible for a beta-binomial distribution relative to a binomial distribution. Parameters are shown in the captions. \relax }}{18}{figure.caption.9}\protected@file@percent }
+\newlabel{eq:comb_pmf}{{6}{18}{Conway-Maxwell-binomial distribution}{equation.5.6}{}}
+\newlabel{eq:comb_norm}{{7}{18}{Conway-Maxwell-binomial distribution}{equation.5.7}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Relative dispersion of the COMb distribution, and association between Bernoulli variables as represented by the value of the $\nu $ parameter.\relax }}{19}{table.caption.10}\protected@file@percent }
+\newlabel{fig:comb_underdispersion}{{8a}{20}{$n=100, p=0.5, \alpha =\beta =10, \nu =2.5$\relax }{figure.caption.11}{}}
+\newlabel{sub@fig:comb_underdispersion}{{a}{20}{$n=100, p=0.5, \alpha =\beta =10, \nu =2.5$\relax }{figure.caption.11}{}}
+\newlabel{fig:comb_overrdispersion}{{8b}{20}{$n=100, p=0.5, \alpha =\beta =0.3, \nu =0.1$\relax }{figure.caption.11}{}}
+\newlabel{sub@fig:comb_overrdispersion}{{b}{20}{$n=100, p=0.5, \alpha =\beta =0.3, \nu =0.1$\relax }{figure.caption.11}{}}
+\newlabel{fig:comb_skewed}{{8c}{20}{$n=100, p=0.4, \alpha =10, \beta =15, \nu =0.1$\relax }{figure.caption.11}{}}
+\newlabel{sub@fig:comb_skewed}{{c}{20}{$n=100, p=0.4, \alpha =10, \beta =15, \nu =0.1$\relax }{figure.caption.11}{}}
+\newlabel{fig:comb_bin_dkl}{{8d}{20}{KL-Divergence as a function of $p$ and $\nu $. $n=100$.\relax }{figure.caption.11}{}}
+\newlabel{sub@fig:comb_bin_dkl}{{d}{20}{KL-Divergence as a function of $p$ and $\nu $. $n=100$.\relax }{figure.caption.11}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces Figures showing (a) the over-dispersion and (b) under-dispersion permitted by the COMb distribution relative to a binomial distribution. (c) illustrates that the $p$ parameter of the COMb distribution does not correspond to the mean of the distribution, as it does for the binomial and beta-binomial distributions. (d) shows a heatmap for the value of the Kullback-Liebler divergence between the COMb distribution and the standard binomial distribution with same value for $n$, as a function of $p$ and $\nu $. Parameters are shown in the captions.\relax }}{20}{figure.caption.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Fitting}{21}{subsection.5.6}\protected@file@percent }
+\newlabel{eq:binomial_log_like_p_estimate}{{10}{21}{Fitting}{equation.5.10}{}}
+\newlabel{eq:comb_log_like}{{11}{21}{Fitting}{equation.5.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.7}Goodness-of-fit}{21}{subsection.5.7}\protected@file@percent }
 \bibdata{conway_maxwell_hierarchical_model.bbl}
 \bibcite{altham}{1}
 \bibcite{churchland}{2}
