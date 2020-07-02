@@ -629,3 +629,43 @@ def plotCellFanoFactors(h5_file_list, region, stim_times=[], colour='blue', is_t
     plt.title(region.replace('_', ' ').capitalize() + ', n = ' + str(num_cells) + ' cells', fontsize='large') if use_title else None
     plt.tight_layout() if is_tight_layout else None
     return None
+
+def plotRastersForRegions(adj_cell_ids, cell_info, spike_time_dict, regions, stim_info, image_dir):
+    """
+    For plotting rasters for regions.
+    Arguments:  adj_cell_ids, the adjusted cell ids
+                spike_time_dict, adj_cell_id => spike times
+                regions, str, the list of regions
+                stim_info, dataframe
+                image_dir, str
+    Returns:    file_names
+    """
+    regions = [regions] if str == type(regions) else regions
+    grouped_cell_info = cell_info.loc[adj_cell_ids,['cluster_id','region']].groupby('region')
+    trial_info = stim_info.loc[np.random.choice(stim_info[stim_info['stim_ids'] != 17].index)]
+    time_info = trial_info - trial_info.stim_starts
+    save_names = []
+    for region in regions:
+        region_fig, region_ax = plt.subplots(nrows=1,ncols=1,figsize=(9,3))
+        region_ids = grouped_cell_info.get_group(region).index.values
+        for i,id in enumerate(region_ids):
+            spike_times = spike_time_dict.get(id)
+            relevant_spike_times = spike_times[(trial_info.read_starts < spike_times) & (spike_times < trial_info.read_stops)]
+            if len(relevant_spike_times) > 0:
+                region_ax.vlines(x=relevant_spike_times - trial_info.stim_starts, ymin=i, ymax=i+1)
+        plotShadedStimulus([time_info.stim_starts], [time_info.stim_stops], upper_bound=len(region_ids)+1, lower_bound=0)
+        region_ax.set_xlim([time_info.read_starts, time_info.read_stops])
+        region_ax.set_ylim([0,len(region_ids)+1])
+        region_ax.set_ylabel('Cells', fontsize='x-large')
+        region_ax.set_xlabel('Time (s)', fontsize='x-large')
+        region_ax.set_yticks([])
+        region_ax.set_title(region.capitalize().replace('_',' ') + ' raster', fontsize='x-large')
+        plt.tight_layout()
+        save_name = os.path.join(image_dir,'Rasters',region,'_'.join([region,'raster',str(int(trial_info.stim_ids))])+'.png')
+        os.path.isdir(os.path.dirname(save_name)) or os.makedirs(os.path.dirname(save_name))
+        plt.savefig(save_name)
+        plt.savefig(save_name.replace('.png','.svg'))
+        plt.savefig(save_name.replace('.png','.eps'))
+        save_names.append(save_name)
+        plt.close('all')
+    return save_names

@@ -268,3 +268,11 @@ if not args.debug:
         os.makedirs(os.path.dirname(save_name)) if not os.path.exists(os.path.dirname(save_name)) else None
         plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg'));
         plt.close('all')
+
+######################## PLOT RASTERS #################################
+    if args.plot_rasters:
+        cell_info = comh.loadCellInfo(csv_dir)
+        adj_cell_ids = comh.getRandomSubsetOfCells(cell_info, 100, groups=['good'], regions=['v1','thalamus','hippocampus'])
+        spike_time_dict = comh.loadSpikeTimeDict(adj_cell_ids, posterior_dir, frontal_dir, cell_info)
+        save_names = comh.plotRastersForRegions(adj_cell_ids, cell_info, spike_time_dict, ['v1','thalamus','hippocampus'], stim_info, image_dir)
+        [print(dt.datetime.now().isoformat() + ' INFO: ' + sn + ' saved.') for sn in save_names]
