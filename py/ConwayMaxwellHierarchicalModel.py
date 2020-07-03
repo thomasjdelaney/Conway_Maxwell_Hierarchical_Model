@@ -581,7 +581,7 @@ def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[],
     plt.plot(x_axis, measures_mean, color=colour, **kwargs)
     plt.fill_between(x_axis, measures_mean-measures_stderr, measures_mean+measures_stderr, alpha=0.3, color=colour, label='Std. Err.')
     plt.ylim(lower_bound, upper_bound)
-    plt.xlim((x_axis[0], x_axis[-1]));plt.ylim((0,plt.ylim()[1]))
+    plt.xlim((x_axis[0], x_axis[-1]))
     plt.xticks(fontsize='large');plt.yticks(fontsize='large')
     plt.xlabel('Time (s)', fontsize='x-large')
     plt.ylabel(y_label, fontsize='x-large') if y_label != '' else None
