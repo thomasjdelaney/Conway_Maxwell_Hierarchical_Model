@@ -568,24 +568,26 @@ def plotAverageMeasure(h5_file_list, region, measure, index=None, stim_times=[],
     Returns:    None
     """
     x_axis, time_adjustor = getXAxisTimeAdjustor(h5_file_list[0]) if stim_times==[] else getXAxisTimeAdjustor(h5_file_list[0], stim_start=stim_times[0])
+    num_cells = h5py.File(h5_file_list[0],'r').get(region).get('num_cells')[()]
     measures = collectMeasureFromFiles(h5_file_list, region, measure, index, reparametrise)
     measures_mean = np.nanmean(measures, axis=0)
     measures_std = np.nanstd(measures, axis=0)
     measures_samples = np.sum(~np.isnan(measures), axis=0)
     measures_stderr = measures_std/np.sqrt(measures_samples)
-    lower_bound = np.nanmin(np.nanmin(measures_mean - measures_stderr),0)
+    lower_bound = np.nanmin(np.append(measures_mean - measures_stderr,0))
     upper_bound = np.nanmax(measures_mean + measures_stderr)
     if stim_times != []: # include the grey shaded area to indicate the stimulus
         plotShadedStimulus([0.0], [stim_times[1] - stim_times[0]], upper_bound, lower_bound=lower_bound)
     plt.plot(x_axis, measures_mean, color=colour, **kwargs)
     plt.fill_between(x_axis, measures_mean-measures_stderr, measures_mean+measures_stderr, alpha=0.3, color=colour, label='Std. Err.')
     plt.ylim(lower_bound, upper_bound)
-    plt.xlim((x_axis[0], x_axis[-1]))
+    plt.xlim((x_axis[0], x_axis[-1]));plt.ylim((0,plt.ylim()[1]))
     plt.xticks(fontsize='large');plt.yticks(fontsize='large')
     plt.xlabel('Time (s)', fontsize='x-large')
     plt.ylabel(y_label, fontsize='x-large') if y_label != '' else None
-    plt.title(title, fontsize='large') if title != '' else None
+    plt.title(title + ', Num cells = '+str(num_cells), fontsize='large') if title != '' else None
     plt.legend(fontsize='large') if 'label' in kwargs else None
+    plt.tight_layout()
     return None
 
 def plotCellFanoFactors(h5_file_list, region, stim_times=[], colour='blue', is_tight_layout=True, use_title=False, window_size=100):
@@ -646,7 +648,7 @@ def plotRastersForRegions(adj_cell_ids, cell_info, spike_time_dict, regions, sti
     time_info = trial_info - trial_info.stim_starts
     save_names = []
     for region in regions:
-        region_fig, region_ax = plt.subplots(nrows=1,ncols=1,figsize=(9,3))
+        region_fig, region_ax = plt.subplots(nrows=1,ncols=1,figsize=(8,3))
         region_ids = grouped_cell_info.get_group(region).index.values
         for i,id in enumerate(region_ids):
             spike_times = spike_time_dict.get(id)
@@ -659,6 +661,7 @@ def plotRastersForRegions(adj_cell_ids, cell_info, spike_time_dict, regions, sti
         region_ax.set_ylabel('Cells', fontsize='x-large')
         region_ax.set_xlabel('Time (s)', fontsize='x-large')
         region_ax.set_yticks([])
+        region_ax.tick_params(axis='x', labelsize='large')
         region_ax.set_title(region.capitalize().replace('_',' ') + ' raster', fontsize='x-large')
         plt.tight_layout()
         save_name = os.path.join(image_dir,'Rasters',region,'_'.join([region,'raster',str(int(trial_info.stim_ids))])+'.png')

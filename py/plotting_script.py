@@ -22,6 +22,7 @@ parser.add_argument('-a', '--plot_averages', help='Flag to plot the averages acr
 parser.add_argument('-f', '--plot_fano', help='Flag to plot the fano factors.', default=False, action='store_true')
 parser.add_argument('-c', '--compare_dists', help='Flag to plot the distribution comparison plot.', default=False, action='store_true')
 parser.add_argument('-e', '--fitted_example', help='Flag to plot the example of data and fitted distributions.', default=False, action='store_true')
+parser.add_argument('-s', '--plot_rasters', help='Flag to plot some rasters for selected regions.', default=False, action='store_true')
 parser.add_argument('-d', '--debug', help='Enter debug mode.', default=False, action='store_true')
 args = parser.parse_args()
 
@@ -58,7 +59,7 @@ def plotAveragesAcrossTrials(h5_file_list, title, file_name_suffix, stim_times, 
     Returns:    Nothing
     """
     for measure, y_label, index, label, reparametrise, file_name_prefix in zip(measure_list,y_label_list,index_list,label_list,reparametrise_list,file_name_prefix_list):
-        plt.figure(figsize=(9,3))
+        plt.figure(figsize=(8,3.1))
         comh.plotAverageMeasure(h5_file_list, args.region, measure, index=index, stim_times=stim_times, label=label, title=title, reparametrise=reparametrise, y_label=y_label)
         save_dir = os.path.join(image_dir, 'Averaging_measurements_across_trials', args.region, str(int(1000*args.bin_width)) + 'ms', measure)
         os.makedirs(save_dir) if not os.path.exists(save_dir) else None
@@ -139,7 +140,7 @@ if not args.debug:
         trial_info = stim_info.loc[comh.getTrialIndexFromH5File(h5py.File(h5_file_list[0],'r'))]
         stim_times = [trial_info['stim_starts'], trial_info['stim_stops']]
         measure_list = ['moving_avg', 'moving_var', 'corr_avg', 'binom_params', 'comb_params', 'comb_params', 'betabinom_ab', 'betabinom_ab']
-        y_label_list = ['Act. Cells Moving Avg.', 'Act. Cells Moving Var.', 'Avg. Corr. Coef.', r'Bin. $p$', r'COMb $p$', r'COMb $\nu$', r'Beta-bin $\pi$', r'Beta-bin $\rho$']
+        y_label_list = ['Num. Act. Cells Moving Avg.', 'Num. Act. Cells Moving Var.', 'Avg. Corr. Coef.', r'Bin. $p$', r'COMb $p$', r'COMb $\nu$', r'Beta-bin $\pi$', r'Beta-bin $\rho$']
         index_list = [None, None, None, None, 0, 1, 0, 1]
         label_list = ['Moving Avg.', 'Moving Var.', 'Avg. Corr.', r'Binomial $p$', r'COM-Binomial $p$', r'COM-Binomial $\nu$', r'Beta-Binomial $\pi$', r'Beta-Binomial $\rho$']
         reparametrise_list = [False, False, False, False, False, False, True, True]
