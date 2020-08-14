@@ -23,6 +23,7 @@ parser.add_argument('-f', '--plot_fano', help='Flag to plot the fano factors.', 
 parser.add_argument('-c', '--compare_dists', help='Flag to plot the distribution comparison plot.', default=False, action='store_true')
 parser.add_argument('-e', '--fitted_example', help='Flag to plot the example of data and fitted distributions.', default=False, action='store_true')
 parser.add_argument('-s', '--plot_rasters', help='Flag to plot some rasters for selected regions.', default=False, action='store_true')
+parser.add_argument('-l', '--plot_ll_hists', help='Flag for plotting the histograms of log likelihoods', default=False, action='store_true')
 parser.add_argument('-d', '--debug', help='Enter debug mode.', default=False, action='store_true')
 args = parser.parse_args()
 
@@ -277,3 +278,12 @@ if not args.debug:
         spike_time_dict = comh.loadSpikeTimeDict(adj_cell_ids, posterior_dir, frontal_dir, cell_info)
         save_names = comh.plotRastersForRegions(adj_cell_ids, cell_info, spike_time_dict, ['v1','thalamus','hippocampus'], stim_info, image_dir)
         [print(dt.datetime.now().isoformat() + ' INFO: ' + sn + ' saved.') for sn in save_names]
+
+
+####################### PLOT LL HISTOGRAMS ###########################
+    if args.plot_ll_hists:
+        stim_info, stim_ids = comh.loadStimulusInfo(mat_dir)
+        h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
+        unstimulated_log_likes, stimulated_log_likes = comh.getLikelihoodsForRegion(h5_file_list, args.region)
+        comh.plotLogLikelihoodsHistograms(unstimulated_log_likes, args.region, image_dir, args.bin_width, title='unstimulated')
+        comh.plotLogLikelihoodsHistograms(stimulated_log_likes, args.region, image_dir, args.bin_width,args.bin_width,  title='stimulated')

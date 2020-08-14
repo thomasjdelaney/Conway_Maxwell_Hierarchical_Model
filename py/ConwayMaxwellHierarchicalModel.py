@@ -410,6 +410,43 @@ def binCombDkl(n,p,nu):
     expected_value = np.sum([v*np.log(comb.comb(n,k)) for k,v in comb_dist.samp_des_dict.items()])
     return (nu - 1)*expected_value - np.log(comb_dist.normaliser)
 
+def getLastUnstimulatedWindowIndFirstStimulatedWindowIndFromFile(h5_file_name, region):
+    """
+    For getting the last unstimulated window ind from a file
+    Arguments:  h5_file_name, h5py file name
+                region, string
+    Returns:    last_unstimulated_window_ind, int, the index
+                first_all_stimulated_window_ind, int, the index
+    """
+    h5_file = h5py.File(h5_file_name, 'r')
+    last_unstimulated_window_ind = h5_file.get(region).get('any_stimulated')[()].nonzero()[0].min()-1
+    first_all_stimulated_window_ind = h5_file.get(region).get('all_stimulated')[()].nonzero()[0].min()
+    if last_unstimulated_window_ind < 0:
+        print(dt.datetime.now().isoformat() + ' WARN: ' + 'Last unstimulated window index is less than 0!')
+    h5_file.close()
+    return last_unstimulated_window_ind, first_all_stimulated_window_ind
+
+def getLikelihoodsForRegion(h5_file_list, region):
+    """
+    Get an array of log likelihoods from each of the files in the file list for the given region and distribution.
+    Arguments:  h5_file_list, list of str
+                region, str
+    Returns:    unstimulated_log_likes, numpy array (num files, 3), binom, betabinom, and comb log likes for last unstimulated window
+                stimulated_log_likes, numpy array (num_files, 3), binom, betabinom, and comb log likes for first stimulated window
+    """
+    unstimulated_log_likes = np.zeros((len(h5_file_list), 3)) # binom, betabinom, comb
+    stimulated_log_likes = np.zeros((len(h5_file_list), 3))
+    for i,h5_file_name in enumerate(h5_file_list):
+        last_unstimulated_window_ind, first_all_stimulated_window_ind = getLastUnstimulatedWindowIndFirstStimulatedWindowIndFromFile(h5_file_name, region)
+        h5_file = h5py.File(h5_file_name, 'r')
+        unstim_bin_log_like, stim_binom_log_like = h5_file.get(region).get('binom_log_like')[()][[last_unstimulated_window_ind, first_all_stimulated_window_ind]]
+        unstim_betabinom_log_like, stim_betabinom_log_like = h5_file.get(region).get('betabinom_log_like')[()][[last_unstimulated_window_ind, first_all_stimulated_window_ind]]
+        unstim_comb_log_like, stim_comb_log_like = h5_file.get(region).get('comb_log_like')[()][[last_unstimulated_window_ind, first_all_stimulated_window_ind]]
+        h5_file.close()
+        unstimulated_log_likes[i,:] = [unstim_bin_log_like, unstim_betabinom_log_like, unstim_comb_log_like]
+        stimulated_log_likes[i,:] = [stim_binom_log_like, stim_betabinom_log_like, stim_comb_log_like]
+    return unstimulated_log_likes, stimulated_log_likes    
+
 ##########################################################
 ########## PLOTTING FUNCTIONS ############################
 ##########################################################
@@ -672,3 +709,28 @@ def plotRastersForRegions(adj_cell_ids, cell_info, spike_time_dict, regions, sti
         save_names.append(save_name)
         plt.close('all')
     return save_names
+
+def plotLogLikelihoodsHistograms(log_likes, region, image_dir, bin_width, title='unstimulated', labels=['Binomial', 'Beta-binomial', 'COMb'], colours=['blue','orange','green']):
+    """
+    For plotting 6 histograms, three for unstimulated, three for stimulated. Want to show if COMb is clearly better than the other two.
+    Arguments:  log_likes, numpy array (num_files, 3), binom, betabinom, and comb log likes
+                region, string
+    Returns:    nothing
+    """
+    label_to_file_part = {'Binomial':'binom', 'Beta-binomial':'beta_binom', 'COMb':'comb'}
+    ll_max, ll_min = log_likes.max(), log_likes.min()
+    ll_bins = np.linspace(ll_min, ll_max, 21)
+    for i in range(3):
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(5,4))
+        ax.hist(log_likes[:,i], bins=ll_bins, label=labels[i], color=colours[i])
+        ax.legend(fontsize='large')
+        ax.set_xlabel('Log Likelihood', fontsize='large')
+        ax.set_title(title.capitalize(), fontsize='x-large') if (title != '') & (i == 0) else None
+        ax.tick_params(axis='both', labelsize='large')
+        plt.tight_layout()
+        save_name = os.path.join(image_dir, 'Log_Likelihood', region, str(int(1000*bin_width)) + 'ms', region + '_' + label_to_file_part[labels[i]] + '_' + str(int(1000*bin_width)) + 'ms' + '_' + title + '_log_likelihood_hist.png')
+        os.makedirs(os.path.dirname(save_name)) if not os.path.exists(os.path.dirname(save_name)) else None
+        plt.savefig(save_name)
+        print(dt.datetime.now().isoformat() + ' INFO: ' + 'Saved: ' + save_name)
+        plt.close('all')
+
