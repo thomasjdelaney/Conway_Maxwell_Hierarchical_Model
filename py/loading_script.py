@@ -41,10 +41,11 @@ import ConwayMaxwellBinomial as comb
 print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
 cell_info = comh.loadCellInfo(csv_dir)
 stim_info, stim_ids = comh.loadStimulusInfo(mat_dir)
-h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
+h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info.index.values, args.bin_width, args.window_size)
+best_ind, binom_best_ll, betabinom_best_ll, comb_best_ll, binom_best_params, betabinom_best_params, comb_best_params, num_active_cells_binned, num_cells = comh.getExampleForFileRegion(h5_file_list[20], args.region)
 
-unstimulated_log_likes, stimulated_log_likes = comh.getLikelihoodsForRegion(h5_file_list, args.region)
-
-comh.plotLogLikelihoodsHistograms(unstimulated_log_likes, args.region, title='unstimulated')
-comh.plotLogLikelihoodsHistograms(stimulated_log_likes, args.region, title='stimulated')
-
+bin_dist = binom(num_cells, binom_best_params)
+betabin_dist = betabinom(num_cells, betabinom_best_params[0], betabinom_best_params[1])
+comb_dist = comb.ConwayMaxwellBinomial(comb_best_params[0], comb_best_params[1], num_cells)
+title = args.region.capitalize() + ', ' + str(num_cells) + ' cells, ' + str(args.window_size) + 'ms window'
+comh.plotCompareDataFittedDistnBar(num_active_cells_binned, [bin_dist, betabin_dist, comb_dist], data_label='Empirical Distn', distn_label=['Binomial PMF', 'Beta-binomial PMF', 'COM-binomial PMF'], title=title, colours=['blue', 'orange', 'green'])

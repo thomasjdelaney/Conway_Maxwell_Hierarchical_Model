@@ -11,6 +11,8 @@ from scipy.optimize import minimize
 sys.path.append(os.path.join(os.environ['PROJ'], 'Conway_Maxwell_Binomial_Distribution'))
 import ConwayMaxwellBinomial as comb
 
+regions = ['v1', 'motor_cortex', 'thalamus', 'striatum', 'hippocampus']
+
 def loadCellInfo(csv_dir):
     """
     For loading the csv containing information about each cell.
@@ -436,16 +438,58 @@ def getLikelihoodsForRegion(h5_file_list, region):
     """
     unstimulated_log_likes = np.zeros((len(h5_file_list), 3)) # binom, betabinom, comb
     stimulated_log_likes = np.zeros((len(h5_file_list), 3))
+    unstim_binom = np.zeros(len(h5_file_list))
+    stim_binom = np.zeros(len(h5_file_list))
+    unstim_betabinom = np.zeros((len(h5_file_list),2))
+    stim_betabinom = np.zeros((len(h5_file_list),2))
+    unstim_comb = np.zeros((len(h5_file_list),2))
+    stim_comb = np.zeros((len(h5_file_list),2))
     for i,h5_file_name in enumerate(h5_file_list):
         last_unstimulated_window_ind, first_all_stimulated_window_ind = getLastUnstimulatedWindowIndFirstStimulatedWindowIndFromFile(h5_file_name, region)
         h5_file = h5py.File(h5_file_name, 'r')
-        unstim_bin_log_like, stim_binom_log_like = h5_file.get(region).get('binom_log_like')[()][[last_unstimulated_window_ind, first_all_stimulated_window_ind]]
-        unstim_betabinom_log_like, stim_betabinom_log_like = h5_file.get(region).get('betabinom_log_like')[()][[last_unstimulated_window_ind, first_all_stimulated_window_ind]]
-        unstim_comb_log_like, stim_comb_log_like = h5_file.get(region).get('comb_log_like')[()][[last_unstimulated_window_ind, first_all_stimulated_window_ind]]
+        unstim_bin_log_like, stim_binom_log_like = h5_file.get(region).get('binom_log_like')[[last_unstimulated_window_ind, first_all_stimulated_window_ind]]
+        unstim_betabinom_log_like, stim_betabinom_log_like = h5_file.get(region).get('betabinom_log_like')[[last_unstimulated_window_ind, first_all_stimulated_window_ind]]
+        unstim_comb_log_like, stim_comb_log_like = h5_file.get(region).get('comb_log_like')[[last_unstimulated_window_ind, first_all_stimulated_window_ind]]
+        unstim_binom_params, stim_binom_params = h5_file.get(region).get('binom_params')[[last_unstimulated_window_ind, first_all_stimulated_window_ind]]
+        unstim_betabinom_params, stim_betabinom_params = h5_file.get(region).get('betabinom_ab')[[last_unstimulated_window_ind, first_all_stimulated_window_ind]]
+        unstim_comb_params, stim_comb_params = h5_file.get(region).get('comb_params')[[last_unstimulated_window_ind, first_all_stimulated_window_ind]]
         h5_file.close()
         unstimulated_log_likes[i,:] = [unstim_bin_log_like, unstim_betabinom_log_like, unstim_comb_log_like]
         stimulated_log_likes[i,:] = [stim_binom_log_like, stim_betabinom_log_like, stim_comb_log_like]
-    return unstimulated_log_likes, stimulated_log_likes    
+        unstim_binom[i] = unstim_binom_params
+        stim_binom[i] = stim_binom_params
+        unstim_betabinom[i,:] = unstim_betabinom_params
+        stim_betabinom[i,:] = stim_betabinom_params
+        unstim_comb[i,:] = unstim_comb_params
+        stim_comb[i,:] = stim_comb_params
+    return unstimulated_log_likes, stimulated_log_likes, unstim_binom, stim_binom, unstim_betabinom, stim_betabinom, unstim_comb, stim_comb    
+
+def getExampleForFileRegion(h5_file_name, region):
+    """
+    Get the window for which each distribution is the best fit. Get the distribution params as well.
+    Arguments:  h5_file_name, list of strings
+                region, str
+    Returns:    window data
+                params
+    """
+    h5_file = h5py.File(h5_file_name,'r')
+    binom_ll = h5_file.get(region).get('binom_log_like')[()]
+    betabinom_ll = h5_file.get(region).get('betabinom_log_like')[()]
+    comb_ll = h5_file.get(region).get('comb_log_like')[()]
+
+    good_inds = np.flatnonzero((comb_ll > betabinom_ll) & (comb_ll > binom_ll) & (betabinom_ll > binom_ll))
+    best_ind = good_inds[comb_ll[good_inds].argmax()]
+    
+    binom_best_ll = h5_file.get(region).get('binom_log_like')[best_ind]
+    betabinom_best_ll = h5_file.get(region).get('betabinom_log_like')[best_ind]
+    comb_best_ll = h5_file.get(region).get('comb_log_like')[best_ind]
+    binom_best_params = h5_file.get(region).get('binom_params')[best_ind]
+    betabinom_best_params = h5_file.get(region).get('betabinom_ab')[best_ind]
+    comb_best_params = h5_file.get(region).get('comb_params')[best_ind]
+    num_active_cells_binned = h5_file.get(region).get('num_active_cells_binned')[()]
+    num_cells = h5_file.get(region).get('num_cells')[()]
+    h5_file.close()
+    return best_ind, binom_best_ll, betabinom_best_ll, comb_best_ll, binom_best_params, betabinom_best_params, comb_best_params, num_active_cells_binned, num_cells
 
 ##########################################################
 ########## PLOTTING FUNCTIONS ############################
@@ -518,6 +562,38 @@ def plotCompareDataFittedDistn(num_active_cells_binned, fitted_distn, plot_type=
     plt.xlabel('Num. Active Cells', fontsize='x-large')
     plt.ylabel('P(k)', fontsize='x-large')
     plt.title(title, fontsize='large') if title != '' else None
+    plt.tight_layout()
+    return None
+
+def plotCompareDataFittedDistnBar(num_active_cells_binned, fitted_distn, data_label='Num. Active Cells', distn_label=['Fitted Distn. PMF'], title='', colours=['blue']):
+    """
+    For comparing a fitted distribution to some data in a bar plot.
+    Arguments:  num_active_cells_binned, array int
+                fitted_distn, distribution object or list of distn objects, needs pdf and cdf functions
+    Returns:    nothing
+    """
+    fitted_distn = [fitted_distn] if list != type(fitted_distn) else fitted_distn
+    num_distns = len(fitted_distn)
+    distn_label = distn_label * num_distns if len(distn_label) != num_distns else distn_label
+    bin_borders = range(num_active_cells_binned.max()+2)
+    emp_pmf, _ = np.histogram(num_active_cells_binned, bins=bin_borders, density=True)
+    x_axis = np.array(bin_borders[:-1])
+    distn_pmfs = np.zeros((num_distns, emp_pmf.size))
+    for i,distn in enumerate(fitted_distn):
+        distn_pmfs[i,:] = distn.pmf(x_axis)
+    all_pmfs = np.vstack([emp_pmf, distn_pmfs])
+    all_labels = np.hstack([data_label, distn_label])
+    all_colours = np.hstack(['skyblue', colours])
+    width=0.2
+    fig, ax = plt.subplots(figsize=(5,4))
+    for i in range(all_pmfs.shape[0]):
+        ax.bar(x_axis + (i-2)*width, all_pmfs[i,:], width, label=all_labels[i], color=all_colours[i])
+    ax.legend(fontsize='large')
+    ax.set_xticks(x_axis)
+    ax.tick_params(axis='both', labelsize='large')
+    ax.set_xlabel('Num. Active Cells', fontsize='x-large')
+    ax.set_ylabel('P(k)', fontsize='x-large')
+    ax.set_title(title, fontsize='large') if title != '' else None
     plt.tight_layout()
     return None
 
@@ -734,3 +810,28 @@ def plotLogLikelihoodsHistograms(log_likes, region, image_dir, bin_width, title=
         print(dt.datetime.now().isoformat() + ' INFO: ' + 'Saved: ' + save_name)
         plt.close('all')
 
+def plotParaHistogram(image_dir, param, region, bin_width, stim, param_values, x_label='', title=''):
+    """
+    For plotting parameter histograms.
+    Arguments:  image_dir, str
+                param, the param name
+                region,
+                bin_width,
+                stim, str ['stim' or 'unstim']
+                param_values, array
+                x_label,
+                title,
+    Returns:    nothing
+    """
+    fig, ax = plt.subplots(figsize=(5,4))
+    ax.hist(param_values)
+    ax.set_xlabel(x_label, fontsize='x-large') if x_label != '' else None
+    ax.set_title(title, fontsize='large') if title != '' else None
+    ax.tick_params(axis='both', labelsize='large')
+    plt.tight_layout()
+    save_name = os.path.join(image_dir, 'Param_hists', region, str(int(1000*bin_width)) + 'ms', '_'.join([region, str(int(1000*bin_width)) + 'ms', param, stim]) + '.png')
+    os.makedirs(os.path.dirname(save_name)) if not os.path.exists(os.path.dirname(save_name)) else None
+    plt.savefig(save_name)
+    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Saved: ' + save_name)
+    plt.close('all')
+    

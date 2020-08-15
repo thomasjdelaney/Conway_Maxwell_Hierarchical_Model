@@ -24,6 +24,7 @@ parser.add_argument('-c', '--compare_dists', help='Flag to plot the distribution
 parser.add_argument('-e', '--fitted_example', help='Flag to plot the example of data and fitted distributions.', default=False, action='store_true')
 parser.add_argument('-s', '--plot_rasters', help='Flag to plot some rasters for selected regions.', default=False, action='store_true')
 parser.add_argument('-l', '--plot_ll_hists', help='Flag for plotting the histograms of log likelihoods', default=False, action='store_true')
+parser.add_argument('-g', '--plot_bars', help='Flag for plotting some fitted examples', default=False, action='store_true')
 parser.add_argument('-d', '--debug', help='Enter debug mode.', default=False, action='store_true')
 args = parser.parse_args()
 
@@ -271,6 +272,23 @@ if not args.debug:
         plt.savefig(save_name); plt.savefig(save_name.replace('.png','.svg'));
         plt.close('all')
 
+######################## BAR PLOT EXAMPLES ############################
+    if args.plot_bars:
+        h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info.index.values, args.bin_width, args.window_size)
+        h5_files_to_use = np.random.choice(h5_file_list, size=5, replace=False)
+        for h5_file_name in h5_files_to_use:
+            best_ind, binom_best_ll, betabinom_best_ll, comb_best_ll, binom_best_params, betabinom_best_params, comb_best_params, num_active_cells_binned, num_cells = comh.getExampleForFileRegion(h5_file_name, args.region)
+            bin_dist = binom(num_cells, binom_best_params)
+            betabin_dist = betabinom(num_cells, betabinom_best_params[0], betabinom_best_params[1])
+            comb_dist = comb.ConwayMaxwellBinomial(comb_best_params[0], comb_best_params[1], num_cells)
+            title = args.region.capitalize() + ', ' + str(num_cells) + ' cells, ' + str(args.window_size) + 'ms window' + ', ' + str(int(1000*args.bin_width)) + 'ms bins, ' + os.path.basename(h5_file_name).split('_')[1] 
+            comh.plotCompareDataFittedDistnBar(num_active_cells_binned, [bin_dist, betabin_dist, comb_dist], data_label='Empirical Distn', distn_label=['Binomial PMF', 'Beta-binomial PMF', 'COM-binomial PMF'], title=title, colours=['blue', 'orange', 'green'])
+            save_name = os.path.join(image_dir, 'Fitted_examples', args.region, str(int(1000*args.bin_width)) + 'ms', args.region + '_' + str(int(1000*args.bin_width)) + 'ms' + '_trial_' + os.path.basename(h5_file_name).split('_')[1] + '_example.png')
+            os.makedirs(os.path.dirname(save_name)) if not os.path.exists(os.path.dirname(save_name)) else None
+            plt.savefig(save_name)
+            print(dt.datetime.now().isoformat() + ' INFO: ' + 'Saved: ' + save_name)
+            plt.close('all')
+
 ######################## PLOT RASTERS #################################
     if args.plot_rasters:
         cell_info = comh.loadCellInfo(csv_dir)
@@ -284,6 +302,20 @@ if not args.debug:
     if args.plot_ll_hists:
         stim_info, stim_ids = comh.loadStimulusInfo(mat_dir)
         h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
-        unstimulated_log_likes, stimulated_log_likes = comh.getLikelihoodsForRegion(h5_file_list, args.region)
+        unstimulated_log_likes, stimulated_log_likes, unstim_binom, stim_binom, unstim_betabinom, stim_betabinom, unstim_comb, stim_comb = comh.getLikelihoodsForRegion(h5_file_list, args.region)
+        unstim_betabinom_pi = comh.reparametriseBetaBinomial(unstim_betabinom)
+        stim_betabinom_pi = comh.reparametriseBetaBinomial(stim_betabinom)
         comh.plotLogLikelihoodsHistograms(unstimulated_log_likes, args.region, image_dir, args.bin_width, title='unstimulated')
-        comh.plotLogLikelihoodsHistograms(stimulated_log_likes, args.region, image_dir, args.bin_width,args.bin_width,  title='stimulated')
+        comh.plotLogLikelihoodsHistograms(stimulated_log_likes, args.region, image_dir, args.bin_width, title='stimulated')
+        comh.plotParaHistogram(image_dir, 'binom_p', args.region, args.bin_width, 'unstim', unstim_binom, x_label=r'Binomial $p$', title=args.region + ', ' + str(len(h5_file_list)) + ' trials, unstimulated window')
+        comh.plotParaHistogram(image_dir, 'binom_p', args.region, args.bin_width, 'stim', stim_binom, x_label=r'Binomial $p$', title=args.region + ', ' + str(len(h5_file_list)) + ' trials, stimulated window')
+        comh.plotParaHistogram(image_dir, 'betabinom_pi', args.region, args.bin_width, 'unstim', unstim_betabinom_pi[:,0], x_label=r'Beta-binomial $\pi$', title=args.region + ', ' + str(len(h5_file_list)) + ' trials, unstimulated window')
+        comh.plotParaHistogram(image_dir, 'betabinom_pi', args.region, args.bin_width, 'stim', stim_betabinom_pi[:,0], x_label=r'Beta-binomial $\pi$', title=args.region + ', ' + str(len(h5_file_list)) + ' trials, stimulated window')
+        comh.plotParaHistogram(image_dir, 'betabinom_rho', args.region, args.bin_width, 'unstim', unstim_betabinom_pi[:,1], x_label=r'Beta-binomial $\rho$', title=args.region + ', ' + str(len(h5_file_list)) + ' trials, unstimulated window')
+        comh.plotParaHistogram(image_dir, 'betabinom_rho', args.region, args.bin_width, 'stim', stim_betabinom_pi[:,1], x_label=r'Beta-binomial $\rho$', title=args.region + ', ' + str(len(h5_file_list)) + ' trials, stimulated window')
+        comh.plotParaHistogram(image_dir, 'comb_p', args.region, args.bin_width, 'unstim', unstim_comb[:,0], x_label=r'COMb $p$', title=args.region + ', ' + str(len(h5_file_list)) + ' trials, unstimulated window')
+        comh.plotParaHistogram(image_dir, 'comb_p', args.region, args.bin_width, 'stim', stim_comb[:,0], x_label=r'COMb $p$', title=args.region + ', ' + str(len(h5_file_list)) + ' trials, stimulated window')
+        comh.plotParaHistogram(image_dir, 'comb_nu', args.region, args.bin_width, 'unstim', unstim_comb[:,1], x_label=r'COMb $\nu$', title=args.region + ', ' + str(len(h5_file_list)) + ' trials, unstimulated window')
+        comh.plotParaHistogram(image_dir, 'comb_nu', args.region, args.bin_width, 'stim', stim_comb[:,1], x_label=r'COMb $\nu$', title=args.region + ', ' + str(len(h5_file_list)) + ' trials, stimulated window')
+
+
