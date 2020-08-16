@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 import matplotlib.pyplot as plt
+from matplotlib import cm
 from scipy.io import loadmat
 from multiprocessing import Pool
 from scipy.stats import binom, betabinom, mannwhitneyu
@@ -835,3 +836,32 @@ def plotParaHistogram(image_dir, param, region, bin_width, stim, param_values, x
     print(dt.datetime.now().isoformat() + ' INFO: ' + 'Saved: ' + save_name)
     plt.close('all')
     
+def plotTwoParamHistogram(image_dir, distn, x_param, y_param, region, bin_width, stim, x_param_values, y_param_values, title=''):
+    """
+    For plotting 2d param histograms for betabinomial and COMb distributions.
+    Arguments:  image_dir, str
+                distn, str, the distribution, for saving purposes
+                x_param, the x-params label
+                y_param, the y_param label
+                region, str
+                bin_width,
+                stim, str ['stim' or 'unstim']
+                x_param_values, floats
+                y_param_values, floats
+                title,
+    Returns:    nothing
+    """
+    fig, ax = plt.subplots(figsize=(5,4))
+    h, x_edge, y_edge, cs = ax.hist2d(x=x_param_values, y=y_param_values, bins=10, cmap=cm.PuBu_r)
+    ax.set_xlabel(x_param, fontsize='x-large')
+    ax.set_ylabel(y_param, fontsize='x-large')
+    ax.tick_params(axis='both', labelsize='large')
+    ax.set_title(title) if title !='' else None
+    cbar = fig.colorbar(cs)
+    plt.tight_layout()
+    save_name = os.path.join(image_dir, 'Param_hists', region, str(int(1000*bin_width)) + 'ms', '_'.join([region, str(int(1000*bin_width)) + 'ms', distn, stim]) + '.png')
+    os.makedirs(os.path.dirname(save_name)) if not os.path.exists(os.path.dirname(save_name)) else None
+    plt.savefig(save_name)
+    print(dt.datetime.now().isoformat() + ' INFO: ' + 'Saved: ' + save_name)
+    plt.close('all')
+

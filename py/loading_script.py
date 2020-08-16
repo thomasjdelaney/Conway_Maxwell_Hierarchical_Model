@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import datetime as dt
 import matplotlib.pyplot as plt
+from matplotlib import cm
 from scipy.stats import binom, betabinom, mannwhitneyu
 from scipy.optimize import minimize
 from multiprocessing import Pool
@@ -41,11 +42,9 @@ import ConwayMaxwellBinomial as comb
 print(dt.datetime.now().isoformat() + ' INFO: ' + 'Starting main function...')
 cell_info = comh.loadCellInfo(csv_dir)
 stim_info, stim_ids = comh.loadStimulusInfo(mat_dir)
-h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info.index.values, args.bin_width, args.window_size)
-best_ind, binom_best_ll, betabinom_best_ll, comb_best_ll, binom_best_params, betabinom_best_params, comb_best_params, num_active_cells_binned, num_cells = comh.getExampleForFileRegion(h5_file_list[20], args.region)
-
-bin_dist = binom(num_cells, binom_best_params)
-betabin_dist = betabinom(num_cells, betabinom_best_params[0], betabinom_best_params[1])
-comb_dist = comb.ConwayMaxwellBinomial(comb_best_params[0], comb_best_params[1], num_cells)
-title = args.region.capitalize() + ', ' + str(num_cells) + ' cells, ' + str(args.window_size) + 'ms window'
-comh.plotCompareDataFittedDistnBar(num_active_cells_binned, [bin_dist, betabin_dist, comb_dist], data_label='Empirical Distn', distn_label=['Binomial PMF', 'Beta-binomial PMF', 'COM-binomial PMF'], title=title, colours=['blue', 'orange', 'green'])
+h5_file_list = comh.getFileListFromTrialIndices(h5_dir, stim_info[stim_info['stim_ids'] != 17].index.values, args.bin_width, args.window_size)
+unstimulated_log_likes, stimulated_log_likes, unstim_binom, stim_binom, unstim_betabinom, stim_betabinom, unstim_comb, stim_comb = comh.getLikelihoodsForRegion(h5_file_list, args.region)
+unstim_betabinom_pi = comh.reparametriseBetaBinomial(unstim_betabinom)
+stim_betabinom_pi = comh.reparametriseBetaBinomial(stim_betabinom)
+comh.plotTwoParamHistogram(image_dir,'beta_binom',r'$\pi$', r'$\rho$', args.region, args.bin_width, 'unstim', unstim_betabinom_pi[:,0], unstim_betabinom_pi[:,1], title='Beta-binomial, ' + args.region + ', ' + str(len(h5_file_list)) + ' trials, unstimulated window')
+comh.plotTwoParamHistogram(image_dir,'beta_binom',r'$\pi$', r'$\rho$', args.region, args.bin_width, 'stim', stim_betabinom_pi[:,0], stim_betabinom_pi[:,1], title='Beta-binomial, ' + args.region + ', ' + str(len(h5_file_list)) + ' trials, stimulated window')

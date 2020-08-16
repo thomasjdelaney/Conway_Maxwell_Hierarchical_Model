@@ -317,5 +317,9 @@ if not args.debug:
         comh.plotParaHistogram(image_dir, 'comb_p', args.region, args.bin_width, 'stim', stim_comb[:,0], x_label=r'COMb $p$', title=args.region + ', ' + str(len(h5_file_list)) + ' trials, stimulated window')
         comh.plotParaHistogram(image_dir, 'comb_nu', args.region, args.bin_width, 'unstim', unstim_comb[:,1], x_label=r'COMb $\nu$', title=args.region + ', ' + str(len(h5_file_list)) + ' trials, unstimulated window')
         comh.plotParaHistogram(image_dir, 'comb_nu', args.region, args.bin_width, 'stim', stim_comb[:,1], x_label=r'COMb $\nu$', title=args.region + ', ' + str(len(h5_file_list)) + ' trials, stimulated window')
+        comh.plotTwoParamHistogram(image_dir,'beta_binom',r'$\pi$', r'$\rho$', args.region, args.bin_width, 'unstim', unstim_betabinom_pi[:,0], unstim_betabinom_pi[:,1], title='Beta-binomial, ' + args.region + ', ' + str(len(h5_file_list)) + ' trials, unstimulated window')
+        comh.plotTwoParamHistogram(image_dir,'beta_binom',r'$\pi$', r'$\rho$', args.region, args.bin_width, 'stim', stim_betabinom_pi[:,0], stim_betabinom_pi[:,1], title='Beta-binomial, ' + args.region + ', ' + str(len(h5_file_list)) + ' trials, stimulated window')
+        comh.plotTwoParamHistogram(image_dir,'comb',r'$p$', r'$\nu$', args.region, args.bin_width, 'unstim', unstim_comb[:,0], unstim_comb[:,1], title='COMb, ' + args.region + ', ' + str(len(h5_file_list)) + ' trials, unstimulated window')
+        comh.plotTwoParamHistogram(image_dir,'comb',r'$p$', r'$\nu$', args.region, args.bin_width, 'stim', stim_comb[:,0], stim_comb[:,1], title='COMb, ' + args.region + ', ' + str(len(h5_file_list)) + ' trials, stimulated window')
 
 
